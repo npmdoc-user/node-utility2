@@ -1373,10 +1373,36 @@ shMountData() {(set -e
     chmod 1777 /tmp
 )}
 
+shNpmPublish() {(set -e
+# this function will npm-publish the $DIR as $NAME@$VERSION with a clean repo
+    cd "$1"
+    if ! [ -d .git ]
+    then
+        git init
+        git add .
+        git rm --cached node_modules > /dev/null 2>&1 || true
+        git commit -am "npm publish" > /dev/null 2>&1 || true
+    fi
+    shInit
+    shGitInfo
+    read -p "npm publish? [y/n]: " INPUT
+    case "$INPUT" in
+    y)
+        ;;
+    *)
+        printf "canceled\n"
+        exit
+        ;;
+    esac
+    shNpmPublishAs $@
+)}
+
 shNpmPublishAs() {(set -e
-# this function will npm-publish the current dir as $NAME@$VERSION with a clean repo
-    NAME="$1"
-    VERSION="$2"
+# this function will npm-publish the $DIR as $NAME@$VERSION with a clean repo
+    DIR="$1"
+    NAME="$2"
+    VERSION="$3"
+    cd "$DIR"
     shInit
     shGitRepoBranchCommand copyPwdLsTree
     cd /tmp/git.repo.branch
@@ -1406,12 +1432,6 @@ local.packageJson.version = local.version || local.packageJson.version;
 local.fs.writeFileSync('package.json', JSON.stringify(local.packageJson));
 // </script>
     "
-    npm publish
-)}
-
-shNpmPublishDir() {(set -e
-# this function will npm-publish the dir $1
-    cd "$1"
     npm publish
 )}
 
