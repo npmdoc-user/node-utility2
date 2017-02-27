@@ -134,7 +134,7 @@ body {\n\
 }\n\
 </style>\n\
 <div class="apiDocDiv">\n\
-<h1>api-doc\n\
+<h1>api documentation\n\
     <a\n\
         {{#if env.npm_package_homepage}}\n\
         href="{{env.npm_package_homepage}}"\n\
@@ -243,9 +243,11 @@ utility2-comment -->\n\
     <h3>{{env.npm_package_description}}</h3>\n\
 <!-- utility2-comment\n\
     <h4><a download href="assets.app.js">download standalone app</a></h4>\n\
-    <button class="onclick" id="testRunButton1">run internal test</button><br>\n\
+    <button class="onclick onreset" id="testRunButton1">run internal test</button><br>\n\
     <div id="testReportDiv1" style="display: none;"></div>\n\
 utility2-comment -->\n\
+\n\
+\n\
 \n\
 <!-- utility2-comment\n\
     {{#if isRollup}}\n\
@@ -409,19 +411,76 @@ instruction\n\
     // run browser js-env code - post-init\n\
     case \'browser\':\n\
         local.testRunBrowser = function (event) {\n\
-            return event;\n\
+            if (!event || (event &&\n\
+                    event.currentTarget &&\n\
+                    event.currentTarget.className &&\n\
+                    event.currentTarget.className.includes &&\n\
+                    event.currentTarget.className.includes(\'onreset\'))) {\n\
+                // reset output\n\
+                Array.from(\n\
+                    document.querySelectorAll(\'body > .resettable\')\n\
+                ).forEach(function (element) {\n\
+                    switch (element.tagName) {\n\
+                    case \'INPUT\':\n\
+                    case \'TEXTAREA\':\n\
+                        element.value = \'\';\n\
+                        break;\n\
+                    default:\n\
+                        element.textContent = \'\';\n\
+                    }\n\
+                });\n\
+            }\n\
+            switch (event && event.currentTarget && event.currentTarget.id) {\n\
+            case \'testRunButton1\':\n\
+                // show tests\n\
+                if (document.querySelector(\'#testReportDiv1\').style.display === \'none\') {\n\
+                    document.querySelector(\'#testReportDiv1\').style.display = \'block\';\n\
+                    document.querySelector(\'#testRunButton1\').textContent =\n\
+                        \'hide internal test\';\n\
+                    local.modeTest = true;\n\
+                    local.testRunDefault(local);\n\
+                // hide tests\n\
+                } else {\n\
+                    document.querySelector(\'#testReportDiv1\').style.display = \'none\';\n\
+                    document.querySelector(\'#testRunButton1\').textContent = \'run internal test\';\n\
+                }\n\
+                break;\n\
+            // custom-case\n\
+            default:\n\
+                break;\n\
+            }\n\
+            if (document.querySelector(\'#inputTextareaEval1\') && (!event || (event &&\n\
+                    event.currentTarget &&\n\
+                    event.currentTarget.className &&\n\
+                    event.currentTarget.className.includes &&\n\
+                    event.currentTarget.className.includes(\'oneval\')))) {\n\
+                // try to eval input-code\n\
+                try {\n\
+                    /*jslint evil: true*/\n\
+                    eval(document.querySelector(\'#inputTextareaEval1\').value);\n\
+                } catch (errorCaught) {\n\
+                    console.error(errorCaught.stack);\n\
+                }\n\
+            }\n\
         };\n\
         // log stderr and stdout to #outputTextareaStdout1\n\
         [\'error\', \'log\'].forEach(function (key) {\n\
-            console[\'_\' + key] = console[key];\n\
+            console[key + \'_original\'] = console[key];\n\
             console[key] = function () {\n\
-                console[\'_\' + key].apply(console, arguments);\n\
-                (document.querySelector(\'#outputTextareaStdout1\') || { value: \'\' }).value +=\n\
-                    Array.from(arguments).map(function (arg) {\n\
-                        return typeof arg === \'string\'\n\
-                            ? arg\n\
-                            : JSON.stringify(arg, null, 4);\n\
-                    }).join(\' \') + \'\\n\';\n\
+                var element;\n\
+                console[key + \'_original\'].apply(console, arguments);\n\
+                element = document.querySelector(\'#outputTextareaStdout1\');\n\
+                if (!element) {\n\
+                    return;\n\
+                }\n\
+                // append text to #outputTextareaStdout1\n\
+                element.value += Array.from(arguments).map(function (arg) {\n\
+                    return typeof arg === \'string\'\n\
+                        ? arg\n\
+                        : JSON.stringify(arg, null, 4);\n\
+                }).join(\' \') + \'\\n\';\n\
+                // scroll textarea to bottom\n\
+                element.scrollTop = element.scrollHeight;\n\
             };\n\
         });\n\
         // init event-handling\n\
@@ -431,7 +490,7 @@ instruction\n\
             });\n\
         });\n\
         // run tests\n\
-        local.testRunBrowser({ currentTarget: { id: \'default\' } });\n\
+        local.testRunBrowser();\n\
         break;\n\
 \n\
 \n\
@@ -553,7 +612,7 @@ local.assetsDict['/assets.index.template.html'].replace((/\n/g), '\\n\\\n') +
         "env": "env",\n\
         "heroku-postbuild": "npm install \'kaizhu256/node-utility2#alpha\' && utility2 shRun shDeployHeroku",\n\
         "postinstall": "if [ -f lib.jslint.npm-scripts.sh ]; then ./lib.jslint.npm-scripts.sh postinstall; fi",\n\
-        "publish-alias": "VERSION=$(npm info $npm_package_name version); for ALIAS in undefined; do utility2 shRun shNpmPublish $ALIAS $VERSION; utility2 shRun shNpmTestPublished $ALIAS || exit $?; done",\n\
+        "publish-alias": "VERSION=$(npm info $npm_package_name version); for ALIAS in undefined; do utility2 shRun shNpmPublishAs $ALIAS $VERSION; utility2 shRun shNpmTestPublished $ALIAS || exit $?; done",\n\
         "start": "export PORT=${PORT:-8080} && export npm_config_mode_auto_restart=1 && utility2 shRun shIstanbulCover test.js",\n\
         "test": "export PORT=$(utility2 shServerPortRandom) && utility2 test test.js"\n\
     },\n\
@@ -677,14 +736,14 @@ local.assetsDict['/assets.testReport.template.html'] = '\
 }\n\
 </style>\n\
 <div class="testReportPlatformDiv summary">\n\
-<h1>\n\
+<h1>test report\n\
     <a\n\
         {{#if env.npm_package_homepage}}\n\
         href="{{env.npm_package_homepage}}"\n\
         {{/if env.npm_package_homepage}}\n\
-    >{{env.npm_package_nameAlias}} v{{env.npm_package_version}}</a>\n\
+    >({{env.npm_package_nameAlias}} v{{env.npm_package_version}})</a>\n\
 </h1>\n\
-<h2>test-report summary</h2>\n\
+<h2>summary</h2>\n\
 <h4>\n\
     <span>version</span>-\n\
         {{env.npm_package_version}}<br>\n\
@@ -844,13 +903,6 @@ local.assetsDict['/assets.utility2.rollup.end.js'] = '\
 
 
 local.assetsDict['/favicon.ico'] = '';
-
-
-
-// https://www.w3.org/TR/html5/forms.html#valid-e-mail-address
-local.regexpEmailValidate = (
-/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
-);
 /* jslint-ignore-end */
     }());
 
@@ -2234,17 +2286,21 @@ return Utf8ArrayToStr(bff);
                 }
                 return text;
             };
-            local.objectSetDefault(options, {
+            // init options
+            options = local.objectSetDefault(options, {
                 env: local.env,
                 exampleFileList: ['README.md', 'test.js', local.env.npm_package_main],
                 blacklistDict: local
             });
             // init moduleDict
             local.objectSetDefault(options, local.objectLiteralize({
+                env: {
+                    npm_package_nameAlias: options.env.npm_package_name
+                },
                 moduleDict: {
                     '$[]': [local.env.npm_package_nameAlias, {
                         exampleFileList: [],
-                        exports: global.utility2_moduleExports
+                        exports: require(process.cwd())
                     }]
                 }
             }), 2);
@@ -2513,11 +2569,13 @@ return Utf8ArrayToStr(bff);
                 (/\n {8}\$ npm install [^`]*? &&/),
                 (/\n {12}: global;\n[^`]*?\n {8}local\.global\.local = local;\n/),
                 (/\n {8}local\.global\.local = local;\n[^`]*?\n {4}\/\/ post-init\n/),
-                (/\n {8}local\.testRunBrowser = function \(event\) \{\n[^`]*?\n {8}\};\n/),
+                new RegExp('\\n {8}local\\.testRunBrowser = function \\(event\\) \\{\\n' +
+                    '[^`]*?^ {12}if \\(!event \\|\\| \\(event &&\\n', 'm'),
+                (/\n {12}\/\/ custom-case\n[^`]*?\n {12}\}\n/),
                 // customize quickstart-html-style
                 (/\n<\/style>\\n\\\n<style>\\n\\\n[^`]*?\\n\\\n<\/style>\\n\\\n/),
                 // customize quickstart-html-body
-                (/\nutility2-comment -->\\n\\\n\\n\\\n[^`]*?^<!-- utility2-comment\\n\\\n/m),
+                (/\nutility2-comment -->(?:\\n\\\n){4}[^`]*?^<!-- utility2-comment\\n\\\n/m),
                 // customize build-script
                 (/\n# internal build-script\n[\S\s]*?^- build\.sh\n/m)
             ].forEach(function (rgx) {
@@ -5108,6 +5166,14 @@ instruction\n\
             ? {}
             : process.env;
         local.errorDefault = new Error('default error');
+        // https://www.w3.org/TR/html5/forms.html#valid-e-mail-address
+        local.regexpEmailValidate = new RegExp(
+            '^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}' +
+                '[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'
+        );
+        // https://en.wikipedia.org/wiki/E.164
+        local.regexpPhoneValidate =
+            (/^(?:\+\d{1,3}[ \-]{0,1}){0,1}(?:\(\d{1,4}\)[ \-]{0,1}){0,1}\d[\d \-]{7,16}$/);
         local.regexpUriComponentCharset = (/[\w\!\%\'\(\)\*\-\.\~]/);
         local.regexpUuidValidate =
             (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);

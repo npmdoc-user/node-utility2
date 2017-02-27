@@ -848,6 +848,14 @@ shGitSquashShift() {(set -e
     git checkout "$BRANCH"
 )}
 
+shGitTagAndPushMaster() {(set -e
+# this function will tag origin/beta and push it to master
+    shInit
+    git fetch origin beta
+    git tag "$(npm info $npm_package_name version)" origin/beta
+    git push origin origin/beta:master --tags
+)}
+
 shGrep() {(set -e
 # this function will recursively grep $DIR for the $REGEXP
     DIR="$1"
@@ -1031,9 +1039,9 @@ if (process.env.GITHUB_REPO === undefined && value) {
         export npm_package_name=example || return $?
         export npm_package_version=0.0.1 || return $?
     fi
-    if [ ! "$npm_config_package_nameAlias" ]
+    if [ ! "$npm_package_nameAlias" ]
     then
-        export npm_config_package_nameAlias="$npm_package_name" || return $?
+        export npm_package_nameAlias="$npm_package_name" || return $?
     fi
     # init $npm_config_*
     export npm_config_dir_build="$PWD/tmp/build" || return $?
@@ -1365,8 +1373,8 @@ shMountData() {(set -e
     chmod 1777 /tmp
 )}
 
-shNpmPublish() {(set -e
-# this function will run npm-publish $NAME@$VERSION with a clean repo
+shNpmPublishAs() {(set -e
+# this function will npm-publish the current dir as $NAME@$VERSION with a clean repo
     NAME="$1"
     VERSION="$2"
     shInit
@@ -1398,6 +1406,12 @@ local.packageJson.version = local.version || local.packageJson.version;
 local.fs.writeFileSync('package.json', JSON.stringify(local.packageJson));
 // </script>
     "
+    npm publish
+)}
+
+shNpmPublishDir() {(set -e
+# this function will npm-publish the dir $1
+    cd "$1"
     npm publish
 )}
 
@@ -1982,6 +1996,7 @@ shUtility2BuildApp() {(set -e
             (cd "$DIR" && shBuildApp) || return $?
         fi
     done
+    shUtility2GitDiff | less
 )}
 
 shUtility2DependentsSync() {(set -e
@@ -2012,6 +2027,18 @@ shUtility2DependentsSync() {(set -e
     fi
 )}
 
+shUtility2GitCommit() {(set -e
+# this function will git-commit $UTILITY2_DEPENDENTS with the given $MESSAGE
+    # init $MESSAGE
+    MESSAGE="$1"
+    for DIR in $UTILITY2_DEPENDENTS
+    do
+        cd "$HOME/src/$DIR"
+        printf "\n\n\n\n$(pwd)\n"
+        git commit -am "'$MESSAGE'" || true
+    done
+)}
+
 shUtility2GitCommitAndPush() {(set -e
 # this function will git-commit and git-push $UTILITY2_DEPENDENTS with the given $MESSAGE
     # init $MESSAGE
@@ -2025,7 +2052,7 @@ shUtility2GitCommitAndPush() {(set -e
     done
 )}
 
-shUtility2GitStatus() {(set -e
+shUtility2GitDiff() {(set -e
 # this function will print the git-status of $UTILITY2_DEPENDENTS to stdout
     for DIR in $UTILITY2_DEPENDENTS
     do

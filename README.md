@@ -29,16 +29,17 @@ this zero-dependency package will run dynamic browser-tests with coverage (via e
 [![api-doc](https://kaizhu256.github.io/node-utility2/build/screen-capture.apiDoc.browser._2Fhome_2Ftravis_2Fbuild_2Fkaizhu256_2Fnode-utility2_2Ftmp_2Fbuild_2Fapi-doc.html.png)](https://kaizhu256.github.io/node-utility2/build..beta..travis-ci.org/api-doc.html)
 
 #### todo
+- npm publish 2017.2.21
 - add utility2.middlewareLimit
 - add server stress test using electron
 - none
 
-#### change since 4460ca51
-- npm publish 2017.2.20
-- add field nameOriginal to package.json
-- do not cover rollups
-- merge shell-function shNpmPublishAlias into shNpmPublish
-- normalize example.html
+#### change since 345e02c6
+- README.md - normalize browser-script in example.js
+- lib.db.js - add ttl-cache
+- lib.utility2.js - merge coverage-report header into html
+- shell-function - add shNpmPublishDir
+- shell-function - rename shNpmPublish -> shNpmPublishAs
 - none
 
 #### this package requires
@@ -241,8 +242,42 @@ instruction
     // run browser js-env code - post-init
     case 'browser':
         local.testRunBrowser = function (event) {
-            switch (event.currentTarget.id) {
+            if (!event || (event &&
+                    event.currentTarget &&
+                    event.currentTarget.className &&
+                    event.currentTarget.className.includes &&
+                    event.currentTarget.className.includes('onreset'))) {
+                // reset output
+                Array.from(
+                    document.querySelectorAll('body > .resettable')
+                ).forEach(function (element) {
+                    switch (element.tagName) {
+                    case 'INPUT':
+                    case 'TEXTAREA':
+                        element.value = '';
+                        break;
+                    default:
+                        element.textContent = '';
+                    }
+                });
+            }
+            switch (event && event.currentTarget && event.currentTarget.id) {
             case 'testRunButton1':
+                // show tests
+                if (document.querySelector('#testReportDiv1').style.display === 'none') {
+                    document.querySelector('#testReportDiv1').style.display = 'block';
+                    document.querySelector('#testRunButton1').textContent =
+                        'hide internal test';
+                    local.modeTest = true;
+                    local.testRunDefault(local);
+                // hide tests
+                } else {
+                    document.querySelector('#testReportDiv1').style.display = 'none';
+                    document.querySelector('#testRunButton1').textContent = 'run internal test';
+                }
+                break;
+            // custom-case
+            case 'testRunButton2':
                 // run tests
                 local.modeTest = true;
                 local.testRunDefault(local);
@@ -251,28 +286,24 @@ instruction
                 if (location.href.indexOf("modeTest=") >= 0) {
                     return;
                 }
-                // reset stdout
-                document.querySelector('#outputTextareaStdout1').value = '';
-                if (!document.querySelector('#inputTextarea1')) {
-                    return;
-                }
-                // try to JSON.stringify #inputTextarea1
+                // try to JSON.stringify #inputTextareaEval1
                 try {
                     document.querySelector('#outputPreJsonStringify1').textContent = '';
                     document.querySelector('#outputPreJsonStringify1').textContent =
                         local.jsonStringifyOrdered(
-                            JSON.parse(document.querySelector('#inputTextarea1').value),
+                            JSON.parse(document.querySelector('#inputTextareaEval1').value),
                             null,
                             4
                         );
                 } catch (ignore) {
                 }
-                // jslint #inputTextarea1
+                // jslint #inputTextareaEval1
                 local.jslint.errorText = '';
-                if (document.querySelector('#inputTextarea1').value.indexOf('/*jslint') >= 0) {
+                if (document.querySelector('#inputTextareaEval1').value
+                        .indexOf('/*jslint') >= 0) {
                     local.jslint.jslintAndPrint(
-                        document.querySelector('#inputTextarea1').value,
-                        'inputTextarea1.js'
+                        document.querySelector('#inputTextareaEval1').value,
+                        'inputTextareaEval1.js'
                     );
                 }
                 document.querySelector('#outputPreJslint1').textContent =
@@ -281,19 +312,18 @@ instruction
                     .trim();
                 // try to cleanup __coverage__
                 try {
-                    delete local.global.__coverage__['/inputTextarea1.js'];
+                    delete local.global.__coverage__['/inputTextareaEval1.js'];
                 } catch (ignore) {
                 }
                 // try to cover and eval input-code
                 try {
                     /*jslint evil: true*/
-                    document.querySelector('#outputTextareaIstanbul1').value = '';
-                    document.querySelector('#outputTextareaIstanbul1').value =
+                    document.querySelector('#outputTextarea1').value =
                         local.istanbul.instrumentSync(
-                            document.querySelector('#inputTextarea1').value,
-                            '/inputTextarea1.js'
+                            document.querySelector('#inputTextareaEval1').value,
+                            '/inputTextareaEval1.js'
                         );
-                    eval(document.querySelector('#outputTextareaIstanbul1').value);
+                    eval(document.querySelector('#outputTextarea1').value);
                     document.querySelector('.istanbulCoverageDiv').innerHTML =
                         local.istanbul.coverageReportCreate({
                             coverage: window.__coverage__
@@ -301,22 +331,39 @@ instruction
                 } catch (errorCaught) {
                     console.error(errorCaught.stack);
                 }
-                // scroll stdout to bottom
-                document.querySelector('#outputTextareaStdout1').scrollTop =
-                    document.querySelector('#outputTextareaStdout1').scrollHeight;
+            }
+            if (document.querySelector('#inputTextareaEval1') && (!event || (event &&
+                    event.currentTarget &&
+                    event.currentTarget.className &&
+                    event.currentTarget.className.includes &&
+                    event.currentTarget.className.includes('oneval')))) {
+                // try to eval input-code
+                try {
+                    /*jslint evil: true*/
+                    eval(document.querySelector('#inputTextareaEval1').value);
+                } catch (errorCaught) {
+                    console.error(errorCaught.stack);
+                }
             }
         };
         // log stderr and stdout to #outputTextareaStdout1
         ['error', 'log'].forEach(function (key) {
-            console['_' + key] = console[key];
+            console[key + '_original'] = console[key];
             console[key] = function () {
-                console['_' + key].apply(console, arguments);
-                (document.querySelector('#outputTextareaStdout1') || { value: '' }).value +=
-                    Array.from(arguments).map(function (arg) {
-                        return typeof arg === 'string'
-                            ? arg
-                            : JSON.stringify(arg, null, 4);
-                    }).join(' ') + '\n';
+                var element;
+                console[key + '_original'].apply(console, arguments);
+                element = document.querySelector('#outputTextareaStdout1');
+                if (!element) {
+                    return;
+                }
+                // append text to #outputTextareaStdout1
+                element.value += Array.from(arguments).map(function (arg) {
+                    return typeof arg === 'string'
+                        ? arg
+                        : JSON.stringify(arg, null, 4);
+                }).join(' ') + '\n';
+                // scroll textarea to bottom
+                element.scrollTop = element.scrollHeight;
             };
         });
         // init event-handling
@@ -326,7 +373,7 @@ instruction
             });
         });
         // run tests
-        local.testRunBrowser({ currentTarget: { id: 'default' } });
+        local.testRunBrowser();
         break;
 
 
@@ -376,7 +423,7 @@ body > * {\n\
 }\n\
 textarea {\n\
     font-family: monospace;\n\
-    height: 15rem;\n\
+    height: 10rem;\n\
     width: 100%;\n\
 }\n\
 textarea[readonly] {\n\
@@ -407,8 +454,10 @@ utility2-comment -->\n\
     <h4><a download href="assets.app.js">download standalone app</a></h4>\n\
 utility2-comment -->\n\
 \n\
+\n\
+\n\
     <label>edit or paste script below to cover and test</label>\n\
-<textarea class="onkeyup" id="inputTextarea1">\n\
+<textarea class="oneval onkeyup onreset" id="inputTextareaEval1">\n\
 // remove comment below to disable jslint\n\
 /*jslint\n\
     browser: true,\n\
@@ -464,13 +513,12 @@ utility2-comment -->\n\
     <pre id="outputPreJsonStringify1"></pre>\n\
     <pre id="outputPreJslint1"></pre>\n\
     <label>instrumented-code</label>\n\
-    <textarea id="outputTextareaIstanbul1" readonly></textarea>\n\
+    <textarea class="resettable" id="outputTextarea1" readonly></textarea>\n\
     <label>stderr and stdout</label>\n\
-    <textarea id="outputTextareaStdout1" readonly></textarea>\n\
-    <button class="onclick" id="testRunButton1">run internal test</button><br>\n\
-    <div id="testReportDiv1" style="display: none;"></div>\n\
-    <h2>coverage-report</h2>\n\
-    <div class="istanbulCoverageDiv"></div>\n\
+    <textarea class="resettable" id="outputTextareaStdout1" readonly></textarea>\n\
+    <button class="onclick onreset" id="testRunButton2">run internal test</button><br>\n\
+    <div class="resettable" id="testReportDiv1" style="display: none;"></div>\n\
+    <div class="istanbulCoverageDiv resettable"></div>\n\
 <!-- utility2-comment\n\
     {{#if isRollup}}\n\
     <script src="assets.app.js"></script>\n\
@@ -635,12 +683,12 @@ utility2-comment -->\n\
         "example.sh": "./lib.utility2.sh shRunScreenCapture shReadmeTestSh example.sh",
         "heroku-postbuild": "./lib.utility2.sh shRun shDeployHeroku",
         "postinstall": "if [ -f lib.utility2.npm-scripts.sh ]; then ./lib.utility2.npm-scripts.sh postinstall; fi",
-        "publish-alias": "VERSION=$(npm info $npm_package_name version); for ALIAS in busybox busybox2 busyweb; do utility2 shRun shNpmPublish $ALIAS $VERSION; utility2 shRun shNpmTestPublished $ALIAS || exit $?; done",
+        "publish-alias": "VERSION=$(npm info $npm_package_name version); for ALIAS in apidocs busybox busybox2 busyweb test-lite; do utility2 shRun shNpmPublishAs $ALIAS $VERSION; utility2 shRun shNpmTestPublished $ALIAS || exit $?; done",
         "start": "export PORT=${PORT:-8080} && if [ -f assets.app.js ]; then node assets.app.js; return; fi && export npm_config_mode_auto_restart=1 && ./lib.utility2.sh shRun shIstanbulCover test.js",
         "test": "export PORT=$(./lib.utility2.sh shServerPortRandom) && export PORT_REPL=$(./lib.utility2.sh shServerPortRandom) && export npm_config_mode_auto_restart=1 && ./lib.utility2.sh test test.js",
         "test-all": "npm test --mode-coverage=all"
     },
-    "version": "2017.2.20"
+    "version": "2017.2.21"
 }
 ```
 

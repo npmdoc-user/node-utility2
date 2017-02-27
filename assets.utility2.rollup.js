@@ -618,43 +618,46 @@
             this.name = String(options.name);
             // register dbTable in dbTableDict
             local.dbTableDict[this.name] = this;
-            this.dbRowCount = 0;
             this.dbRowList = [];
             this.isDirty = null;
             this.idIndexList = [{ name: '_id', dict: {} }];
+            this.ttl = 0;
+            this.ttlLast = 0;
         };
 
         local._DbTable.prototype._cleanup = function () {
         /*
          * this function will cleanup soft-deleted records from the dbTable
          */
-            var self, tmp;
-            self = this;
-            if (!self.isDirty) {
+            var dbRow, ii, list, ttl;
+            ttl = Date.now();
+            if (!(this.isDirty ||
+                  // cleanup ttl every minute
+                  (this.ttl && this.ttlLast + this.ttl < ttl))) {
                 return;
             }
-            self.isDirty = null;
+            this.isDirty = null;
+            this.ttlLast = ttl;
             // cleanup dbRowList
-            self.dbRowList = self.dbRowList.filter(function (dbRow) {
-                return !dbRow.$meta.isRemoved;
-            });
-            // cleanup idIndexList
-            self.idIndexList.forEach(function (dict, ii) {
-                tmp = dict.dict;
-                dict = self.idIndexList[ii].dict = {};
-                Object.keys(tmp).forEach(function (id) {
-                    if (!tmp[id].$meta.isRemoved) {
-                        dict[id] = tmp[id];
-                    }
-                });
-            });
+            list = this.dbRowList;
+            this.dbRowList = [];
+            // optimization - for-loop
+            for (ii = 0; ii < list.length; ii += 1) {
+                dbRow = list[ii];
+                // cleanup ttl
+                if (this.ttl && dbRow.$meta.ttl < ttl) {
+                    this._crudRemoveOneById(dbRow);
+                // cleanup isRemoved
+                } else if (!dbRow.$meta.isRemoved) {
+                    this.dbRowList.push(dbRow);
+                }
+            }
         };
 
         local._DbTable.prototype._crudGetManyByQuery = function (query) {
         /*
          * this function will get the dbRow's in the dbTable with the given query
          */
-            this._cleanup();
             return local.dbRowListGetManyByQuery(this.dbRowList, local.normalizeDict(query));
         };
 
@@ -662,51 +665,51 @@
         /*
          * this function will get the dbRow in the dbTable with the given idDict
          */
-            var id, result, self;
-            self = this;
+            var id, result;
             idDict = local.normalizeDict(idDict);
             result = null;
-            self.idIndexList.some(function (idIndex) {
+            this.idIndexList.some(function (idIndex) {
                 id = idDict[idIndex.name];
                 // optimization - hasOwnProperty
                 if (idIndex.dict.hasOwnProperty(id)) {
                     result = idIndex.dict[id];
-                    result = result.$meta.isRemoved
-                        ? null
-                        : result;
                     return result;
                 }
             });
             return result;
         };
 
-        local._DbTable.prototype._crudRemoveOneById = function (idDict) {
+        local._DbTable.prototype._crudRemoveOneById = function (idDict, circularList) {
         /*
          * this function will remove the dbRow from the dbTable with the given idDict
          */
-            var existing, id, result, self;
+            var id, result, self;
+            if (!idDict) {
+                return null;
+            }
             self = this;
-            idDict = local.normalizeDict(idDict);
+            circularList = circularList || [idDict];
             result = null;
             self.idIndexList.forEach(function (idIndex) {
                 id = idDict[idIndex.name];
                 // optimization - hasOwnProperty
-                if (idIndex.dict.hasOwnProperty(id)) {
-                    existing = idIndex.dict[id];
-                    if (!existing.$meta.isRemoved) {
-                        result = result || existing;
-                        // decrement dbRowCount
-                        self.dbRowCount -= 1;
-                        // optimization - soft-delete
-                        existing.$meta.isRemoved = true;
-                        self.isDirty = true;
-                        // recurse
-                        self._crudRemoveOneById(existing);
-                    }
+                if (!idIndex.dict.hasOwnProperty(id)) {
+                    return;
                 }
+                result = idIndex.dict[id];
+                delete idIndex.dict[id];
+                // optimization - soft-delete
+                result.$meta.isRemoved = true;
+                self.isDirty = true;
+                if (circularList.indexOf(result) >= 0) {
+                    return;
+                }
+                circularList.push(result);
+                // recurse
+                self._crudRemoveOneById(result, circularList);
             });
             // persist
-            self._persist();
+            this._persist();
             return result;
         };
 
@@ -715,8 +718,7 @@
          * this function will set the dbRow into the dbTable with the given dbRow._id
          * WARNING - existing dbRow with conflicting dbRow._id will be removed
          */
-            var existing, id, normalize, timeNow, self;
-            self = this;
+            var existing, id, normalize, timeNow;
             normalize = function (dbRow) {
             /*
              * this function will recursively normalize dbRow
@@ -745,12 +747,10 @@
             normalize(dbRow);
             dbRow = local.jsonCopy(dbRow);
             // remove existing dbRow
-            existing = self._crudRemoveOneById(dbRow) || dbRow;
+            existing = this._crudRemoveOneById(dbRow) || dbRow;
             // init meta
-            dbRow.$meta = {};
-            // increment dbRowCount
-            self.dbRowCount += 1;
-            self.idIndexList.forEach(function (idIndex) {
+            dbRow.$meta = { isRemoved: null, ttl: this.ttl + Date.now() };
+            this.idIndexList.forEach(function (idIndex) {
                 // auto-set id
                 id = local.dbRowSetId(existing, idIndex);
                 // copy id from existing to dbRow
@@ -759,9 +759,9 @@
                 idIndex.dict[id] = dbRow;
             });
             // update dbRowList
-            self.dbRowList.push(dbRow);
+            this.dbRowList.push(dbRow);
             // persist
-            self._persist();
+            this._persist();
             return dbRow;
         };
 
@@ -773,32 +773,27 @@
          * existing dbRow's with conflicting unique-keys (besides the one being updated)
          * will be removed
          */
-            var id, result, self;
-            self = this;
+            var id, result;
             dbRow = local.jsonCopy(local.normalizeDict(dbRow));
             result = null;
-            self.idIndexList.some(function (idIndex) {
+            this.idIndexList.some(function (idIndex) {
                 id = dbRow[idIndex.name];
                 // optimization - hasOwnProperty
                 if (idIndex.dict.hasOwnProperty(id)) {
                     result = idIndex.dict[id];
-                    result = result.$meta.isRemoved
-                        ? null
-                        : result;
-                    if (result) {
-                        // remove existing dbRow
-                        self._crudRemoveOneById(result);
-                        // update dbRow
-                        dbRow._timeCreated = undefined;
-                        result = local.objectSetOverride(result, dbRow, Infinity);
-                        return true;
-                    }
+                    return true;
                 }
             });
-            if (result) {
-                // replace dbRow
-                result = self._crudSetOneById(result);
+            if (!result) {
+                return result;
             }
+            // remove existing dbRow
+            this._crudRemoveOneById(result);
+            // update dbRow
+            dbRow._timeCreated = undefined;
+            local.objectSetOverride(result, dbRow, Infinity);
+            // replace dbRow
+            result = this._crudSetOneById(result);
             return result;
         };
 
@@ -831,13 +826,15 @@
         /*
          * this function will count all of dbRow's in the dbTable
          */
-            return local.setTimeoutOnError(onError, null, this.dbRowCount);
+            this._cleanup();
+            return local.setTimeoutOnError(onError, null, this.dbRowList.length);
         };
 
         local._DbTable.prototype.crudCountManyByQuery = function (query, onError) {
         /*
          * this function will count the number of dbRow's in the dbTable with the given query
          */
+            this._cleanup();
             return local.setTimeoutOnError(
                 onError,
                 null,
@@ -850,6 +847,7 @@
          * this function will get the dbRow's in the dbTable with the given idDictList
          */
             var self;
+            this._cleanup();
             self = this;
             return local.setTimeoutOnError(onError, null, local.dbRowProject(
                 local.normalizeList(idDictList).map(function (idDict) {
@@ -863,6 +861,7 @@
          * this function will get the dbRow's in the dbTable with the given options.query
          */
             var result;
+            this._cleanup();
             options = local.normalizeDict(options);
             // get dbRow's with the given options.query
             result = this._crudGetManyByQuery(options.query);
@@ -899,6 +898,7 @@
         /*
          * this function will get the dbRow in the dbTable with the given idDict
          */
+            this._cleanup();
             return local.setTimeoutOnError(onError, null, local.dbRowProject(
                 this._crudGetOneById(idDict)
             ));
@@ -908,13 +908,15 @@
         /*
          * this function will get the dbRow in the dbTable with the given query
          */
-            var result, self;
-            self = this;
-            self._cleanup();
-            self.dbRowList.some(function (dbRow) {
-                result = local.dbRowListGetManyByQuery([dbRow], query)[0];
-                return result;
-            });
+            var ii, result;
+            this._cleanup();
+            // optimization - for-loop
+            for (ii = 0; ii < this.dbRowList.length; ii += 1) {
+                result = local.dbRowListGetManyByQuery([this.dbRowList[ii]], query)[0];
+                if (result) {
+                    break;
+                }
+            }
             return local.setTimeoutOnError(onError, null, local.dbRowProject(result));
         };
 
@@ -1046,20 +1048,22 @@
         /*
          * this function will export the db
          */
-            var result, self;
+            var ii, result, self;
+            this._cleanup();
             self = this;
-            self._cleanup();
             result = '';
+            result += self.name + ' ttlSet ' + self.ttl + '\n';
             self.idIndexList.forEach(function (idIndex) {
                 result += self.name + ' idIndexCreate ' + JSON.stringify({
                     isInteger: idIndex.isInteger,
                     name: idIndex.name
                 }) + '\n';
             });
-            self.dbRowList.forEach(function (dbRow) {
+            // optimization - for-loop
+            for (ii = 0; ii < self.dbRowList.length; ii += 1) {
                 result += self.name + ' dbRowSet ' +
-                    JSON.stringify(local.dbRowProject(dbRow)) + '\n';
-            });
+                    JSON.stringify(local.dbRowProject(self.dbRowList[ii])) + '\n';
+            }
             return local.setTimeoutOnError(onError, null, result.trim());
         };
 
@@ -1067,8 +1071,7 @@
         /*
          * this function will create an idIndex with the given options.name
          */
-            var idIndex, name, self;
-            self = this;
+            var dbRow, idIndex, ii, name;
             options = local.normalizeDict(options);
             name = String(options.name);
             // disallow idIndex with dot-name
@@ -1076,23 +1079,25 @@
                 return local.setTimeoutOnError(onError);
             }
             // remove existing idIndex
-            self.idIndexRemove(options);
+            this.idIndexRemove(options);
             // init idIndex
             idIndex = {
                 dict: {},
                 isInteger: options.isInteger,
                 name: options.name
             };
-            self.idIndexList.push(idIndex);
-            Object.keys(self.idIndexList[0].dict).forEach(function (dbRow) {
-                dbRow = self.idIndexList[0].dict[dbRow];
+            this.idIndexList.push(idIndex);
+            // populate idIndex with dbRowList
+            // optimization - for-loop
+            for (ii = 0; ii < this.dbRowList.length; ii += 1) {
+                dbRow = this.dbRowList[ii];
                 // auto-set id
                 if (!dbRow.$meta.isRemoved) {
                     idIndex.dict[local.dbRowSetId(dbRow, idIndex)] = dbRow;
                 }
-            });
+            }
             // persist
-            self._persist();
+            this._persist();
             return local.setTimeoutOnError(onError);
         };
 
@@ -1100,15 +1105,32 @@
         /*
          * this function will remove the idIndex with the given options.name
          */
-            var name, self;
-            self = this;
+            var name;
             options = local.normalizeDict(options);
             name = String(options.name);
-            self.idIndexList = self.idIndexList.filter(function (idIndex) {
+            this.idIndexList = this.idIndexList.filter(function (idIndex) {
                 return idIndex.name !== name || idIndex.name === '_id';
             });
             // persist
-            self._persist();
+            this._persist();
+            return local.setTimeoutOnError(onError);
+        };
+
+        local._DbTable.prototype.ttlSet = function (ttl, onError) {
+        /*
+         * this function will set the ttl in milliseconds
+         */
+            var ii;
+            // set ttl in milliseconds
+            this.ttl = ttl;
+            // update dbRowList
+            ttl += Date.now();
+            // optimization - for-loop
+            for (ii = 0; ii < this.dbRowList.length; ii += 1) {
+                this.dbRowList[ii].$meta.ttl = ttl;
+            }
+            // persist
+            this._persist();
             return local.setTimeoutOnError(onError);
         };
 
@@ -1169,23 +1191,23 @@
                 match2,
                 match3
             ) {
-                try {
-                    // jslint-hack
-                    local.nop(match0);
-                    switch (match2) {
-                    case 'dbRowSet':
-                        dbTable = local.dbTableCreateOne({ isLoaded: true, name: match1 });
-                        dbTable.crudSetOneById(JSON.parse(match3));
-                        break;
-                    case 'idIndexCreate':
-                        dbTable = local.dbTableCreateOne({ isLoaded: true, name: match1 });
-                        dbTable.idIndexCreate(JSON.parse(match3));
-                        break;
-                    default:
-                        throw new Error('dbImport - invalid operation - ' + match0);
-                    }
-                } catch (errorCaught) {
-                    local.onErrorDefault(errorCaught);
+                // jslint-hack
+                local.nop(match0);
+                switch (match2) {
+                case 'dbRowSet':
+                    dbTable = local.dbTableCreateOne({ isLoaded: true, name: match1 });
+                    dbTable.crudSetOneById(JSON.parse(match3));
+                    break;
+                case 'idIndexCreate':
+                    dbTable = local.dbTableCreateOne({ isLoaded: true, name: match1 });
+                    dbTable.idIndexCreate(JSON.parse(match3));
+                    break;
+                case 'ttlSet':
+                    dbTable = local.dbTableCreateOne({ isLoaded: true, name: match1 });
+                    dbTable.ttlSet(JSON.parse(match3));
+                    break;
+                default:
+                    local.onErrorDefault(new Error('dbImport - invalid operation - ' + match0));
                 }
             });
             return local.setTimeoutOnError(onError);
@@ -2200,15 +2222,14 @@
             }
             // init writer
             local.coverageReportHtml = '';
+            local.coverageReportHtml += '<h1>coverage report</h1>\n';
             local.coverageReportHtml +=
                 '<div style="background: #fff; border: 1px solid #000; margin 0; padding: 0;">';
             local.writerData = '';
             options.sourceStore = {};
             options.writer = local.writer;
             // 1. print coverage in text-format to stdout
-            if (local.modeJs === 'node') {
-                new local.TextReport(options).writeReport(local.collector);
-            }
+            new local.TextReport(options).writeReport(local.collector);
             // 2. write coverage in html-format to filesystem
             new local.HtmlReport(options).writeReport(local.collector);
             local.writer.writeFile('', local.nop);
@@ -2313,7 +2334,7 @@
             return new local.Instrumenter({
                 embedSource: true,
                 noAutoWrap: true
-            }).instrumentSync(code, file);
+            }).instrumentSync(code, file).trimLeft();
         };
         local.util = { inherits: local.nop };
     }());
@@ -4021,7 +4042,7 @@ local['./common/defaults'] = module.exports; }());
 local['foot.txt'] = '\
 </div>\n\
 <div class="footer">\n\
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at {{datetime}}</div>\n\
+    <div class="meta">Generated by <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a> at {{datetime}}</div>\n\
 </div>\n\
 </body>\n\
 </html>\n\
@@ -8546,7 +8567,7 @@ body {\n\
 }\n\
 </style>\n\
 <div class="apiDocDiv">\n\
-<h1>api-doc\n\
+<h1>api documentation\n\
     <a\n\
         {{#if env.npm_package_homepage}}\n\
         href="{{env.npm_package_homepage}}"\n\
@@ -8655,9 +8676,11 @@ utility2-comment -->\n\
     <h3>{{env.npm_package_description}}</h3>\n\
 <!-- utility2-comment\n\
     <h4><a download href="assets.app.js">download standalone app</a></h4>\n\
-    <button class="onclick" id="testRunButton1">run internal test</button><br>\n\
+    <button class="onclick onreset" id="testRunButton1">run internal test</button><br>\n\
     <div id="testReportDiv1" style="display: none;"></div>\n\
 utility2-comment -->\n\
+\n\
+\n\
 \n\
 <!-- utility2-comment\n\
     {{#if isRollup}}\n\
@@ -8821,19 +8844,76 @@ instruction\n\
     // run browser js-env code - post-init\n\
     case \'browser\':\n\
         local.testRunBrowser = function (event) {\n\
-            return event;\n\
+            if (!event || (event &&\n\
+                    event.currentTarget &&\n\
+                    event.currentTarget.className &&\n\
+                    event.currentTarget.className.includes &&\n\
+                    event.currentTarget.className.includes(\'onreset\'))) {\n\
+                // reset output\n\
+                Array.from(\n\
+                    document.querySelectorAll(\'body > .resettable\')\n\
+                ).forEach(function (element) {\n\
+                    switch (element.tagName) {\n\
+                    case \'INPUT\':\n\
+                    case \'TEXTAREA\':\n\
+                        element.value = \'\';\n\
+                        break;\n\
+                    default:\n\
+                        element.textContent = \'\';\n\
+                    }\n\
+                });\n\
+            }\n\
+            switch (event && event.currentTarget && event.currentTarget.id) {\n\
+            case \'testRunButton1\':\n\
+                // show tests\n\
+                if (document.querySelector(\'#testReportDiv1\').style.display === \'none\') {\n\
+                    document.querySelector(\'#testReportDiv1\').style.display = \'block\';\n\
+                    document.querySelector(\'#testRunButton1\').textContent =\n\
+                        \'hide internal test\';\n\
+                    local.modeTest = true;\n\
+                    local.testRunDefault(local);\n\
+                // hide tests\n\
+                } else {\n\
+                    document.querySelector(\'#testReportDiv1\').style.display = \'none\';\n\
+                    document.querySelector(\'#testRunButton1\').textContent = \'run internal test\';\n\
+                }\n\
+                break;\n\
+            // custom-case\n\
+            default:\n\
+                break;\n\
+            }\n\
+            if (document.querySelector(\'#inputTextareaEval1\') && (!event || (event &&\n\
+                    event.currentTarget &&\n\
+                    event.currentTarget.className &&\n\
+                    event.currentTarget.className.includes &&\n\
+                    event.currentTarget.className.includes(\'oneval\')))) {\n\
+                // try to eval input-code\n\
+                try {\n\
+                    /*jslint evil: true*/\n\
+                    eval(document.querySelector(\'#inputTextareaEval1\').value);\n\
+                } catch (errorCaught) {\n\
+                    console.error(errorCaught.stack);\n\
+                }\n\
+            }\n\
         };\n\
         // log stderr and stdout to #outputTextareaStdout1\n\
         [\'error\', \'log\'].forEach(function (key) {\n\
-            console[\'_\' + key] = console[key];\n\
+            console[key + \'_original\'] = console[key];\n\
             console[key] = function () {\n\
-                console[\'_\' + key].apply(console, arguments);\n\
-                (document.querySelector(\'#outputTextareaStdout1\') || { value: \'\' }).value +=\n\
-                    Array.from(arguments).map(function (arg) {\n\
-                        return typeof arg === \'string\'\n\
-                            ? arg\n\
-                            : JSON.stringify(arg, null, 4);\n\
-                    }).join(\' \') + \'\\n\';\n\
+                var element;\n\
+                console[key + \'_original\'].apply(console, arguments);\n\
+                element = document.querySelector(\'#outputTextareaStdout1\');\n\
+                if (!element) {\n\
+                    return;\n\
+                }\n\
+                // append text to #outputTextareaStdout1\n\
+                element.value += Array.from(arguments).map(function (arg) {\n\
+                    return typeof arg === \'string\'\n\
+                        ? arg\n\
+                        : JSON.stringify(arg, null, 4);\n\
+                }).join(\' \') + \'\\n\';\n\
+                // scroll textarea to bottom\n\
+                element.scrollTop = element.scrollHeight;\n\
             };\n\
         });\n\
         // init event-handling\n\
@@ -8843,7 +8923,7 @@ instruction\n\
             });\n\
         });\n\
         // run tests\n\
-        local.testRunBrowser({ currentTarget: { id: \'default\' } });\n\
+        local.testRunBrowser();\n\
         break;\n\
 \n\
 \n\
@@ -8965,7 +9045,7 @@ local.assetsDict['/assets.index.template.html'].replace((/\n/g), '\\n\\\n') +
         "env": "env",\n\
         "heroku-postbuild": "npm install \'kaizhu256/node-utility2#alpha\' && utility2 shRun shDeployHeroku",\n\
         "postinstall": "if [ -f lib.jslint.npm-scripts.sh ]; then ./lib.jslint.npm-scripts.sh postinstall; fi",\n\
-        "publish-alias": "VERSION=$(npm info $npm_package_name version); for ALIAS in undefined; do utility2 shRun shNpmPublish $ALIAS $VERSION; utility2 shRun shNpmTestPublished $ALIAS || exit $?; done",\n\
+        "publish-alias": "VERSION=$(npm info $npm_package_name version); for ALIAS in undefined; do utility2 shRun shNpmPublishAs $ALIAS $VERSION; utility2 shRun shNpmTestPublished $ALIAS || exit $?; done",\n\
         "start": "export PORT=${PORT:-8080} && export npm_config_mode_auto_restart=1 && utility2 shRun shIstanbulCover test.js",\n\
         "test": "export PORT=$(utility2 shServerPortRandom) && utility2 test test.js"\n\
     },\n\
@@ -9089,14 +9169,14 @@ local.assetsDict['/assets.testReport.template.html'] = '\
 }\n\
 </style>\n\
 <div class="testReportPlatformDiv summary">\n\
-<h1>\n\
+<h1>test report\n\
     <a\n\
         {{#if env.npm_package_homepage}}\n\
         href="{{env.npm_package_homepage}}"\n\
         {{/if env.npm_package_homepage}}\n\
-    >{{env.npm_package_nameAlias}} v{{env.npm_package_version}}</a>\n\
+    >({{env.npm_package_nameAlias}} v{{env.npm_package_version}})</a>\n\
 </h1>\n\
-<h2>test-report summary</h2>\n\
+<h2>summary</h2>\n\
 <h4>\n\
     <span>version</span>-\n\
         {{env.npm_package_version}}<br>\n\
@@ -9256,13 +9336,6 @@ local.assetsDict['/assets.utility2.rollup.end.js'] = '\
 
 
 local.assetsDict['/favicon.ico'] = '';
-
-
-
-// https://www.w3.org/TR/html5/forms.html#valid-e-mail-address
-local.regexpEmailValidate = (
-/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
-);
 /* jslint-ignore-end */
     }());
 
@@ -10646,17 +10719,21 @@ return Utf8ArrayToStr(bff);
                 }
                 return text;
             };
-            local.objectSetDefault(options, {
+            // init options
+            options = local.objectSetDefault(options, {
                 env: local.env,
                 exampleFileList: ['README.md', 'test.js', local.env.npm_package_main],
                 blacklistDict: local
             });
             // init moduleDict
             local.objectSetDefault(options, local.objectLiteralize({
+                env: {
+                    npm_package_nameAlias: options.env.npm_package_name
+                },
                 moduleDict: {
                     '$[]': [local.env.npm_package_nameAlias, {
                         exampleFileList: [],
-                        exports: global.utility2_moduleExports
+                        exports: require(process.cwd())
                     }]
                 }
             }), 2);
@@ -10925,11 +11002,13 @@ return Utf8ArrayToStr(bff);
                 (/\n {8}\$ npm install [^`]*? &&/),
                 (/\n {12}: global;\n[^`]*?\n {8}local\.global\.local = local;\n/),
                 (/\n {8}local\.global\.local = local;\n[^`]*?\n {4}\/\/ post-init\n/),
-                (/\n {8}local\.testRunBrowser = function \(event\) \{\n[^`]*?\n {8}\};\n/),
+                new RegExp('\\n {8}local\\.testRunBrowser = function \\(event\\) \\{\\n' +
+                    '[^`]*?^ {12}if \\(!event \\|\\| \\(event &&\\n', 'm'),
+                (/\n {12}\/\/ custom-case\n[^`]*?\n {12}\}\n/),
                 // customize quickstart-html-style
                 (/\n<\/style>\\n\\\n<style>\\n\\\n[^`]*?\\n\\\n<\/style>\\n\\\n/),
                 // customize quickstart-html-body
-                (/\nutility2-comment -->\\n\\\n\\n\\\n[^`]*?^<!-- utility2-comment\\n\\\n/m),
+                (/\nutility2-comment -->(?:\\n\\\n){4}[^`]*?^<!-- utility2-comment\\n\\\n/m),
                 // customize build-script
                 (/\n# internal build-script\n[\S\s]*?^- build\.sh\n/m)
             ].forEach(function (rgx) {
@@ -13520,6 +13599,14 @@ instruction\n\
             ? {}
             : process.env;
         local.errorDefault = new Error('default error');
+        // https://www.w3.org/TR/html5/forms.html#valid-e-mail-address
+        local.regexpEmailValidate = new RegExp(
+            '^[a-zA-Z0-9.!#$%&\'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}' +
+                '[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'
+        );
+        // https://en.wikipedia.org/wiki/E.164
+        local.regexpPhoneValidate =
+            (/^(?:\+\d{1,3}[ \-]{0,1}){0,1}(?:\(\d{1,4}\)[ \-]{0,1}){0,1}\d[\d \-]{7,16}$/);
         local.regexpUriComponentCharset = (/[\w\!\%\'\(\)\*\-\.\~]/);
         local.regexpUuidValidate =
             (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
@@ -14247,6 +14334,7 @@ border: 0;\n\
     <button class="td3">Explore</button>\n\
 </form2>\n\
     </div>\n\
+    <div class="swggAjaxProgressDiv" style="margin-top: 1rem; text-align: center;">fetching resource list; Please wait.</div>\n\
     <script src="assets.swgg.rollup.js"></script>\n\
     <script>window.swgg.uiEventListenerDict[".onEventUiReload"]();</script>\n\
 </body>\n\
@@ -15681,6 +15769,14 @@ local.templateUiResponseAjax = '\
                 case 'json':
                     tmp = JSON.stringify({ random: tmp });
                     break;
+                case 'phone':
+                    tmp = options.modeNotRandom
+                        ? '+123 (1234) 1234-1234'
+                        : '+' + Math.random().toString().slice(-3) +
+                            ' (' + Math.random().toString().slice(-4) + ') ' +
+                            Math.random().toString().slice(-4) + '-' +
+                            Math.random().toString().slice(-4);
+                    break;
                 }
                 // http://json-schema.org/latest/json-schema-validation.html#anchor25
                 // 5.2.  Validation keywords for strings
@@ -16535,8 +16631,7 @@ local.templateUiResponseAjax = '\
                 // validate schema
                 local.assert(tmp, schema.$ref);
                 // recurse
-                tmp = local.schemaNormalizeAndCopy(tmp);
-                schema = tmp;
+                schema = local.schemaNormalizeAndCopy(tmp);
             }
             // inherit allOf
             if (schema.allOf) {
@@ -16548,7 +16643,11 @@ local.templateUiResponseAjax = '\
                 });
                 schema = tmp;
             }
-            return local.jsonCopy(schema);
+            schema = local.jsonCopy(schema);
+            if (schema.type === 'object') {
+                schema.properties = local.normalizeDict(schema.properties);
+            }
+            return schema;
         };
 
         local.serverRespondJsonapi = function (request, response, error, data, meta) {
@@ -17140,9 +17239,17 @@ local.templateUiResponseAjax = '\
                     document.querySelector('.swggUiContainer > .header > .td2').value
                         .replace((/^\//), '')
                 ).href;
+            // display .swggAjaxProgressDiv
+            document.querySelector('.swggAjaxProgressDiv').textContent =
+                'fetching resource list: ' +
+                document.querySelector('.swggUiContainer > .header > .td2').value +
+                '; Please wait.';
+            document.querySelector('.swggAjaxProgressDiv').style.display = 'block';
             local.ajax({
                 url: document.querySelector('.swggUiContainer > .header > .td2').value
             }, function (error, xhr) {
+                // hide .swggAjaxProgressDiv
+                document.querySelector('.swggAjaxProgressDiv').style.display = 'none';
                 // validate no error occurred
                 local.assert(!error, error);
                 // reset state
@@ -17249,10 +17356,7 @@ local.templateUiResponseAjax = '\
                 paramDef.schema,
                 paramDef.schema && paramDef.schema.items
             ].some(function (element) {
-                local.tryCatchOnError(function () {
-                    paramDef.schema2 = paramDef.schema2 ||
-                        local.schemaNormalizeAndCopy(element).properties;
-                }, local.nop);
+                paramDef.schema2 = local.schemaNormalizeAndCopy(element || {}).properties;
                 return paramDef.schema2;
             });
             if (paramDef.schema2) {
@@ -17744,6 +17848,9 @@ local.templateUiResponseAjax = '\
                         break;
                     case 'email':
                         local.assert(local.regexpEmailValidate.test(data));
+                        break;
+                    case 'phone':
+                        local.assert(local.regexpPhoneValidate.test(data));
                         break;
                     case 'json':
                         JSON.parse(data);
