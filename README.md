@@ -30,15 +30,17 @@ this zero-dependency package will run dynamic browser-tests with coverage (via e
 
 #### todo
 - npm publish 2017.2.21
+- rename test.js -> test.$npm_package_nameAlias.js
 - add utility2.middlewareLimit
 - add server stress test using electron
 - none
 
 #### change since 345e02c6
 - README.md - normalize browser-script in example.js
-- lib.db.js - add ttl-cache
 - promote utility2 plug in README.md, api-doc, code-coverage, rollup, test-coverage
-- shell-function - revamp shNpmPublish
+- lib.db.js - add ttl-cache
+- lib.utility2.js - revamp function buildApiDoc
+- lib.utility2.sh - revamp shell-function shNpmPublish
 - none
 
 #### this package requires

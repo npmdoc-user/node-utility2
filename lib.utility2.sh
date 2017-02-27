@@ -129,7 +129,13 @@ require('$npm_config_dir_utility2/lib.utility2.js').browserTest({
 
 shBuildApiDoc() {(set -e
 # this function will build the api-doc
-    npm test --mode-coverage="" --mode-test-case=testCase_buildApiDoc_default
+    shInit
+    if (grep -e testCase_buildApiDoc_default test.js > /dev/null 2>&1)
+    then
+        npm test --mode-coverage="" --mode-test-case=testCase_buildApiDoc_default
+        return $?
+    fi
+    node "$npm_config_dir_utility2/lib.utility2.js" buildApiDoc
 )}
 
 shBuildApp() {(set -e
