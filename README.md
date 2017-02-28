@@ -847,6 +847,16 @@ shBuild() {(set -e
         ;;
     master)
         shBuildCiDefault
+        git tag "$npm_package_version"
+        git push "git@github.com:$GITHUB_REPO.git" "$npm_package_version" || true
+        ;;
+    publish)
+        printf "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > "$HOME/.npmrc"
+        export CI_BRANCH=alpha
+        shNpmPublishAs
+        shBuildCiDefault
+        npm run publish-alias
+        git push "git@github.com:$GITHUB_REPO.git" publish:beta
         ;;
     esac
     # docker build
