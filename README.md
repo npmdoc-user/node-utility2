@@ -36,6 +36,8 @@ this zero-dependency package will run dynamic browser-tests with coverage (via e
 - none
 
 #### change since 345e02c6
+- build - add publish build-branch
+- build - auto-tag branch in master build-branch
 - README.md - normalize browser-script in example.js
 - promote utility2 plug in README.md, api-doc, code-coverage, rollup, test-coverage
 - lib.db.js - add ttl-cache

@@ -680,7 +680,6 @@ shFileTrimLeft() {(set -e
 */
 'use strict';
 require('fs').writeFileSync('$FILE', require('fs').readFileSync('$FILE', 'utf8').trimLeft());
-process.stdout.write('$FILE');
 // </script>
     "
 )}
@@ -977,7 +976,7 @@ shImageToDataUri() {(set -e
     stupid: true
 */
 'use strict';
-process.stdout.write('data:image/' +
+console.log('data:image/' +
     require('path').extname('$1').slice(1) +
     ';base64,' +
     require('fs').readFileSync('$1').toString('base64'));
@@ -1790,7 +1789,7 @@ shServerPortRandom() {(set -e
     stupid: true
 */
 'use strict';
-process.stdout.write(String(Math.random() * 0x10000 | 0x8000));
+console.log(String(Math.random() * 0x10000 | 0x8000));
 // </script>
         "
         return

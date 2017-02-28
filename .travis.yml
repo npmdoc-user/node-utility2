@@ -10,6 +10,7 @@ branches:
     - docker.latest
     - beta
     - master
+    - publish
 env:
     global:
     # this value is auto-created by shTravisEncryptYml

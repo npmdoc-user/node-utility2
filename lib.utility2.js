@@ -124,7 +124,7 @@ local.assetsDict['/assets.apiDoc.template.html'] = '\
     white-space: pre-wrap;\n\
 }\n\
 .apiDocFooterDiv {\n\
-    margin-top: 10px;\n\
+    margin-top: 20px;\n\
     text-align: center;\n\
 }\n\
 .apiDocModuleLi {\n\
@@ -620,7 +620,7 @@ local.assetsDict['/assets.index.template.html'].replace((/\n/g), '\\n\\\n') +
         "env": "env",\n\
         "heroku-postbuild": "npm install \'kaizhu256/node-utility2#alpha\' && utility2 shRun shDeployHeroku",\n\
         "postinstall": "if [ -f lib.jslint.npm-scripts.sh ]; then ./lib.jslint.npm-scripts.sh postinstall; fi",\n\
-        "publish-alias": "VERSION=$(npm info $npm_package_name version); for ALIAS in undefined; do utility2 shRun shNpmPublishAs . $ALIAS $VERSION; utility2 shRun shNpmTestPublished $ALIAS || exit $?; done",\n\
+        "publish-alias": "VERSION=$(npm info $npm_package_name version); for ALIAS in; do utility2 shRun shNpmPublishAs . $ALIAS $VERSION; utility2 shRun shNpmTestPublished $ALIAS || exit $?; done",\n\
         "start": "export PORT=${PORT:-8080} && export npm_config_mode_auto_restart=1 && utility2 shRun shIstanbulCover test.js",\n\
         "test": "export PORT=$(utility2 shServerPortRandom) && utility2 test test.js"\n\
     },\n\
@@ -659,6 +659,15 @@ shBuild() {(set -e\n\
         ;;\n\
     master)\n\
         shBuildCiDefault\n\
+        git tag "$npm_package_version"\n\
+        git push "git@github.com:$GITHUB_REPO.git" "$npm_package_version" || true\n\
+        ;;\n\
+    publish)\n\
+        export CI_BRANCH=alpha\n\
+        shNpmPublishAs\n\
+        shBuildCiDefault\n\
+        npm run publish-alias\n\
+        git push "git@github.com:$GITHUB_REPO.git" publish:beta\n\
         ;;\n\
     esac\n\
 )}\n\
@@ -707,7 +716,7 @@ local.assetsDict['/assets.testReport.template.html'] = '\
     font-family: Arial, Helvetica, sans-serif;\n\
 }\n\
 .testReportFooterDiv {\n\
-    margin-top: 10px;\n\
+    margin-top: 20px;\n\
     text-align: center;\n\
 }\n\
 .testReportPlatformDiv {\n\
@@ -2356,7 +2365,20 @@ return Utf8ArrayToStr(bff);
             options = local.objectSetDefault(options, {
                 packageJson: { nameAlias: options.packageJson.name }
             }, 2);
-            options.exampleFileList.push(options.packageJson.main);
+            options = local.objectSetDefault(options, {
+                blacklistDict: local,
+                circularList: [global],
+                env: local.env,
+                exampleFileList: [
+                    'README.md',
+                    'test.js',
+                    'test.' +  options.packageJson.nameAlias + '.js',
+                    options.packageJson.main,
+                    'index.js'
+                ],
+                html: '',
+                packageJson: JSON.parse(local.fs.readFileSync('package.json'))
+            });
             // init moduleDict
             local.objectSetDefault(options, local.objectLiteralize({
                 env: {
