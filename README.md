@@ -41,7 +41,8 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 - none
 
 #### change since d1a00ec8
-- security - disable requiring arbitrary modules in function moduleDirname
+- security - rewrite function moduleDirname, so that it doesn't have to require arbitrary modules
+- add github-crud command 'touch' to trigger github-hooks and add commit-messages without changing files
 - add commit-message-meta macro 'promote branch1 -> branch2'
 - add env var TRAVIS_REPO_CREATE_FORCE to force re-creation of npmdoc
 - add optional commit-message for PUT and DELETE requests in github-crud
