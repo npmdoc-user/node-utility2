@@ -496,7 +496,7 @@ local.templateApidocMd = '\
                 element.name = (element.typeof + ' <span class="apidocSignatureSpan">' +
                     element.moduleName + '.</span>' + key)
                     // handle case where module is a function
-                    .replace('>.<', '');
+                    .replace('>.<', '><');
                 if (element.typeof !== 'function') {
                     return element;
                 }

@@ -34,7 +34,6 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 - add package-listing to npmdoc
 - use remote credentials
 - use github oauth - https://stackoverflow.com/questions/18027115/committing-via-travis-ci-failing
-- shFileTrimLeft example.* before shBuildGithubUpload
 - allow server-side stdout to be streamed to webapps
 - add utility2.middlewareLimit
 - add server stress test using electron
@@ -46,6 +45,7 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 - add optional commit-message for PUT and DELETE requests in github-crud
 - add package-description to apidoc
 - add shell-function shNpmdocRepoListCreate to automate creation of npmdoc's
+- fix 'span class' error in https://www.npmjs.com/package/npmdoc-glob
 - merge function local.runIfTrue -> local.nop
 - shBuildPrint message for deprecate and publish operations
 - none
