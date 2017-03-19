@@ -29,7 +29,6 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 
 #### todo
 - npm publish 2017.3.18
-- rename lib.xxx.npm_scripts.sh to npm_scripts.sh
 - fix npmdoc on npmdoc
 - add package-listing to npmdoc
 - use remote credentials
@@ -52,6 +51,7 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 - add shell function shUtility2GrepTravisYml
 - fix 'span class' error in https://www.npmjs.com/package/npmdoc-glob
 - merge function local.runIfTrue -> local.nop
+- rename lib.xxx.npm_scripts.sh to npm_scripts.sh
 - shBuildPrint message for deprecate and publish operations
 - none
 
@@ -705,7 +705,7 @@ utility2-comment -->\n\
         "build-ci": "./lib.utility2.sh shReadmeTest build_ci.sh",
         "env": "env",
         "heroku-postbuild": "./lib.utility2.sh shDeployHeroku",
-        "postinstall": "if [ -f lib.utility2.npm_scripts.sh ]; then ./lib.utility2.npm_scripts.sh postinstall; fi",
+        "postinstall": "if [ -f npm_scripts.sh ]; then ./npm_scripts.sh postinstall; fi",
         "start": "(set -e; export PORT=${PORT:-8080}; if [ -f assets.app.js ]; then node assets.app.js; exit; fi; export npm_config_mode_auto_restart=1; ./lib.utility2.sh shRun shIstanbulCover test.js)",
         "test": "(set -e; export PORT=$(./lib.utility2.sh shServerPortRandom); export PORT_REPL=$(./lib.utility2.sh shServerPortRandom); export npm_config_mode_auto_restart=1; ./lib.utility2.sh test test.js)"
     },
