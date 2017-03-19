@@ -29,7 +29,7 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 
 #### todo
 - npm publish 2017.3.18
-- add sensitive data-scrubber in function moduleDirname
+- add scrub sensitive-data before calling require in function moduleDirname
 - fix npmdoc on npmdoc
 - add package-listing to npmdoc
 - use remote credentials
@@ -41,6 +41,7 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 - none
 
 #### change since d1a00ec8
+- add commit-message-meta macro 'promote branch1 -> branch2'
 - add env var TRAVIS_REPO_CREATE_FORCE to force re-creation of npmdoc
 - add optional commit-message for PUT and DELETE requests in github-crud
 - add package-description to apidoc

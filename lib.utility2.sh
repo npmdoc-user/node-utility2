@@ -250,6 +250,14 @@ shBuildCi() {(set -e
     case "$CI_BRANCH" in
     alpha)
         case "$CI_COMMIT_MESSAGE_META" in
+        "[promote alpha -> beta]")
+            shBuildScriptEval "githubPush" \
+                "git push -f git@github.com:$GITHUB_REPO.git HEAD:beta"
+            ;;
+        "[promote alpha -> beta -> master]")
+            shBuildScriptEval "githubPush" \
+                "git push -f git@github.com:$GITHUB_REPO.git HEAD:beta"
+            ;;
         "[npm publish]")
             shBuildScriptEval "githubPush" \
                 "git push git@github.com:$GITHUB_REPO.git HEAD:publish"
@@ -271,11 +279,27 @@ shBuildCi() {(set -e
         esac
         ;;
     beta)
+        case "$CI_COMMIT_MESSAGE_META" in
+        "[promote alpha -> beta -> master]")
+            shBuildScriptEval "githubPush" \
+                "git push -f git@github.com:$GITHUB_REPO.git HEAD:master"
+            ;;
+        "[promote beta -> master]")
+            shBuildScriptEval "githubPush" \
+                "git push -f git@github.com:$GITHUB_REPO.git HEAD:master"
+            ;;
+        esac
         ;;
     master)
         git tag "$npm_package_version" || true
         shBuildScriptEval "githubPush" \
-            "git push git@github.com:$GITHUB_REPO.git $npm_package_version"
+            "git push git@github.com:$GITHUB_REPO.git $npm_package_version" || true
+        case "$CI_COMMIT_MESSAGE_META" in
+        "[promote master -> alpha]")
+            shBuildScriptEval "githubPush" \
+                "git push -f git@github.com:$GITHUB_REPO.git HEAD:alpha"
+            ;;
+        esac
         ;;
     publish)
         shNpmPublishAliasList . "$npm_package_nameAliasPublish"
@@ -1375,9 +1399,14 @@ Object.keys(dict).forEach(function (key) {
         process.stdout.write('export npm_package_' + key + '=' + JSON.stringify(value) + ';');
     }
 });
-value = (/\bgithub\.com\/(.*)\.git\$/).exec(dict.repository && dict.repository.url);
-if (process.env.GITHUB_REPO === undefined && value) {
-    process.stdout.write('export GITHUB_REPO=' + JSON.stringify(value[1]) + ';');
+value = String((dict.repository && dict.repository.url) || dict.repository || '')
+    .split(':').slice(-1)[0].toString()
+    .split('/')
+    .slice(-2)
+    .join('/')
+    .replace((/\.git\$/), '');
+if (process.env.GITHUB_REPO === undefined && (/^[^\/]+\/[^\/]+\$/).test(value)) {
+    process.stdout.write('export GITHUB_REPO=' + JSON.stringify(value) + ';');
 }
 // </script>
         ") || return $?
