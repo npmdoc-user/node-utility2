@@ -479,7 +479,8 @@ instruction
         local.assetsDict['/assets.utility2.rollup.js'] =
             local.assetsDict['/assets.utility2.rollup.js'] ||
             local.fs.readFileSync(
-                local.utility2.__dirname + '/lib.utility2.js',
+                local.utility2.__dirname +
+                    '/lib.utility2.js',
                 'utf8'
             ).replace((/^#!/), '//');
         local.assetsDict['/favicon.ico'] = local.assetsDict['/favicon.ico'] || '';
