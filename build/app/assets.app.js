@@ -9872,7 +9872,7 @@ example module\n\
         "build-ci": "utility2 shReadmeTest build_ci.sh",\n\
         "env": "env",\n\
         "heroku-postbuild": "(set -e; npm install \\\"kaizhu256/node-utility2#alpha\\\"; utility2 shDeployHeroku)",\n\
-        "postinstall": "if [ -f lib.jslint.npm_scripts.sh ]; then ./lib.jslint.npm_scripts.sh postinstall; fi",\n\
+        "postinstall": "if [ -f npm_scripts.sh ]; then ./npm_scripts.sh postinstall; fi",\n\
         "start": "(set -e; export PORT=${PORT:-8080}; utility2 start test.js)",\n\
         "test": "(set -e; export PORT=$(utility2 shServerPortRandom); utility2 test test.js)"\n\
     },\n\
