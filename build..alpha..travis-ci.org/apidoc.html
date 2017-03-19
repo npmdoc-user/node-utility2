@@ -6490,8 +6490,11 @@ xhr.addEventListener(&#x27;loadstart&#x27;, local.ajaxProgressUpdate);
         return text;
     };
     // init options
-    local.objectSetDefault(options, { modulePathList: local.module.paths });
-    options.dir = local.moduleDirname(options.dir, options.modulePat ...</pre></li>
+    options.dir = local.moduleDirname(
+        options.dir,
+        options.modulePathList || local.module.paths
+    );
+    local.objectSetDefaul ...</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 local.fs = require(&#x27;fs&#x27;);
 local.path = require(&#x27;path&#x27;);
@@ -7689,6 +7692,12 @@ local.testCase_buildReadme_default = local.testCase_buildReadme_default || funct
     options = {};
     options.readme = local.apidocCreate({
         dir: local.env.npm_package_buildNpmdoc,
+        header: (/\n\n[\S\s]*?\n\n\n\n/)
+            .exec(local.assetsDict[&#x27;/assets.readme.template.md&#x27;])[0]
+            .trim()
+            .replace((/kaizhu256/g), &#x27;npmdoc&#x27;)
+            .replace((/\/jslint-lite/g), &#x27;\/&#x27; + local.env.npm_package_buildNpmdoc)
+            .replace((/jslint-lite/g), local.env.npm_package_name),
         modulePathList: options.modulePathList,
         template: local.apidoc.templateApidocMd
     });
@@ -10044,21 +10053,21 @@ switch (local.modeJs) {
     return result || &#x27;&#x27;;
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
+    // enforce 128 character column limit
     while ((/^.{128}[^\\\n]/m).test(text)) {
         text = text.replace((/^(.{128})([^\\\n]+)/gm), &#x27;$1\\\n$2&#x27;);
     }
     return text;
 };
 // init options
-local.objectSetDefault(options, { modulePathList: local.module.paths });
-options.dir = local.<span class="apidocCodeKeywordSpan">moduleDirname</span>(options.dir, options.modulePathList);
+options.dir = local.<span class="apidocCodeKeywordSpan">moduleDirname</span>(
+    options.dir,
+    options.modulePathList || local.module.paths
+);
 local.objectSetDefault(options, {
     packageJson: JSON.parse(readExample(&#x27;package.json&#x27;))
 });
 local.objectSetDefault(options, { env: {
-    npm_package_description: options.packageJson.description,
-    npm_package_homepage: options.packageJson.homepage,
-    npm_package_name: options.packageJson.name,
 ...</pre></li>
     </ul>
     
@@ -14932,8 +14941,11 @@ break;
         return text;
     };
     // init options
-    local.objectSetDefault(options, { modulePathList: local.module.paths });
-    options.dir = local.moduleDirname(options.dir, options.modulePat ...</pre></li>
+    options.dir = local.moduleDirname(
+        options.dir,
+        options.modulePathList || local.module.paths
+    );
+    local.objectSetDefaul ...</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 local.fs = require(&#x27;fs&#x27;);
 local.path = require(&#x27;path&#x27;);
@@ -15122,21 +15134,21 @@ local.<span class="apidocCodeKeywordSpan">apidocModuleDictAdd</span>(options, op
     return result || &#x27;&#x27;;
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
+    // enforce 128 character column limit
     while ((/^.{128}[^\\\n]/m).test(text)) {
         text = text.replace((/^(.{128})([^\\\n]+)/gm), &#x27;$1\\\n$2&#x27;);
     }
     return text;
 };
 // init options
-local.objectSetDefault(options, { modulePathList: local.module.paths });
-options.dir = local.<span class="apidocCodeKeywordSpan">moduleDirname</span>(options.dir, options.modulePathList);
+options.dir = local.<span class="apidocCodeKeywordSpan">moduleDirname</span>(
+    options.dir,
+    options.modulePathList || local.module.paths
+);
 local.objectSetDefault(options, {
     packageJson: JSON.parse(readExample(&#x27;package.json&#x27;))
 });
 local.objectSetDefault(options, { env: {
-    npm_package_description: options.packageJson.description,
-    npm_package_homepage: options.packageJson.homepage,
-    npm_package_name: options.packageJson.name,
 ...</pre></li>
     </ul>
     
@@ -21908,10 +21920,10 @@ local.assetsDict[&#x27;/assets.example.js&#x27;] =
 local.assetsDict[&#x27;/assets.utility2.rollup.js&#x27;] =
     local.assetsDict[&#x27;/assets.utility2.rollup.js&#x27;] ||
     local.fs.readFileSync(
-        local.utility2.__dirname + &#x27;/lib.utility2.js&#x27;,
+        local.utility2.__dirname +
+            &#x27;/lib.utility2.js&#x27;,
         &#x27;utf8&#x27;
     ).replace((/^#!/), &#x27;//&#x27;);
-local.assetsDict[&#x27;/favicon.ico&#x27;] = local.assetsDict[&#x27;/favicon.ico&#x27;] || &#x27;&#x27;;
 ...</pre></li>
     </ul>
     

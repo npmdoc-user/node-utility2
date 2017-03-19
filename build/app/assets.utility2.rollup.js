@@ -411,10 +411,14 @@ local.templateApidocMd = '\
 {{env.npm_package_name}} (v{{env.npm_package_version}}) \
 {{/if env.npm_package_homepage}} \
 \n\
+{{env.npm_package_description}} \
 \n\
 \n\
 \n\
-#### {{env.npm_package_description}} \
+\n\
+{{#if header}} \
+{{header}} \
+{{/if header}} \
 \n\
 \n\
 \n\
@@ -577,8 +581,10 @@ local.templateApidocMd = '\
                 return text;
             };
             // init options
-            local.objectSetDefault(options, { modulePathList: local.module.paths });
-            options.dir = local.moduleDirname(options.dir, options.modulePathList);
+            options.dir = local.moduleDirname(
+                options.dir,
+                options.modulePathList || local.module.paths
+            );
             local.objectSetDefault(options, {
                 packageJson: JSON.parse(readExample('package.json'))
             });
@@ -9653,7 +9659,8 @@ local.assetsDict['/assets.index.template.html'].replace((/\n/g), '\\n\\\n') +
         local.assetsDict[\'/assets.jslint.rollup.js\'] =\n\
             local.assetsDict[\'/assets.jslint.rollup.js\'] ||\n\
             local.fs.readFileSync(\n\
-                local.jslint.__dirname + \'/lib.jslint.js\',\n\
+                local.jslint.__dirname +\n\
+                    \'/lib.jslint.js\',\n\
                 \'utf8\'\n\
             ).replace((/^#!/), \'//\');\n\
         local.assetsDict[\'/favicon.ico\'] = local.assetsDict[\'/favicon.ico\'] || \'\';\n\
@@ -11812,6 +11819,12 @@ return Utf8ArrayToStr(bff);
             options = {};
             options.readme = local.apidocCreate({
                 dir: local.env.npm_package_buildNpmdoc,
+                header: (/\n\n[\S\s]*?\n\n\n\n/)
+                    .exec(local.assetsDict['/assets.readme.template.md'])[0]
+                    .trim()
+                    .replace((/kaizhu256/g), 'npmdoc')
+                    .replace((/\/jslint-lite/g), '\/' + local.env.npm_package_buildNpmdoc)
+                    .replace((/jslint-lite/g), local.env.npm_package_name),
                 modulePathList: options.modulePathList,
                 template: local.apidoc.templateApidocMd
             });
