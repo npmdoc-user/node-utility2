@@ -1805,17 +1805,23 @@
          * this function will test moduleDirname's default handling-behavior
          */
             options = {};
+            options.modulePathList = module.paths;
             // test null-case handling-behavior
-            options.data = local.moduleDirname();
+            options.data = local.moduleDirname(null, options.modulePathList);
             local.assertJsonEqual(options.data, process.cwd());
             // test path handling-behavior
-            options.data = local.moduleDirname('.');
+            options.data = local.moduleDirname('.', options.modulePathList);
             local.assertJsonEqual(options.data, process.cwd());
+            options.data = local.moduleDirname('./', options.modulePathList);
+            local.assertJsonEqual(options.data, process.cwd());
+            // test builtin-module handling-behavior
+            options.data = local.moduleDirname('fs', options.modulePathList);
+            local.assertJsonEqual(options.data, 'fs');
             // test module exists handling-behavior
-            options.data = local.moduleDirname('electron-lite');
+            options.data = local.moduleDirname('electron-lite', options.modulePathList);
             local.assert((/\/electron-lite$/).test(options.data), options.data);
             // test module does not exists handling-behavior
-            options.data = local.moduleDirname('syntax error');
+            options.data = local.moduleDirname('syntax error', options.modulePathList);
             local.assertJsonEqual(options.data, '');
             onError();
         };

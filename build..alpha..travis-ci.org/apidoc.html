@@ -821,7 +821,7 @@
             
             <a class="apidocElementLiA" href="#apidoc.element.utility2.moduleDirname">
             function <span class="apidocSignatureSpan">utility2.</span>moduleDirname
-            <span class="apidocSignatureSpan">(module)</span>
+            <span class="apidocSignatureSpan">(module, modulePathList)</span>
             </a>
             
         </li>
@@ -2178,7 +2178,7 @@
             
             <a class="apidocElementLiA" href="#apidoc.element.utility2.apidoc.moduleDirname">
             function <span class="apidocSignatureSpan">utility2.apidoc.</span>moduleDirname
-            <span class="apidocSignatureSpan">(module)</span>
+            <span class="apidocSignatureSpan">(module, modulePathList)</span>
             </a>
             
         </li>
@@ -2234,6 +2234,12 @@
         <li>
             
             <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">utility2.apidoc.</span>local</span>
+            
+        </li>
+        
+        <li>
+            
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">utility2.apidoc.</span>module</span>
             
         </li>
         
@@ -6463,25 +6469,24 @@ xhr.addEventListener(&#x27;loadstart&#x27;, local.ajaxProgressUpdate);
         return text;
     };
     // init options
-    console.error(&#x27;apidocCreate - normalizing dir &#x27; + options.dir);
-    options.dir = local.moduleDirname(options.dir);
-    console.error(&#x27;apidoc ...</pre></li>
+    local.objectSetDefault(options, { modulePathList: local.module.paths });
+    options.dir = local.moduleDirname(options.dir, options.modulePat ...</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-    local.fs = require(&#x27;fs&#x27;);
-    local.path = require(&#x27;path&#x27;);
-    // run the cli
-    if (module !== require.main || local.global.utility2_rollup) {
-        break;
-    }
-    // jslint files
-    process.stdout.write(local.<span class="apidocCodeKeywordSpan">apidocCreate</span>({
-        dir: process.argv[2],
-        template: process.argv[3] === &#x27;--markdown&#x27;
-            ? local.templateApidocMd
-            : local.templateApidocHtml
-    }));
+local.fs = require(&#x27;fs&#x27;);
+local.path = require(&#x27;path&#x27;);
+// run the cli
+if (module !== require.main || local.global.utility2_rollup) {
     break;
 }
+// jslint files
+process.stdout.write(local.<span class="apidocCodeKeywordSpan">apidocCreate</span>({
+    dir: process.argv[2],
+    modulePathList: module.paths,
+    template: process.argv[3] === &#x27;--markdown&#x27;
+        ? local.templateApidocMd
+        : local.templateApidocHtml
+}));
+break;
 ...</pre></li>
     </ul>
     
@@ -7422,13 +7427,13 @@ case &#x27;application/x-www-form-urlencoded&#x27;:
     }, onError);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
+ * this function will test buildApidoc\&#x27;s default handling-behavior-behavior\n\
  */\n\
+    options = { modulePathList: options.modulePathList };\n\
     if (local.env.npm_package_buildNpmdoc) {\n\
-        options = {};\n\
         local.buildNpmdoc(options, onError);\n\
         return;\n\
     }\n\
-    options = {};\n\
     local.<span class="apidocCodeKeywordSpan">buildApidoc</span>(options, onError);\n\
 };\n\
 \n\
@@ -7656,12 +7661,14 @@ local.testCase_buildReadme_default = local.testCase_buildReadme_default || funct
     // build apidoc.html
     onParallel.counter += 1;
     local.buildApidoc({
-        dir: local.env.npm_package_buildNpmdoc
+        dir: local.env.npm_package_buildNpmdoc,
+        modulePathList: options.modulePathList
     }, onParallel);
     // build README.md
     options = {};
     options.readme = local.apidocCreate({
         dir: local.env.npm_package_buildNpmdoc,
+        modulePathList: options.modulePathList,
         template: local.apidoc.templateApidocMd
     });
     local.fs.writeFileSync(&#x27;README.md&#x27;, options.readme);
@@ -7682,16 +7689,16 @@ local.testCase_buildReadme_default = local.testCase_buildReadme_default || funct
 /*\n\
  * this function will test buildApidoc\&#x27;s default handling-behavior-behavior\n\
  */\n\
+    options = { modulePathList: options.modulePathList };\n\
     if (local.env.npm_package_buildNpmdoc) {\n\
-        options = {};\n\
         local.<span class="apidocCodeKeywordSpan">buildNpmdoc</span>(options, onError);\n\
         return;\n\
     }\n\
-    options = {};\n\
     local.buildApidoc(options, onError);\n\
 };\n\
 \n\
 local.testCase_buildApp_default = local.testCase_buildApp_default || function (\n\
+    options,\n\
 ...</pre></li>
     </ul>
     
@@ -9980,34 +9987,37 @@ switch (local.modeJs) {
     <h2>
         <a href="#apidoc.element.utility2.moduleDirname" id="apidoc.element.utility2.moduleDirname">
         function <span class="apidocSignatureSpan">utility2.</span>moduleDirname
-        <span class="apidocSignatureSpan">(module)</span>
+        <span class="apidocSignatureSpan">(module, modulePathList)</span>
         </a>
     </h2>
     <ul>
-    <li>description and source-code<pre class="apidocCodePre">moduleDirname = function (module) {
+    <li>description and source-code<pre class="apidocCodePre">moduleDirname = function (module, modulePathList) {
 <span class="apidocCodeCommentSpan">/*
- * this function will return the __dirname of the module
+ * this function will search modulePathList for the module&#x27;s __dirname
  */
-</span>    var result;
-    if (!module || module.indexOf(&#x27;/&#x27;) &#x3e;= 0 || module === &#x27;.&#x27;) {
+</span>    var result, tmp;
+    // search process.cwd()
+    if (!module || module === &#x27;.&#x27; || module.indexOf(&#x27;/&#x27;) &#x3e;= 0) {
         return require(&#x27;path&#x27;).resolve(process.cwd(), module || &#x27;&#x27;);
     }
-    try {
-        require(process.cwd() + &#x27;/node_modules/&#x27; + module);
-    } catch (errorCaught) {
-        try {
-            require(module);
-        } catch (ignore) {
-        }
+    // search builtin
+    if (Object.keys(process.binding(&#x27;natives&#x27;)).indexOf(module) &#x3e;= 0) {
+        return module;
     }
+    // search modulePathList
     [
-        new RegExp(&#x27;(.*?/&#x27; + module + &#x27;)\\b&#x27;),
-        new RegExp(&#x27;(.*?/&#x27; + module + &#x27;)/[^/].*?$&#x27;)
-    ].some(function (rgx) {
-        return Object.keys(require.cache).some(function (key) {
-            result = rgx.exec(key);
-            result = result &#x26;&#x26; result[1];
-            return result;
+        modulePathList,
+        require(&#x27;module&#x27;).globalPaths
+    ].some(function (modulePathList) {
+        modulePathList.some(function (modulePath) {
+            try {
+                tmp = require(&#x27;path&#x27;).resolve(
+                    process.cwd(),
+                    modulePath + &#x27;/&#x27; + module
+                );
+                result = require(&#x27;fs&#x27;).statSync(tmp).isDirectory() &#x26;&#x26; tmp;
+            } catch (ignore) {
+            }
         });
     });
     return result || &#x27;&#x27;;
@@ -10019,15 +10029,15 @@ switch (local.modeJs) {
     return text;
 };
 // init options
-console.error(&#x27;apidocCreate - normalizing dir &#x27; + options.dir);
-options.dir = local.<span class="apidocCodeKeywordSpan">moduleDirname</span>(options.dir);
-console.error(&#x27;apidocCreate - normalized dir &#x27; + options.dir);
+local.objectSetDefault(options, { modulePathList: local.module.paths });
+options.dir = local.<span class="apidocCodeKeywordSpan">moduleDirname</span>(options.dir, options.modulePathList);
 local.objectSetDefault(options, {
     packageJson: JSON.parse(readExample(&#x27;package.json&#x27;))
 });
 local.objectSetDefault(options, { env: {
     npm_package_description: options.packageJson.description,
     npm_package_homepage: options.packageJson.homepage,
+    npm_package_name: options.packageJson.name,
 ...</pre></li>
     </ul>
     
@@ -13488,22 +13498,22 @@ n.prototype=new Error,r.fromToken=function(e){return new r(e.value,e.startLine,e
   return Module._resolveFilename(request, self);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-
-local.moduleDirname = function (module) {
+local.moduleDirname = function (module, modulePathList) {
 /*
- * this function will return the __dirname of the module
+ * this function will search modulePathList for the module&#x27;s __dirname
  */
-    var result;
-    if (!module || module.indexOf(&#x27;/&#x27;) &#x3e;= 0 || module === &#x27;.&#x27;) {
+    var result, tmp;
+    // search process.cwd()
+    if (!module || module === &#x27;.&#x27; || module.indexOf(&#x27;/&#x27;) &#x3e;= 0) {
         return require(&#x27;path&#x27;).<span class="apidocCodeKeywordSpan">resolve</span>(process.cwd(), module || &#x27;&#x27\
 ;);
     }
-    try {
-        require(process.cwd() + &#x27;/node_modules/&#x27; + module);
-    } catch (errorCaught) {
-        try {
-            require(module);
-        } catch (ignore) {
+    // search builtin
+    if (Object.keys(process.binding(&#x27;natives&#x27;)).indexOf(module) &#x3e;= 0) {
+        return module;
+    }
+    // search modulePathList
+    [
 ...</pre></li>
     </ul>
     
@@ -14235,21 +14245,21 @@ local._http.createServer = function () {
 </span>    this.chunkList.push(data);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-    local.fs = require(&#x27;fs&#x27;);
-    local.path = require(&#x27;path&#x27;);
-    // run the cli
-    if (module !== require.main || local.global.utility2_rollup) {
-        break;
-    }
-    // jslint files
-    process.stdout.<span class="apidocCodeKeywordSpan">write</span>(local.apidocCreate({
-        dir: process.argv[2],
-        template: process.argv[3] === &#x27;--markdown&#x27;
-            ? local.templateApidocMd
-            : local.templateApidocHtml
-    }));
+local.fs = require(&#x27;fs&#x27;);
+local.path = require(&#x27;path&#x27;);
+// run the cli
+if (module !== require.main || local.global.utility2_rollup) {
     break;
 }
+// jslint files
+process.stdout.<span class="apidocCodeKeywordSpan">write</span>(local.apidocCreate({
+    dir: process.argv[2],
+    modulePathList: module.paths,
+    template: process.argv[3] === &#x27;--markdown&#x27;
+        ? local.templateApidocMd
+        : local.templateApidocHtml
+}));
+break;
 ...</pre></li>
     </ul>
     
@@ -14901,25 +14911,24 @@ break;
         return text;
     };
     // init options
-    console.error(&#x27;apidocCreate - normalizing dir &#x27; + options.dir);
-    options.dir = local.moduleDirname(options.dir);
-    console.error(&#x27;apidoc ...</pre></li>
+    local.objectSetDefault(options, { modulePathList: local.module.paths });
+    options.dir = local.moduleDirname(options.dir, options.modulePat ...</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-    local.fs = require(&#x27;fs&#x27;);
-    local.path = require(&#x27;path&#x27;);
-    // run the cli
-    if (module !== require.main || local.global.utility2_rollup) {
-        break;
-    }
-    // jslint files
-    process.stdout.write(local.<span class="apidocCodeKeywordSpan">apidocCreate</span>({
-        dir: process.argv[2],
-        template: process.argv[3] === &#x27;--markdown&#x27;
-            ? local.templateApidocMd
-            : local.templateApidocHtml
-    }));
+local.fs = require(&#x27;fs&#x27;);
+local.path = require(&#x27;path&#x27;);
+// run the cli
+if (module !== require.main || local.global.utility2_rollup) {
     break;
 }
+// jslint files
+process.stdout.write(local.<span class="apidocCodeKeywordSpan">apidocCreate</span>({
+    dir: process.argv[2],
+    modulePathList: module.paths,
+    template: process.argv[3] === &#x27;--markdown&#x27;
+        ? local.templateApidocMd
+        : local.templateApidocHtml
+}));
+break;
 ...</pre></li>
     </ul>
     
@@ -15056,34 +15065,37 @@ local.<span class="apidocCodeKeywordSpan">apidocModuleDictAdd</span>(options, op
     <h2>
         <a href="#apidoc.element.utility2.apidoc.moduleDirname" id="apidoc.element.utility2.apidoc.moduleDirname">
         function <span class="apidocSignatureSpan">utility2.apidoc.</span>moduleDirname
-        <span class="apidocSignatureSpan">(module)</span>
+        <span class="apidocSignatureSpan">(module, modulePathList)</span>
         </a>
     </h2>
     <ul>
-    <li>description and source-code<pre class="apidocCodePre">moduleDirname = function (module) {
+    <li>description and source-code<pre class="apidocCodePre">moduleDirname = function (module, modulePathList) {
 <span class="apidocCodeCommentSpan">/*
- * this function will return the __dirname of the module
+ * this function will search modulePathList for the module&#x27;s __dirname
  */
-</span>    var result;
-    if (!module || module.indexOf(&#x27;/&#x27;) &#x3e;= 0 || module === &#x27;.&#x27;) {
+</span>    var result, tmp;
+    // search process.cwd()
+    if (!module || module === &#x27;.&#x27; || module.indexOf(&#x27;/&#x27;) &#x3e;= 0) {
         return require(&#x27;path&#x27;).resolve(process.cwd(), module || &#x27;&#x27;);
     }
-    try {
-        require(process.cwd() + &#x27;/node_modules/&#x27; + module);
-    } catch (errorCaught) {
-        try {
-            require(module);
-        } catch (ignore) {
-        }
+    // search builtin
+    if (Object.keys(process.binding(&#x27;natives&#x27;)).indexOf(module) &#x3e;= 0) {
+        return module;
     }
+    // search modulePathList
     [
-        new RegExp(&#x27;(.*?/&#x27; + module + &#x27;)\\b&#x27;),
-        new RegExp(&#x27;(.*?/&#x27; + module + &#x27;)/[^/].*?$&#x27;)
-    ].some(function (rgx) {
-        return Object.keys(require.cache).some(function (key) {
-            result = rgx.exec(key);
-            result = result &#x26;&#x26; result[1];
-            return result;
+        modulePathList,
+        require(&#x27;module&#x27;).globalPaths
+    ].some(function (modulePathList) {
+        modulePathList.some(function (modulePath) {
+            try {
+                tmp = require(&#x27;path&#x27;).resolve(
+                    process.cwd(),
+                    modulePath + &#x27;/&#x27; + module
+                );
+                result = require(&#x27;fs&#x27;).statSync(tmp).isDirectory() &#x26;&#x26; tmp;
+            } catch (ignore) {
+            }
         });
     });
     return result || &#x27;&#x27;;
@@ -15095,15 +15107,15 @@ local.<span class="apidocCodeKeywordSpan">apidocModuleDictAdd</span>(options, op
     return text;
 };
 // init options
-console.error(&#x27;apidocCreate - normalizing dir &#x27; + options.dir);
-options.dir = local.<span class="apidocCodeKeywordSpan">moduleDirname</span>(options.dir);
-console.error(&#x27;apidocCreate - normalized dir &#x27; + options.dir);
+local.objectSetDefault(options, { modulePathList: local.module.paths });
+options.dir = local.<span class="apidocCodeKeywordSpan">moduleDirname</span>(options.dir, options.modulePathList);
 local.objectSetDefault(options, {
     packageJson: JSON.parse(readExample(&#x27;package.json&#x27;))
 });
 local.objectSetDefault(options, { env: {
     npm_package_description: options.packageJson.description,
     npm_package_homepage: options.packageJson.homepage,
+    npm_package_name: options.packageJson.name,
 ...</pre></li>
     </ul>
     
@@ -15355,6 +15367,8 @@ if (local.templateRender) {
                 npm_package_version: &#x27;0.0.1&#x27;
 ...</pre></li>
     </ul>
+    
+    
     
     
     
@@ -22269,22 +22283,22 @@ result = result.replace(
   return Module._resolveFilename(request, self);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-
-local.moduleDirname = function (module) {
+local.moduleDirname = function (module, modulePathList) {
 /*
- * this function will return the __dirname of the module
+ * this function will search modulePathList for the module&#x27;s __dirname
  */
-    var result;
-    if (!module || module.indexOf(&#x27;/&#x27;) &#x3e;= 0 || module === &#x27;.&#x27;) {
+    var result, tmp;
+    // search process.cwd()
+    if (!module || module === &#x27;.&#x27; || module.indexOf(&#x27;/&#x27;) &#x3e;= 0) {
         return require(&#x27;path&#x27;).<span class="apidocCodeKeywordSpan">resolve</span>(process.cwd(), module || &#x27;&#x27\
 ;);
     }
-    try {
-        require(process.cwd() + &#x27;/node_modules/&#x27; + module);
-    } catch (errorCaught) {
-        try {
-            require(module);
-        } catch (ignore) {
+    // search builtin
+    if (Object.keys(process.binding(&#x27;natives&#x27;)).indexOf(module) &#x3e;= 0) {
+        return module;
+    }
+    // search modulePathList
+    [
 ...</pre></li>
     </ul>
     
@@ -22356,21 +22370,21 @@ push(n),n=n.parent;for(s=0;s&#x3c;r.length;s+=1)i.push(&#x27;&#x3c;a href=&#x22;
     local.writerData += data;
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-    local.fs = require(&#x27;fs&#x27;);
-    local.path = require(&#x27;path&#x27;);
-    // run the cli
-    if (module !== require.main || local.global.utility2_rollup) {
-        break;
-    }
-    // jslint files
-    process.stdout.<span class="apidocCodeKeywordSpan">write</span>(local.apidocCreate({
-        dir: process.argv[2],
-        template: process.argv[3] === &#x27;--markdown&#x27;
-            ? local.templateApidocMd
-            : local.templateApidocHtml
-    }));
+local.fs = require(&#x27;fs&#x27;);
+local.path = require(&#x27;path&#x27;);
+// run the cli
+if (module !== require.main || local.global.utility2_rollup) {
     break;
 }
+// jslint files
+process.stdout.<span class="apidocCodeKeywordSpan">write</span>(local.apidocCreate({
+    dir: process.argv[2],
+    modulePathList: module.paths,
+    template: process.argv[3] === &#x27;--markdown&#x27;
+        ? local.templateApidocMd
+        : local.templateApidocHtml
+}));
+break;
 ...</pre></li>
     </ul>
     

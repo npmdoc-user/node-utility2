@@ -92,6 +92,7 @@
         } else {
             module.exports = local;
             module.exports.__dirname = __dirname;
+            module.exports.module = module;
         }
     }());
 
@@ -119,30 +120,33 @@
             throw error;
         };
 
-        local.moduleDirname = function (module) {
+        local.moduleDirname = function (module, modulePathList) {
         /*
-         * this function will return the __dirname of the module
+         * this function will search modulePathList for the module's __dirname
          */
-            var result;
-            if (!module || module.indexOf('/') >= 0 || module === '.') {
+            var result, tmp;
+            // search process.cwd()
+            if (!module || module === '.' || module.indexOf('/') >= 0) {
                 return require('path').resolve(process.cwd(), module || '');
             }
-            try {
-                require(process.cwd() + '/node_modules/' + module);
-            } catch (errorCaught) {
-                try {
-                    require(module);
-                } catch (ignore) {
-                }
+            // search builtin
+            if (Object.keys(process.binding('natives')).indexOf(module) >= 0) {
+                return module;
             }
+            // search modulePathList
             [
-                new RegExp('(.*?/' + module + ')\\b'),
-                new RegExp('(.*?/' + module + ')/[^/].*?$')
-            ].some(function (rgx) {
-                return Object.keys(require.cache).some(function (key) {
-                    result = rgx.exec(key);
-                    result = result && result[1];
-                    return result;
+                modulePathList,
+                require('module').globalPaths
+            ].some(function (modulePathList) {
+                modulePathList.some(function (modulePath) {
+                    try {
+                        tmp = require('path').resolve(
+                            process.cwd(),
+                            modulePath + '/' + module
+                        );
+                        result = require('fs').statSync(tmp).isDirectory() && tmp;
+                    } catch (ignore) {
+                    }
                 });
             });
             return result || '';
@@ -573,9 +577,8 @@ local.templateApidocMd = '\
                 return text;
             };
             // init options
-            console.error('apidocCreate - normalizing dir ' + options.dir);
-            options.dir = local.moduleDirname(options.dir);
-            console.error('apidocCreate - normalized dir ' + options.dir);
+            local.objectSetDefault(options, { modulePathList: local.module.paths });
+            options.dir = local.moduleDirname(options.dir, options.modulePathList);
             local.objectSetDefault(options, {
                 packageJson: JSON.parse(readExample('package.json'))
             });
@@ -789,6 +792,7 @@ local.templateApidocMd = '\
         // jslint files
         process.stdout.write(local.apidocCreate({
             dir: process.argv[2],
+            modulePathList: module.paths,
             template: process.argv[3] === '--markdown'
                 ? local.templateApidocMd
                 : local.templateApidocHtml
@@ -9966,12 +9970,11 @@ local.assetsDict['/assets.test.template.js'] = '\
         /*\n\
          * this function will test buildApidoc\'s default handling-behavior-behavior\n\
          */\n\
+            options = { modulePathList: options.modulePathList };\n\
             if (local.env.npm_package_buildNpmdoc) {\n\
-                options = {};\n\
                 local.buildNpmdoc(options, onError);\n\
                 return;\n\
             }\n\
-            options = {};\n\
             local.buildApidoc(options, onError);\n\
         };\n\
 \n\
@@ -11755,12 +11758,14 @@ return Utf8ArrayToStr(bff);
             // build apidoc.html
             onParallel.counter += 1;
             local.buildApidoc({
-                dir: local.env.npm_package_buildNpmdoc
+                dir: local.env.npm_package_buildNpmdoc,
+                modulePathList: options.modulePathList
             }, onParallel);
             // build README.md
             options = {};
             options.readme = local.apidocCreate({
                 dir: local.env.npm_package_buildNpmdoc,
+                modulePathList: options.modulePathList,
                 template: local.apidoc.templateApidocMd
             });
             local.fs.writeFileSync('README.md', options.readme);
@@ -12666,30 +12671,33 @@ return Utf8ArrayToStr(bff);
             nextMiddleware();
         };
 
-        local.moduleDirname = function (module) {
+        local.moduleDirname = function (module, modulePathList) {
         /*
-         * this function will return the __dirname of the module
+         * this function will search modulePathList for the module's __dirname
          */
-            var result;
-            if (!module || module.indexOf('/') >= 0 || module === '.') {
+            var result, tmp;
+            // search process.cwd()
+            if (!module || module === '.' || module.indexOf('/') >= 0) {
                 return require('path').resolve(process.cwd(), module || '');
             }
-            try {
-                require(process.cwd() + '/node_modules/' + module);
-            } catch (errorCaught) {
-                try {
-                    require(module);
-                } catch (ignore) {
-                }
+            // search builtin
+            if (Object.keys(process.binding('natives')).indexOf(module) >= 0) {
+                return module;
             }
+            // search modulePathList
             [
-                new RegExp('(.*?/' + module + ')\\b'),
-                new RegExp('(.*?/' + module + ')/[^/].*?$')
-            ].some(function (rgx) {
-                return Object.keys(require.cache).some(function (key) {
-                    result = rgx.exec(key);
-                    result = result && result[1];
-                    return result;
+                modulePathList,
+                require('module').globalPaths
+            ].some(function (modulePathList) {
+                modulePathList.some(function (modulePath) {
+                    try {
+                        tmp = require('path').resolve(
+                            process.cwd(),
+                            modulePath + '/' + module
+                        );
+                        result = require('fs').statSync(tmp).isDirectory() && tmp;
+                    } catch (ignore) {
+                    }
                 });
             });
             return result || '';
