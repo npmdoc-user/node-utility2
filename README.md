@@ -29,7 +29,7 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 
 #### todo
 - npm publish 2017.3.18
-- add scrub sensitive-data before calling require in function moduleDirname
+- security - scrub sensitive env-data before calling require in function moduleDirname
 - fix npmdoc on npmdoc
 - add package-listing to npmdoc
 - use remote credentials
@@ -46,6 +46,7 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 - add optional commit-message for PUT and DELETE requests in github-crud
 - add package-description to apidoc
 - add shell-function shNpmdocRepoListCreate to automate creation of npmdoc's
+- add shell function shUtility2GrepTravisYml
 - fix 'span class' error in https://www.npmjs.com/package/npmdoc-glob
 - merge function local.runIfTrue -> local.nop
 - shBuildPrint message for deprecate and publish operations

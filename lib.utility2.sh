@@ -1247,7 +1247,7 @@ vendor\\)\\(\\b\\|[_s]\\)\
     find "$DIR" -type f | \
         grep -v "$FILE_FILTER" | \
         tr "\n" "\000" | \
-        xargs -0 grep -Iine "$REGEXP" || true
+        xargs -0 grep -HIine "$REGEXP" || true
 )}
 
 shGrepFileReplace() {(set -e
@@ -2775,6 +2775,19 @@ shUtility2Grep() {(set -e
         if [ -d "$DIR" ]
         then
             shGrep "$DIR" "$REGEXP"
+        fi
+    done
+)}
+
+shUtility2GrepTravisYml() {(set -e
+# this function will recursively grep .travis.yml in $UTILITY2_DEPENDENTS for the regexp $REGEXP
+    REGEXP="$1"
+    for DIR in $UTILITY2_DEPENDENTS
+    do
+        DIR="$HOME/src/$DIR"
+        if [ -d "$DIR" ]
+        then
+            grep -HIine "$REGEXP" "$DIR/.travis.yml" || true
         fi
     done
 )}
