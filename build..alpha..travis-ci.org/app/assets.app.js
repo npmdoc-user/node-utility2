@@ -2449,6 +2449,7 @@ local.templateApidocMd = '\
         } else {
             module.exports = local;
             module.exports.__dirname = __dirname;
+            module.exports.module = module;
         }
     }());
 
@@ -2836,6 +2837,40 @@ local.templateApidocMd = '\
                 onError(error, options.responseJson);
             });
         };
+
+        local.contentTouch = function (options, onError) {
+        /*
+         * this function will touch options.url
+         * https://developer.github.com/v3/repos/contents/#update-a-file
+         */
+            options = {
+                message: options.message,
+                modeErrorIgnore: true,
+                url: options.url
+            };
+            local.onNext(options, function (error, data) {
+                switch (options.modeNext) {
+                case 1:
+                    // get sha
+                    local.contentRequest({ method: 'GET', url: options.url }, options.onNext);
+                    break;
+                case 2:
+                    // put file with sha
+                    local.contentRequest({
+                        content: new Buffer(data.content || '', 'base64'),
+                        message: options.message,
+                        method: 'PUT',
+                        sha: data.sha,
+                        url: options.url
+                    }, options.onNext);
+                    break;
+                default:
+                    onError(error);
+                }
+            });
+            options.modeNext = 0;
+            options.onNext();
+        };
         break;
     }
     switch (local.modeJs) {
@@ -2880,6 +2915,16 @@ local.templateApidocMd = '\
                 message: process.argv[5],
                 url: process.argv[3],
                 file: process.argv[4]
+            }, function (error) {
+                // validate no error occurred
+                console.assert(!error, error);
+            });
+            break;
+        // touch
+        case 'touch':
+            local.contentTouch({
+                message: process.argv[4],
+                url: process.argv[3]
             }, function (error) {
                 // validate no error occurred
                 console.assert(!error, error);
@@ -5540,6 +5585,7 @@ local.templateCoverageBadgeSvg =
         } else {
             module.exports = local;
             module.exports.__dirname = __dirname;
+            module.exports.module = module;
         }
     }());
 
@@ -9989,7 +10035,7 @@ local.assetsDict['/assets.test.template.js'] = '\
         /*\n\
          * this function will test buildApidoc\'s default handling-behavior-behavior\n\
          */\n\
-            options = { modulePathList: options.modulePathList };\n\
+            options = { modulePathList: module.modulePathList };\n\
             if (local.env.npm_package_buildNpmdoc) {\n\
                 local.buildNpmdoc(options, onError);\n\
                 return;\n\
@@ -14938,6 +14984,7 @@ instruction\n\
         } else {
             module.exports = local;
             module.exports.__dirname = __dirname;
+            module.exports.module = module;
         }
         // init lib utility2
         local.utility2 = local.global.utility2_rollup || (local.modeJs === 'browser'

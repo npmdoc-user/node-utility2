@@ -771,7 +771,7 @@ local.assetsDict['/assets.test.template.js'] = '\
         /*\n\
          * this function will test buildApidoc\'s default handling-behavior-behavior\n\
          */\n\
-            options = { modulePathList: options.modulePathList };\n\
+            options = { modulePathList: module.modulePathList };\n\
             if (local.env.npm_package_buildNpmdoc) {\n\
                 local.buildNpmdoc(options, onError);\n\
                 return;\n\

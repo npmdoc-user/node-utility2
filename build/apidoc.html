@@ -2942,6 +2942,15 @@
         
         <li>
             
+            <a class="apidocElementLiA" href="#apidoc.element.utility2.github_crud.contentTouch">
+            function <span class="apidocSignatureSpan">utility2.github_crud.</span>contentTouch
+            <span class="apidocSignatureSpan">(options, onError)</span>
+            </a>
+            
+        </li>
+        
+        <li>
+            
             <a class="apidocElementLiA" href="#apidoc.element.utility2.github_crud.httpRequest">
             function <span class="apidocSignatureSpan">utility2.github_crud.</span>httpRequest
             <span class="apidocSignatureSpan">(options, onError)</span>
@@ -3000,6 +3009,12 @@
         <li>
             
             <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">utility2.github_crud.</span>local</span>
+            
+        </li>
+        
+        <li>
+            
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">utility2.github_crud.</span>module</span>
             
         </li>
         
@@ -4321,6 +4336,12 @@
         <li>
             
             <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">utility2.jslint.</span>local</span>
+            
+        </li>
+        
+        <li>
+            
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">utility2.jslint.</span>module</span>
             
         </li>
         
@@ -7429,7 +7450,7 @@ case &#x27;application/x-www-form-urlencoded&#x27;:
     <li>example usage<pre class="apidocCodePre">...
  * this function will test buildApidoc\&#x27;s default handling-behavior-behavior\n\
  */\n\
-    options = { modulePathList: options.modulePathList };\n\
+    options = { modulePathList: module.modulePathList };\n\
     if (local.env.npm_package_buildNpmdoc) {\n\
         local.buildNpmdoc(options, onError);\n\
         return;\n\
@@ -7689,7 +7710,7 @@ local.testCase_buildReadme_default = local.testCase_buildReadme_default || funct
 /*\n\
  * this function will test buildApidoc\&#x27;s default handling-behavior-behavior\n\
  */\n\
-    options = { modulePathList: options.modulePathList };\n\
+    options = { modulePathList: module.modulePathList };\n\
     if (local.env.npm_package_buildNpmdoc) {\n\
         local.<span class="apidocCodeKeywordSpan">buildNpmdoc</span>(options, onError);\n\
         return;\n\
@@ -18657,6 +18678,67 @@ nNext);
     
     
     <h2>
+        <a href="#apidoc.element.utility2.github_crud.contentTouch" id="apidoc.element.utility2.github_crud.contentTouch">
+        function <span class="apidocSignatureSpan">utility2.github_crud.</span>contentTouch
+        <span class="apidocSignatureSpan">(options, onError)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">contentTouch = function (options, onError) {
+<span class="apidocCodeCommentSpan">/*
+ * this function will touch options.url
+ * https://developer.github.com/v3/repos/contents/#update-a-file
+ */
+</span>    options = {
+        message: options.message,
+        modeErrorIgnore: true,
+        url: options.url
+    };
+    local.onNext(options, function (error, data) {
+        switch (options.modeNext) {
+        case 1:
+            // get sha
+            local.contentRequest({ method: &#x27;GET&#x27;, url: options.url }, options.onNext);
+            break;
+        case 2:
+            // put file with sha
+            local.contentRequest({
+                content: new Buffer(data.content || &#x27;&#x27;, &#x27;base64&#x27;),
+                message: options.message,
+                method: &#x27;PUT&#x27;,
+                sha: data.sha,
+                url: options.url
+            }, options.onNext);
+            break;
+        default:
+            onError(error);
+        }
+    });
+    options.modeNext = 0;
+    options.onNext();
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+    }, function (error) {
+        // validate no error occurred
+        console.assert(!error, error);
+    });
+    break;
+// touch
+case &#x27;touch&#x27;:
+    local.<span class="apidocCodeKeywordSpan">contentTouch</span>({
+        message: process.argv[4],
+        url: process.argv[3]
+    }, function (error) {
+        // validate no error occurred
+        console.assert(!error, error);
+    });
+    break;
+...</pre></li>
+    </ul>
+    
+    
+    
+    <h2>
         <a href="#apidoc.element.utility2.github_crud.httpRequest" id="apidoc.element.utility2.github_crud.httpRequest">
         function <span class="apidocSignatureSpan">utility2.github_crud.</span>httpRequest
         <span class="apidocSignatureSpan">(options, onError)</span>
@@ -18939,6 +19021,8 @@ local.dbCrudRemoveAll = function (onError) {
     });
 ...</pre></li>
     </ul>
+    
+    
     
     
     
@@ -22648,6 +22732,8 @@ t.line||e.column-t.column})}}</pre></li>
         .filter(function (error) {
 ...</pre></li>
     </ul>
+    
+    
     
     
     
