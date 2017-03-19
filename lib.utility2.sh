@@ -72,7 +72,7 @@ shBaseInstall() {
 # curl https://raw.githubusercontent.com/kaizhu256/node-utility2/alpha/lib.utility2.sh > $HOME/lib.utility2.sh && . $HOME/lib.utility2.sh && shBaseInstall
     for FILE in .screenrc .vimrc lib.utility2.sh
     do
-        curl -s "https://raw.githubusercontent.com/kaizhu256/node-utility2/alpha/$FILE" > \
+        curl -Ls "https://raw.githubusercontent.com/kaizhu256/node-utility2/alpha/$FILE" > \
             "$HOME/$FILE" || return $?
     done
     # backup .bashrc
@@ -257,11 +257,12 @@ shBuildCi() {(set -e
         "[npmdoc build]")
             git add .
             shFilePackageJsonVersionIncrement
-            git commit -am "[npmdoc publish]"
+            git commit -am "[npmdoc publish]" || true
             shBuildScriptEval "githubPush" \
-                "git push git@github.com:$GITHUB_REPO.git HEAD:alpha"
+                "git push git@github.com:$GITHUB_REPO.git HEAD:alpha" || true
             ;;
         "[npmdoc publish]")
+            git add .
             shFilePackageJsonVersionIncrement
             git commit -am "$CI_COMMIT_MESSAGE" || true
             shBuildScriptEval "githubPush" \
@@ -547,7 +548,7 @@ shDockerCopyFromImage() {(set -e
 shDockerInstall() {(set -e
 # this function will install docker
     mkdir -p $HOME/docker
-    curl -sSL https://get.docker.com/ | /bin/sh
+    curl -LSs https://get.docker.com/ | /bin/sh
     # test docker
     docker run hello-world
 )}
@@ -1026,7 +1027,8 @@ console.assert(JSON.stringify(aa) === JSON.stringify(bb));\n\
 
 shFilePackageJsonVersionIncrement() {(set -e
 # this function will increment the package.json version before npm publish
-VERSION="$(npm info "" version 2>/dev/null)" || true
+VERSION="${VERSION:-$1}"
+VERSION="${VERSION:-$(npm info "" version 2>/dev/null)}" || true
 VERSION="${VERSION:-0.0.0}"
     node -e "
 // <script>
@@ -1054,7 +1056,7 @@ local.versionList = [
     });
 });
 if (local.versionList[0] < local.versionList[1]) {
-    console.log(local.versionList[1]);
+    console.log(local.versionList[1].replace((/ +/g), ''));
     process.exit();
 }
 local.versionList[0] = local.versionList[0].split('.').map(Number);
@@ -1158,7 +1160,7 @@ shGitSquashShift() {(set -e
     git checkout "$BRANCH"
 )}
 
-shGithubRepoBaseCreate() {(
+shGithubRepoBaseCreate() {(# set -e
 # this function will create the base github-repo https://github.com/$REPO.git
     if [ ! "$GITHUB_TOKEN" ]
     then
@@ -1178,6 +1180,7 @@ shGithubRepoBaseCreate() {(
     if [ ! -d /tmp/githubRepoBase.git ]
     then
         git clone https://github.com/kaizhu256/base.git /tmp/githubRepoBase.git
+        cd /tmp/githubRepoBase.git
         git checkout -b alpha origin/alpha
         git checkout -b beta origin/beta
         git checkout -b gh-pages origin/gh-pages
@@ -1193,12 +1196,6 @@ shGithubRepoBaseCreate() {(
     git push "https://github.com/$REPO.git" alpha
     # push all branches
     git push --all "https://github.com/$REPO.git"
-)}
-
-shGithubRepoNpmdocCreate() {(
-# this function will create the github-repo npmdoc/node-npmdoc-$NAME
-    NAME="$1"
-    shGithubRepoCreate "npmdoc/node-npmdoc-$NAME" npmdoc
 )}
 
 shGrep() {(set -e
@@ -1626,8 +1623,6 @@ shMain() {
         [ "$COMMAND" = -e ] ||
         [ "$COMMAND" = -i ] ||
         [ "$COMMAND" = ajax ] ||
-        [ "$COMMAND" = ajaxOnParallel ] ||
-        [ "$COMMAND" = ajaxOnSeries ] ||
         [ "$COMMAND" = browserTest ]
     then
         shInitNpmConfigDirUtility2
@@ -1963,50 +1958,45 @@ shNpmTestPublishedList() {(set -e
     done
 )}
 
-shNpmdocRepoCreateAndPush() {(set -e
+shNpmdocRepoListCreate() {(set -e
 # this function will create and push the npmdoc-repo npmdoc/node-npmdoc-$LIST[ii]
 # https://docs.travis-ci.com/api
     LIST="$1"
+    LIST2=""
     for NAME in $LIST
     do
-        shNpmdocRepoGithubBaseCreate "$NAME"
+        LIST2="$LIST2 npmdoc/node-npmdoc-$NAME"
     done
+    # init $TRAVIS_REPO
+    shTravisRepoListCreate "$LIST2" npmdoc
     sleep 5
-    # sync travis
-    curl -H "Authorization: token $TRAVIS_TOKEN" -X POST -s \
-        "https://api.travis-ci.org/users/sync" || true
-    printf "\n"
-    sleep 5
+    # init travis-monthly-cron
     for NAME in $LIST
     do
-        shNpmdocRepoTravisInit "$NAME"
-    done
-    for NAME in $LIST
-    do
-        shNpmdocRepoGithubCreate "$NAME"
-    done
-)}
-
-shNpmdocRepoGithubBaseCreate() {(set -e
-# this function will create the base github-repo npmdoc/node-npmdoc-$NAME
-    NAME="$1"
-    shGithubRepoBaseCreate "npmdoc/node-npmdoc-$NAME" npmdoc
-)}
-
-shNpmdocRepoGithubCreate() {(set -e
-# this function will create and push the github-repo npmdoc/node-npmdoc-$NAME
-# https://docs.travis-ci.com/api
-    NAME="$1"
-    GITHUB_REPO="npmdoc/node-npmdoc-$NAME"
-    TRAVIS_REPO_ID="$(node -e \
-        "console.log($(curl -s https://api.travis-ci.org/repos/$GITHUB_REPO).id);")"
-    # build and push initial repo to npmdoc/node-npmdoc-$NAME#alpha
-    # init /tmp/node-npmdoc-$NAME
-    rm -fr /tmp/node-npmdoc-$NAME /tmp/node_modules
-    mkdir -p /tmp/node-npmdoc-$NAME
-    cd /tmp/node-npmdoc-$NAME
-    # init package.json
-    printf "{
+        GITHUB_REPO="npmdoc/node-npmdoc-$NAME"
+        if [ ! "$TRAVIS_REPO_CREATE_FORCE" ] && (curl -Lf \
+            "https://raw.githubusercontent.com/$GITHUB_REPO/alpha/test.js" \
+            > /dev/null 2>&1)
+        then
+            continue
+        fi
+        TRAVIS_REPO_ID="$(shTravisRepoIdGet $GITHUB_REPO)"
+        # init travis-cron monthly
+        curl -H "Travis-API-Version: 3" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token $TRAVIS_TOKEN" \
+            -X POST \
+            -d '{"dont_run_if_recent_build_exists":true,"interval":"monthly"}' \
+            -s \
+            "https://api.travis-ci.org/repo/$TRAVIS_REPO_ID/branch/alpha/cron"
+        printf "\n"
+        # build and push initial repo to npmdoc/node-npmdoc-$NAME#alpha
+        # init /tmp/node-npmdoc-$NAME
+        rm -fr /tmp/node-npmdoc-$NAME /tmp/node_modules
+        mkdir -p /tmp/node-npmdoc-$NAME
+        cd /tmp/node-npmdoc-$NAME
+        # init package.json
+        printf "{
     \"buildNpmdoc\":\"$NAME\",
     \"name\":\"npmdoc-$NAME\",
     \"repository\": {
@@ -2014,54 +2004,19 @@ shNpmdocRepoGithubCreate() {(set -e
         \"url\": \"https://github.com/$GITHUB_REPO.git\"
     }
 }\n" > package.json
-    shBuildApp
-    (eval shBuildNpmdoc "$NAME") || true
-    # update .travis.yml
-    shTravisEncryptYml "$AES_DECRYPTED_SH"
-    # init git
-    cp -a /tmp/githubRepoBase.git/.git .
-    git checkout alpha
-    git add .
-    git add -f .gitignore .travis.yml
-    # git commit and push
-    git commit -am "[npmdoc build]"
-    git push -f "https://github.com/$GITHUB_REPO.git" alpha
-)}
-
-shNpmdocRepoTravisInit() {(set -e
-# this function will init travis-repo npmdoc/node-npmdoc-$NAME
-# https://docs.travis-ci.com/api
-    NAME="$1"
-    GITHUB_REPO="npmdoc/node-npmdoc-$NAME"
-    TRAVIS_REPO_ID="$(node -e \
-        "console.log($(curl -s https://api.travis-ci.org/repos/$GITHUB_REPO).id);")"
-    # init travis-hook
-    curl -H "Authorization: token $TRAVIS_TOKEN" \
-        -H "Content-Type: application/json; charset=UTF-8" \
-        -X PUT \
-        -d '{"hook":{"active":true}}' \
-        -s \
-        "https://api.travis-ci.org/hooks/$TRAVIS_REPO_ID"
-    printf "\n"
-    # init travis-settings
-    curl -H "Travis-API-Version: 3" \
-        -H "Content-Type: application/json; charset=UTF-8" \
-        -H "Authorization: token $TRAVIS_TOKEN" \
-        -X PATCH \
-        -d '{"builds_only_with_travis_yml":true}' \
-        -s \
-        "https://api.travis-ci.org/repo/$TRAVIS_REPO_ID/settings"
-    printf "\n"
-    # init travis-monthly-cron
-    curl \
-        -H "Travis-API-Version: 3" \
-        -H "Content-Type: application/json" \
-        -H "Authorization: token $TRAVIS_TOKEN" \
-        -X POST \
-        -d '{"dont_run_if_recent_build_exists":true,"interval":"monthly"}' \
-        -s \
-        "https://api.travis-ci.org/repo/$TRAVIS_REPO_ID/branch/alpha/cron"
-    printf "\n"
+        shBuildApp
+        (eval shBuildNpmdoc "$NAME") || true
+        # update .travis.yml
+        shTravisEncryptYml "$AES_DECRYPTED_SH"
+        # init git
+        cp -a /tmp/githubRepoBase.git/.git .
+        git checkout alpha
+        git add .
+        git add -f .gitignore .travis.yml
+        # git commit and push
+        git commit -am "[npmdoc build]"
+        git push -f "https://github.com/$GITHUB_REPO.git" alpha
+    done
 )}
 
 shPasswordEnvUnset() {
@@ -2455,11 +2410,6 @@ shTravisCronAlphaDelete() {(set -e
 
 shTravisCronAlphaIdGet() {(set -e
 # this function will get the alpha-branch cron-id for the travis-repo $1
-    if [ "$_TRAVIS_CRON_ALPHA_ID" ]
-    then
-        printf "$_TRAVIS_CRON_ALPHA_ID\n"
-        return
-    fi
     node -e "console.log($(curl -H \"Authorization: token $TRAVIS_TOKEN\" \
         -H "Travis-API-Version: 3" \
         -s \
@@ -2529,14 +2479,57 @@ shTravisEncryptYml() {(set -e
     rm -f .travis.ymln
 )}
 
+shTravisRepoListCreate() {(set -e
+# this function will create the travis-repo $LIST[ii]
+# https://docs.travis-ci.com/api
+    LIST="$1"
+    ORG="$2"
+    # init $GITHUB_REPO
+    for GITHUB_REPO in $LIST
+    do
+        TRAVIS_REPO_ID="$(shTravisRepoIdGet $GITHUB_REPO)"
+        if [ ! "$TRAVIS_REPO_CREATE_FORCE" ] && [ "$TRAVIS_REPO_ID" ]
+        then
+            continue
+        fi
+        (eval shGithubRepoBaseCreate "$GITHUB_REPO" "$ORG") || true
+    done
+    sleep 5
+    # sync travis
+    printf "syncing travis ...\n"
+    curl -H "Authorization: token $TRAVIS_TOKEN" -X POST -s \
+        "https://api.travis-ci.org/users/sync" || true
+    printf "\n"
+    sleep 10
+    printf "... synced travis\n"
+    # init $TRAVIS_REPO
+    for GITHUB_REPO in $LIST
+    do
+        TRAVIS_REPO_ID="$(shTravisRepoIdGet $GITHUB_REPO)"
+        # init travis-hook
+        curl -H "Authorization: token $TRAVIS_TOKEN" \
+            -H "Content-Type: application/json; charset=UTF-8" \
+            -X PUT \
+            -d '{"hook":{"active":true}}' \
+            -s \
+            "https://api.travis-ci.org/hooks/$TRAVIS_REPO_ID" &
+        # init travis-settings
+        curl -H "Travis-API-Version: 3" \
+            -H "Content-Type: application/json; charset=UTF-8" \
+            -H "Authorization: token $TRAVIS_TOKEN" \
+            -X PATCH \
+            -d '{"user_setting.value":true}' \
+            -s \
+            "https://api.travis-ci.org"\
+"/repo/$TRAVIS_REPO_ID/setting/builds_only_with_travis_yml" &
+    done
+)}
+
 shTravisRepoIdGet() {(set -e
 # this function will get the id for the travis-repo $1
-    if [ "$_TRAVIS_REPO_ID" ]
-    then
-        printf "$_TRAVIS_REPO_ID\n"
-        return
-    fi
-    node -e "console.log($(curl -s https://api.travis-ci.org/repos/$1).id || '');"
+    printf "\$ shTravisRepoIdGet $1\n" 1>&2
+    node -e "console.log($(curl -s https://api.travis-ci.org/repos/$1).id || '');" 2>/dev/null \
+        || true
 )}
 
 shTravisRepoListGet() {(set -e

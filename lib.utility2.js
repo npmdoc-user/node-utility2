@@ -404,7 +404,8 @@ local.assetsDict['/assets.index.template.html'].replace((/\n/g), '\\n\\\n') +
             local.assetsDict[\'/assets.example.js\'] ||\n\
             local.fs.readFileSync(__filename, \'utf8\');\n\
         local.assetsDict[\'/assets.jslint.rollup.js\'] =\n\
-            local.assetsDict[\'/assets.jslint.rollup.js\'] || local.fs.readFileSync(\n\
+            local.assetsDict[\'/assets.jslint.rollup.js\'] ||\n\
+            local.fs.readFileSync(\n\
                 local.jslint.__dirname + \'/lib.jslint.js\',\n\
                 \'utf8\'\n\
             ).replace((/^#!/), \'//\');\n\
@@ -1789,51 +1790,6 @@ local.assetsDict['/favicon.ico'] = '';
                 xhr.send(local.bufferToNodeBuffer(xhr.data));
             }
             return xhr;
-        };
-
-        local.ajaxOnParallel = function (optionsList, onError) {
-        /*
-         * this function will send multiple ajax-requests in parallel,
-         * with error-handling and timeout
-         */
-            var done, onParallel, xhrList;
-            onParallel = local.onParallel(function (error, data) {
-                if (done) {
-                    return;
-                }
-                done = true;
-                if (error) {
-                    xhrList.forEach(function (xhr) {
-                        xhr.abort();
-                    });
-                }
-                onError(error, data);
-            });
-            onParallel.counter += 1;
-            xhrList = [];
-            optionsList.forEach(function (options) {
-                onParallel.counter += 1;
-                xhrList.push(local.ajax(options, onParallel));
-            });
-            onParallel();
-        };
-
-        local.ajaxOnSeries = function (optionsList, onError) {
-        /*
-         * this function will send multiple ajax-requests in series,
-         * with error-handling and timeout
-         */
-            var options;
-            options = {};
-            local.onNext(options, function (error, data) {
-                if (options.modeNext < optionsList.length) {
-                    local.ajax(optionsList[options.modeNext], options.onNext);
-                    return;
-                }
-                onError(error, data);
-            });
-            options.modeNext = -1;
-            options.onNext();
         };
 
         local.ajaxProgressUpdate = function () {
@@ -5676,16 +5632,6 @@ instruction\n\
             break;
         case 'ajax':
             local.ajax(JSON.parse(process.argv[3]), function (error, data) {
-                // validate no error occurred
-                local.assert(!error, error);
-                process.stdout.write(new Buffer((data && data.response) || ''));
-            });
-            return;
-        case 'ajaxOnParallel':
-            local.ajaxOnParallel(JSON.parse(process.argv[3]), local.onErrorThrow);
-            return;
-        case 'ajaxOnSeries':
-            local.ajaxOnSeries(JSON.parse(process.argv[3]), function (error, data) {
                 // validate no error occurred
                 local.assert(!error, error);
                 process.stdout.write(new Buffer((data && data.response) || ''));

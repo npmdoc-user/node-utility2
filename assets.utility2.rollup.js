@@ -350,6 +350,7 @@ local.templateApidocHtml = '\
         {{/if env.npm_package_homepage}}\n\
     >{{env.npm_package_name}} (v{{env.npm_package_version}})</a>\n\
 </h1>\n\
+<h4>{{env.npm_package_description}}</h4>\n\
 <div class="apidocSectionDiv"><a\n\
     href="#apidoc.tableOfContents"\n\
     id="apidoc.tableOfContents"\n\
@@ -405,6 +406,11 @@ local.templateApidocMd = '\
 {{#unless env.npm_package_homepage}} \
 {{env.npm_package_name}} (v{{env.npm_package_version}}) \
 {{/if env.npm_package_homepage}} \
+\n\
+\n\
+\n\
+\n\
+#### {{env.npm_package_description}} \
 \n\
 \n\
 \n\
@@ -574,6 +580,7 @@ local.templateApidocMd = '\
                 packageJson: JSON.parse(readExample('package.json'))
             });
             local.objectSetDefault(options, { env: {
+                npm_package_description: options.packageJson.description,
                 npm_package_homepage: options.packageJson.homepage,
                 npm_package_name: options.packageJson.name,
                 npm_package_version: options.packageJson.version
@@ -2589,7 +2596,7 @@ local.templateApidocMd = '\
          * https://developer.github.com/v3/repos/contents/#delete-a-file
          */
             var onParallel;
-            options = { url: options.url };
+            options = { message: options.message, url: options.url };
             local.onNext(options, function (error, data) {
                 switch (options.modeNext) {
                 case 1:
@@ -2600,6 +2607,7 @@ local.templateApidocMd = '\
                     // delete file with sha
                     if (!error && data.sha) {
                         local.contentRequest({
+                            message: options.message,
                             method: 'DELETE',
                             sha: data.sha,
                             url: options.url
@@ -2612,7 +2620,10 @@ local.templateApidocMd = '\
                     data.forEach(function (element) {
                         onParallel.counter += 1;
                         // recurse
-                        local.contentDelete({ url: element.url }, onParallel);
+                        local.contentDelete({
+                            message: options.message,
+                            url: element.url
+                        }, onParallel);
                     });
                     onParallel();
                     break;
@@ -2651,7 +2662,12 @@ local.templateApidocMd = '\
          * this function will put options.content into the github file
          * https://developer.github.com/v3/repos/contents/#update-a-file
          */
-            options = { content: options.content, modeErrorIgnore: true, url: options.url };
+            options = {
+                content: options.content,
+                message: options.message,
+                modeErrorIgnore: true,
+                url: options.url
+            };
             local.onNext(options, function (error, data) {
                 switch (options.modeNext) {
                 case 1:
@@ -2662,6 +2678,7 @@ local.templateApidocMd = '\
                     // put file with sha
                     local.contentRequest({
                         content: options.content,
+                        message: options.message,
                         method: 'PUT',
                         sha: data.sha,
                         url: options.url
@@ -2680,7 +2697,7 @@ local.templateApidocMd = '\
          * this function will put options.file into the github file
          * https://developer.github.com/v3/repos/contents/#update-a-file
          */
-            options = { file: options.file, url: options.url };
+            options = { file: options.file, message: options.message, url: options.url };
             local.onNext(options, function (error, data) {
                 switch (options.modeNext) {
                 case 1:
@@ -2703,6 +2720,7 @@ local.templateApidocMd = '\
                 case 2:
                     local.contentPut({
                         content: data,
+                        message: options.message,
                         // resolve file in url
                         url: (/\/$/).test(options.url)
                             ? options.url + local.path.basename(options.file)
@@ -2731,6 +2749,7 @@ local.templateApidocMd = '\
                     // bug-workaround - github api requires user-agent header
                     'User-Agent': 'undefined'
                 },
+                message: options.message,
                 method: options.method,
                 responseJson: {},
                 sha: options.sha,
@@ -2771,7 +2790,8 @@ local.templateApidocMd = '\
                 return;
             }
             if (options.method !== 'GET') {
-                options.message = '[skip ci] ' + options.method + ' file ' + options.url
+                options.message = options.message ||
+                    '[ci skip] ' + options.method + ' file ' + options.url
                     .replace((/\?.*/), '');
                 options.url += '&message=' + encodeURIComponent(options.message);
                 if (options.sha) {
@@ -2811,7 +2831,10 @@ local.templateApidocMd = '\
         switch (String(process.argv[2]).toLowerCase()) {
         // delete file
         case 'delete':
-            local.contentDelete({ url: process.argv[3] }, function (error) {
+            local.contentDelete({
+                message: process.argv[4],
+                url: process.argv[3]
+            }, function (error) {
                 // validate no error occurred
                 console.assert(!error, error);
             });
@@ -2830,6 +2853,7 @@ local.templateApidocMd = '\
         // put file
         case 'put':
             local.contentPutFile({
+                message: process.argv[5],
                 url: process.argv[3],
                 file: process.argv[4]
             }, function (error) {
@@ -9573,7 +9597,8 @@ local.assetsDict['/assets.index.template.html'].replace((/\n/g), '\\n\\\n') +
             local.assetsDict[\'/assets.example.js\'] ||\n\
             local.fs.readFileSync(__filename, \'utf8\');\n\
         local.assetsDict[\'/assets.jslint.rollup.js\'] =\n\
-            local.assetsDict[\'/assets.jslint.rollup.js\'] || local.fs.readFileSync(\n\
+            local.assetsDict[\'/assets.jslint.rollup.js\'] ||\n\
+            local.fs.readFileSync(\n\
                 local.jslint.__dirname + \'/lib.jslint.js\',\n\
                 \'utf8\'\n\
             ).replace((/^#!/), \'//\');\n\
@@ -10958,51 +10983,6 @@ local.assetsDict['/favicon.ico'] = '';
                 xhr.send(local.bufferToNodeBuffer(xhr.data));
             }
             return xhr;
-        };
-
-        local.ajaxOnParallel = function (optionsList, onError) {
-        /*
-         * this function will send multiple ajax-requests in parallel,
-         * with error-handling and timeout
-         */
-            var done, onParallel, xhrList;
-            onParallel = local.onParallel(function (error, data) {
-                if (done) {
-                    return;
-                }
-                done = true;
-                if (error) {
-                    xhrList.forEach(function (xhr) {
-                        xhr.abort();
-                    });
-                }
-                onError(error, data);
-            });
-            onParallel.counter += 1;
-            xhrList = [];
-            optionsList.forEach(function (options) {
-                onParallel.counter += 1;
-                xhrList.push(local.ajax(options, onParallel));
-            });
-            onParallel();
-        };
-
-        local.ajaxOnSeries = function (optionsList, onError) {
-        /*
-         * this function will send multiple ajax-requests in series,
-         * with error-handling and timeout
-         */
-            var options;
-            options = {};
-            local.onNext(options, function (error, data) {
-                if (options.modeNext < optionsList.length) {
-                    local.ajax(optionsList[options.modeNext], options.onNext);
-                    return;
-                }
-                onError(error, data);
-            });
-            options.modeNext = -1;
-            options.onNext();
         };
 
         local.ajaxProgressUpdate = function () {
@@ -14845,16 +14825,6 @@ instruction\n\
             break;
         case 'ajax':
             local.ajax(JSON.parse(process.argv[3]), function (error, data) {
-                // validate no error occurred
-                local.assert(!error, error);
-                process.stdout.write(new Buffer((data && data.response) || ''));
-            });
-            return;
-        case 'ajaxOnParallel':
-            local.ajaxOnParallel(JSON.parse(process.argv[3]), local.onErrorThrow);
-            return;
-        case 'ajaxOnSeries':
-            local.ajaxOnSeries(JSON.parse(process.argv[3]), function (error, data) {
                 // validate no error occurred
                 local.assert(!error, error);
                 process.stdout.write(new Buffer((data && data.response) || ''));

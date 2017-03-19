@@ -29,11 +29,7 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 
 #### todo
 - npm publish 2017.3.18
-- add function ajaxParallel and ajaxSeries
-- split npmdoc to travis
-- add curl check for npmdoc
-- add description to npmdoc
-- travis disable concurrent build
+- add sensitive data-scrubber in function moduleDirname
 - fix npmdoc on npmdoc
 - add package-listing to npmdoc
 - use remote credentials
@@ -46,8 +42,10 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 - none
 
 #### change since d1a00ec8
-- add functions ajaxOnParallel and ajaxOnSeries
-- add shell-function shNpmdocRepoCreateAndPush to automate creation of npmdoc's
+- add env var TRAVIS_REPO_CREATE_FORCE to force re-creation of npmdoc
+- add optional commit-message for PUT and DELETE requests in github-crud
+- add package-description to apidoc
+- add shell-function shNpmdocRepoListCreate to automate creation of npmdoc's
 - merge function local.runIfTrue -> local.nop
 - shBuildPrint message for deprecate and publish operations
 - none
@@ -597,7 +595,8 @@ utility2-comment -->\n\
             local.assetsDict['/assets.example.js'] ||
             local.fs.readFileSync(__filename, 'utf8');
         local.assetsDict['/assets.utility2.rollup.js'] =
-            local.assetsDict['/assets.utility2.rollup.js'] || local.fs.readFileSync(
+            local.assetsDict['/assets.utility2.rollup.js'] ||
+            local.fs.readFileSync(
                 local.utility2.__dirname + '/lib.utility2.js',
                 'utf8'
             ).replace((/^#!/), '//');
