@@ -28,7 +28,13 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 [![apidoc](https://kaizhu256.github.io/node-utility2/build/screen-capture.buildApidoc.browser._2Fhome_2Ftravis_2Fbuild_2Fkaizhu256_2Fnode-utility2_2Ftmp_2Fbuild_2Fapidoc.html.png)](https://kaizhu256.github.io/node-utility2/build..beta..travis-ci.org/apidoc.html)
 
 #### todo
-- replace shell-function shGitRemoteRepoCreate -> shGithubRepoCreate
+- npm publish 2017.3.18
+- add function ajaxParallel and ajaxSeries
+- split npmdoc to travis
+- add curl check for npmdoc
+- add description to npmdoc
+- travis disable concurrent build
+- fix npmdoc on npmdoc
 - add package-listing to npmdoc
 - use remote credentials
 - use github oauth - https://stackoverflow.com/questions/18027115/committing-via-travis-ci-failing
@@ -39,11 +45,11 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 - analytics
 - none
 
-#### change since ba418372
-- npm publish 2017.3.17
-- fix quickstart demo for example.js
-- allow auto-deprecating of aliases in publish branch
-- allow auto-publishing of aliases in publish branch
+#### change since d1a00ec8
+- add functions ajaxOnParallel and ajaxOnSeries
+- add shell-function shNpmdocRepoCreateAndPush to automate creation of npmdoc's
+- merge function local.runIfTrue -> local.nop
+- shBuildPrint message for deprecate and publish operations
 - none
 
 #### this package requires
@@ -229,7 +235,7 @@ instruction
     case 'node':
         local.testCase_webpage_default = function (options, onError) {
         /*
-         * this function will test the webpage's default handling-behavior
+         * this function will test webpage's default handling-behavior
          */
             options = { modeCoverageMerge: true, url: local.serverLocalHost + '?modeTest=1' };
             local.browserTest(options, onError);
@@ -680,7 +686,6 @@ utility2-comment -->\n\
     "main": "lib.utility2.js",
     "name": "utility2",
     "nameAlias": "utility2",
-    "nameAliasDeprecate": "busybox2 busyweb",
     "nameAliasPublish": "busybox test-lite",
     "nameOriginal": "utility2",
     "os": [
@@ -700,7 +705,7 @@ utility2-comment -->\n\
         "start": "(set -e; export PORT=${PORT:-8080}; if [ -f assets.app.js ]; then node assets.app.js; exit; fi; export npm_config_mode_auto_restart=1; ./lib.utility2.sh shRun shIstanbulCover test.js)",
         "test": "(set -e; export PORT=$(./lib.utility2.sh shServerPortRandom); export PORT_REPL=$(./lib.utility2.sh shServerPortRandom); export npm_config_mode_auto_restart=1; ./lib.utility2.sh test test.js)"
     },
-    "version": "2017.3.17"
+    "version": "2017.3.18"
 }
 ```
 

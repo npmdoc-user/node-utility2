@@ -523,7 +523,9 @@ local.templateApidocMd = '\
                 return text;
             };
             // init options
+            console.error('apidocCreate - normalizing dir ' + options.dir);
             options.dir = local.moduleDirname(options.dir);
+            console.error('apidocCreate - normalized dir ' + options.dir);
             local.objectSetDefault(options, {
                 packageJson: JSON.parse(readExample('package.json'))
             });

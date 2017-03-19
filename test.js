@@ -1099,16 +1099,6 @@
             });
         };
 
-        local.testCase_runIfTrue_default = function (options, onError) {
-        /*
-         * this function will test runIfTrue's default handling-behavior
-         */
-            options = null;
-            local.runIfTrue(options, onError);
-            options = true;
-            local.runIfTrue(options, onError);
-        };
-
         local.testCase_sjclHashScryptXxx_default = function (options, onError) {
         /*
          * this function will test sjclHashScryptXxx's default handling-behavior
@@ -1600,8 +1590,8 @@
             options.customize = function () {
                 // search-and-replace - customize dataTo
                 [
-                    // customize js-env code
-                    (/[\S\s]*?run shared js-env code - pre-function/)
+                    // customize js\-env code
+                    (/[\S\s]*?run shared js\-env code - pre-function/)
                 ].forEach(function (rgx) {
                     options.dataFrom.replace(rgx, function (match0) {
                         options.dataTo = options.dataTo.replace(rgx, match0);
@@ -1665,9 +1655,10 @@
             options.customize = function () {
                 // search-and-replace - customize dataTo
                 [
-                    // customize js-env code
-                    (/\n {4}\/\/ run browser js-env code - post-init\n[\S\s]*?\n {8}break;\n/),
-                    (/\n {4}\/\/ run node js-env code - post-init\n[\S\s]*?\n {8}break;\n/)
+                    // customize js\-env code
+                    (/\n {4}\/\/ run shared js\-env code - pre-init\n[\S\s]*?\n {4}\}\(\)\);/),
+                    (/\n {4}\/\/ run browser js\-env code - post-init\n[\S\s]*?\n {8}break;\n/),
+                    (/\n {4}\/\/ run node js\-env code - post-init\n[\S\s]*?\n {8}break;\n/)
                 ].forEach(function (rgx) {
                     options.dataFrom.replace(rgx, function (match0) {
                         options.dataTo = options.dataTo.replace(rgx, match0);
@@ -2034,7 +2025,7 @@
 
         local.testCase_webpage_error = function (options, onError) {
         /*
-         * this function will test the webpage's error handling-behavior
+         * this function will test webpage's error handling-behavior
          */
             options = {
                 modeCoverageMerge: true,
