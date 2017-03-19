@@ -1709,35 +1709,37 @@ shModuleDirname() {(set -e
 'use strict';
 var local;
 local = {};
-local.moduleDirname = function (module) {
+local.moduleDirname = function (module, modulePathList) {
 /*
- * this function will return the __dirname of the module
+ * this function will search modulePathList for the module's __dirname
  */
-    var result;
+    var ii, result;
+    // search builtin
+    if (Object.keys(process.binding('natives')).indexOf(module) >= 0) {
+        return module;
+    }
+    // search process.cwd()
     if (!module || module.indexOf('/') >= 0 || module === '.') {
         return require('path').resolve(process.cwd(), module || '');
     }
-    try {
-        require(process.cwd() + '/node_modules/' + module);
-    } catch (errorCaught) {
+    // search modulePathList
+    modulePathList = modulePathList.concat(require('module').globalPaths);
+    for (ii = 0; ii < modulePathList.length; ii += 1) {
         try {
-            require(module);
+            result = require('path').resolve(
+                process.cwd(),
+                modulePathList[ii] + '/' + module
+            );
+            if (require('fs').statSync(result).isDirectory()) {
+                return result;
+            }
         } catch (ignore) {
         }
     }
-    [
-        new RegExp('(.*?/' + module + ')\\b'),
-        new RegExp('(.*?/' + module + ')/[^/].*?$')
-    ].some(function (rgx) {
-        return Object.keys(require.cache).some(function (key) {
-            result = rgx.exec(key);
-            result = result && result[1];
-            return result;
-        });
-    });
-    return result || '';
+    // search default
+    return '';
 };
-console.log(local.moduleDirname('$MODULE'));
+console.log(local.moduleDirname('$MODULE', module.paths));
 // </script>
     "
 )}
