@@ -886,6 +886,7 @@ local.templateApidocMd = '\
         } else {
             module.exports = local;
             module.exports.__dirname = __dirname;
+            module.exports.module = module;
         }
     }());
 
@@ -8539,6 +8540,7 @@ sjcl.misc.scrypt.blockxor = function(S, Si, D, Di, len) {
         } else {
             module.exports = local;
             module.exports.__dirname = __dirname;
+            module.exports.module = module;
         }
     }());
 
@@ -9241,6 +9243,7 @@ split_lines=split_lines,exports.MAP=MAP,exports.ast_squeeze_more=require("./sque
         } else {
             module.exports = local;
             module.exports.__dirname = __dirname;
+            module.exports.module = module;
         }
     }());
 
@@ -9680,6 +9683,7 @@ local.assetsDict['/assets.lib.template.js'] = '\
         } else {\n\
             module.exports = local;\n\
             module.exports.__dirname = __dirname;\n\
+            module.exports.module = module;\n\
         }\n\
     }());\n\
 }());\n\
@@ -11699,7 +11703,7 @@ return Utf8ArrayToStr(bff);
                 // customize body before istanbul
                 (/[\S\s]*?^\/\* istanbul instrument in package /m),
                 // customize body after init exports
-                (/\n {12}module.exports.__dirname = __dirname;\n[\S\s]*?$/)
+                (/\n {12}module.exports.module = module;\n[\S\s]*?$/)
             ].forEach(function (rgx) {
                 // handle large string-replace
                 options.dataFrom.replace(rgx, function (match0) {

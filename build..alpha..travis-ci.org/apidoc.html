@@ -1578,6 +1578,12 @@
         
         <li>
             
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">utility2.</span>module</span>
+            
+        </li>
+        
+        <li>
+            
             <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">utility2.</span>packageJsonNpmdocDefault</span>
             
         </li>
@@ -2577,6 +2583,12 @@
         <li>
             
             <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">utility2.db.</span>local</span>
+            
+        </li>
+        
+        <li>
+            
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">utility2.db.</span>module</span>
             
         </li>
         
@@ -5536,6 +5548,12 @@
         
         <li>
             
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">utility2.uglifyjs.</span>module</span>
+            
+        </li>
+        
+        <li>
+            
             <span class="apidocSignatureSpan">string <span class="apidocSignatureSpan">utility2.uglifyjs.</span>__dirname</span>
             
         </li>
@@ -7559,7 +7577,7 @@ local.testCase_buildLib_default = local.testCase_buildLib_default || function (\
         // customize body before istanbul
         (/[\S\s]*?^\/\* istanbul instrument in package /m),
         // customize body after init exports
-        (/\n {12}module.exports.__dirname = __dirname;\n[\S\s]*?$/)
+        (/\n {12}module.exports.module = module;\n[\S\s]*?$/)
     ].forEach(function (rgx) {
         // handle large string-replace
         options.dataFrom.replace(rgx, function (match0) {
@@ -13238,6 +13256,8 @@ switch (local.modeJs) {
     
     
     
+    
+    
 </div>
 
 <div class="apidocSectionDiv">
@@ -16984,6 +17004,8 @@ local._DbTable.prototype.crudCountAll = function (onError) {
     this._cleanup();
 ...</pre></li>
     </ul>
+    
+    
     
     
     
@@ -25801,6 +25823,8 @@ prototype.hasOwnProperty.call(e,t)}var jsp=require(&#x22;./parse-js&#x22;),curry
 break;
 ...</pre></li>
     </ul>
+    
+    
     
     
     
