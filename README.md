@@ -45,6 +45,7 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 - add github-crud command 'touch' to trigger github-hooks and add commit-messages without changing files
 - add commit-message-meta macro 'promote branch1 -> branch2'
 - add env var TRAVIS_REPO_CREATE_FORCE to force re-creation of npmdoc
+- add env var npm_package_buildNpmdocMain to customize npmdoc target
 - add optional commit-message for PUT and DELETE requests in github-crud
 - add package-description to apidoc
 - add shell-function shNpmdocRepoListCreate to automate creation of npmdoc's

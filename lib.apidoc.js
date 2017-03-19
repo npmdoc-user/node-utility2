@@ -566,7 +566,8 @@ local.templateApidocMd = '\
             ).map(readExample));
             // init moduleMain
             moduleMain = options.moduleDict[options.env.npm_package_name] =
-                options.moduleDict[options.env.npm_package_name] || require(options.dir);
+                options.moduleDict[options.env.npm_package_name] ||
+                require(options.dir + (process.env.npm_package_buildNpmdocMain || ''));
             // init circularList - builtin
             Object.keys(process.binding('natives')).forEach(function (key) {
                 if (!(/\/|_linklist|sys/).test(key)) {
