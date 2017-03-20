@@ -407,6 +407,7 @@ local.assetsDict['/assets.index.template.html'].replace((/\n/g), '\\n\\\n') +
         local.assetsDict[\'/assets.jslint.rollup.js\'] =\n\
             local.assetsDict[\'/assets.jslint.rollup.js\'] ||\n\
             local.fs.readFileSync(\n\
+                // npmdoc-hack\n\
                 local.jslint.__dirname +\n\
                     \'/lib.jslint.js\',\n\
                 \'utf8\'\n\
@@ -2567,12 +2568,35 @@ return Utf8ArrayToStr(bff);
             options = {};
             options.readme = local.apidocCreate({
                 dir: local.env.npm_package_buildNpmdoc,
-                header: (/\n\n[\S\s]*?\n\n\n\n/)
-                    .exec(local.assetsDict['/assets.readme.template.md'])[0]
-                    .trim()
-                    .replace((/kaizhu256/g), 'npmdoc')
-                    .replace((/\/jslint-lite/g), '\/' + local.env.npm_package_buildNpmdoc)
-                    .replace((/jslint-lite/g), local.env.npm_package_name),
+/* jslint-ignore-begin */
+header: '\
+# api-documentation for \
+{{#if env.npm_package_homepage}} \
+[{{env.npm_package_name}} (v{{env.npm_package_version}})]({{env.npm_package_homepage}}) \
+{{#unless env.npm_package_homepage}} \
+{{env.npm_package_name}} (v{{env.npm_package_version}}) \
+{{/if env.npm_package_homepage}} \
+\n\
+{{env.npm_package_description}} \
+\n\
+\n\
+[![NPM](https://nodei.co/npm/{{env.npm_package_name}}.png?downloads=true)](https://www.npmjs.com/package/{{env.npm_package_name}}) \
+\n\
+\n\
+\n\
+\n\
+# package.json \
+\n\
+\n\
+```json \
+\n\
+\n\
+{{packageJson jsonStringify4 markdownCodeSafe}} \
+\n\
+``` \
+\n\
+',
+/* jslint-ignore-end */
                 modulePathList: options.modulePathList,
                 template: local.apidoc.templateApidocMd
             });
@@ -4634,6 +4658,12 @@ instruction\n\
                         break;
                     case 'jsonStringify':
                         value = JSON.stringify(value);
+                        break;
+                    case 'jsonStringify4':
+                        value = JSON.stringify(value, null, 4);
+                        break;
+                    case 'markdownCodeSafe':
+                        value = value.replace((/`/g), "'");
                         break;
                     default:
                         value = value[arg]();

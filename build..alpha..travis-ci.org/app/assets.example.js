@@ -603,6 +603,7 @@ utility2-comment -->\n\
         local.assetsDict['/assets.utility2.rollup.js'] =
             local.assetsDict['/assets.utility2.rollup.js'] ||
             local.fs.readFileSync(
+                // npmdoc-hack
                 local.utility2.__dirname +
                     '/lib.utility2.js',
                 'utf8'

@@ -303,6 +303,12 @@ instruction
                     case 'jsonStringify':
                         value = JSON.stringify(value);
                         break;
+                    case 'jsonStringify4':
+                        value = JSON.stringify(value, null, 4);
+                        break;
+                    case 'markdownCodeSafe':
+                        value = value.replace((/`/g), "'");
+                        break;
                     default:
                         value = value[arg]();
                         break;
@@ -423,6 +429,9 @@ local.templateApidocHtml = '\
 ';
 
 local.templateApidocMd = '\
+{{#if header}} \
+{{header}} \
+{{#unless header}} \
 # api-documentation for \
 {{#if env.npm_package_homepage}} \
 [{{env.npm_package_name}} (v{{env.npm_package_version}})]({{env.npm_package_homepage}}) \
@@ -432,13 +441,7 @@ local.templateApidocMd = '\
 \n\
 {{env.npm_package_description}} \
 \n\
-\n\
-\n\
-\n\
-{{#if header}} \
-{{header}} \
 {{/if header}} \
-\n\
 \n\
 \n\
 \n\
@@ -473,7 +476,7 @@ local.templateApidocMd = '\
 \n\
 ```javascript \
 \n\
-{{source}} \
+{{source markdownCodeSafe}} \
 \n\
 ``` \
 \n\
@@ -481,7 +484,7 @@ local.templateApidocMd = '\
 \n\
 ```shell \
 \n\
-{{example}} \
+{{example markdownCodeSafe}} \
 \n\
 ``` \
 {{/if source}} \
@@ -534,7 +537,7 @@ local.templateApidocMd = '\
                 }
                 element.source = (options.template === local.templateApidocHtml
                     ? local.stringHtmlSafe(element.source)
-                    : element.source.replace((/`/g), '_'))
+                    : element.source)
                     .replace((/\([\S\s]*?\)/), function (match0) {
                         // init signature
                         element.signature = match0
@@ -560,7 +563,7 @@ local.templateApidocMd = '\
                                         local.stringHtmlSafe(match2) +
                                         '</span>' +
                                         local.stringHtmlSafe(match3)
-                                    : match0.replace((/`/g), "'")
+                                    : match0
                             ).trimRight() + '\n...';
                         }
                     );
@@ -594,9 +597,9 @@ local.templateApidocMd = '\
                 });
                 text = text.replace(new RegExp('^' + whitespace, 'gm'), '');
                 // enforce 128 character column limit
-                while ((/^.{128}[^\\\n]/m).test(text)) {
-                    text = text.replace((/^(.{128})([^\\\n]+)/gm), '$1\\\n$2');
-                }
+                text = text.replace((/^.{128}[^\\\n]+/gm), function (match0) {
+                    return match0.replace((/(.{128}(?:\b|\w+))/g), '$1\n').trimRight();
+                });
                 return text;
             };
             // init options
@@ -605,14 +608,16 @@ local.templateApidocMd = '\
                 options.modulePathList || local.module.paths
             );
             local.objectSetDefault(options, {
+                env: {},
                 packageJson: JSON.parse(readExample('package.json'))
             });
-            local.objectSetDefault(options, { env: {
-                npm_package_description: options.packageJson.description,
-                npm_package_homepage: options.packageJson.homepage,
-                npm_package_name: options.packageJson.name,
-                npm_package_version: options.packageJson.version
-            } }, 2);
+            Object.keys(options.packageJson).forEach(function (key) {
+                if (key[0] === '_') {
+                    delete options.packageJson[key];
+                } else if (typeof options.packageJson[key] === 'string') {
+                    options.env['npm_package_' + key] = options.packageJson[key];
+                }
+            });
             local.objectSetDefault(options, {
                 blacklistDict: { global: global },
                 circularList: [global],
@@ -9678,6 +9683,7 @@ local.assetsDict['/assets.index.template.html'].replace((/\n/g), '\\n\\\n') +
         local.assetsDict[\'/assets.jslint.rollup.js\'] =\n\
             local.assetsDict[\'/assets.jslint.rollup.js\'] ||\n\
             local.fs.readFileSync(\n\
+                // npmdoc-hack\n\
                 local.jslint.__dirname +\n\
                     \'/lib.jslint.js\',\n\
                 \'utf8\'\n\
@@ -11838,12 +11844,35 @@ return Utf8ArrayToStr(bff);
             options = {};
             options.readme = local.apidocCreate({
                 dir: local.env.npm_package_buildNpmdoc,
-                header: (/\n\n[\S\s]*?\n\n\n\n/)
-                    .exec(local.assetsDict['/assets.readme.template.md'])[0]
-                    .trim()
-                    .replace((/kaizhu256/g), 'npmdoc')
-                    .replace((/\/jslint-lite/g), '\/' + local.env.npm_package_buildNpmdoc)
-                    .replace((/jslint-lite/g), local.env.npm_package_name),
+/* jslint-ignore-begin */
+header: '\
+# api-documentation for \
+{{#if env.npm_package_homepage}} \
+[{{env.npm_package_name}} (v{{env.npm_package_version}})]({{env.npm_package_homepage}}) \
+{{#unless env.npm_package_homepage}} \
+{{env.npm_package_name}} (v{{env.npm_package_version}}) \
+{{/if env.npm_package_homepage}} \
+\n\
+{{env.npm_package_description}} \
+\n\
+\n\
+[![NPM](https://nodei.co/npm/{{env.npm_package_name}}.png?downloads=true)](https://www.npmjs.com/package/{{env.npm_package_name}}) \
+\n\
+\n\
+\n\
+\n\
+# package.json \
+\n\
+\n\
+```json \
+\n\
+\n\
+{{packageJson jsonStringify4 markdownCodeSafe}} \
+\n\
+``` \
+\n\
+',
+/* jslint-ignore-end */
                 modulePathList: options.modulePathList,
                 template: local.apidoc.templateApidocMd
             });
@@ -13905,6 +13934,12 @@ instruction\n\
                         break;
                     case 'jsonStringify':
                         value = JSON.stringify(value);
+                        break;
+                    case 'jsonStringify4':
+                        value = JSON.stringify(value, null, 4);
+                        break;
+                    case 'markdownCodeSafe':
+                        value = value.replace((/`/g), "'");
                         break;
                     default:
                         value = value[arg]();
@@ -19719,6 +19754,7 @@ utility2-comment -->\n\
         local.assetsDict['/assets.utility2.rollup.js'] =
             local.assetsDict['/assets.utility2.rollup.js'] ||
             local.fs.readFileSync(
+                // npmdoc-hack
                 local.utility2.__dirname +
                     '/lib.utility2.js',
                 'utf8'
@@ -21020,10 +21056,11 @@ utility2-comment -->\n\
             local.assertJsonEqual(options.data, '{{aa}}');
             // test default handling-behavior
             options.data = local.templateRender('{{aa}} ' +
-                '{{aa jsonStringify htmlSafe encodeURIComponent decodeURIComponent trim}} ' +
+                '{{aa htmlSafe jsonStringify jsonStringify4 markdownCodeSafe ' +
+                'decodeURIComponent encodeURIComponent trim}} ' +
                 '{{bb}} {{cc}} {{dd}} {{ee.ff}}', {
                     // test string value handling-behavior
-                    aa: '<aa>',
+                    aa: '`<aa>`',
                     // test non-string value handling-behavior
                     bb: 1,
                     // test null-value handling-behavior
@@ -21035,7 +21072,7 @@ utility2-comment -->\n\
                 });
             local.assertJsonEqual(
                 options.data,
-                '<aa> &#x22;&#x3c;aa&#x3e;&#x22; 1 null {{dd}} gg'
+                '`<aa>` %22%5C%22\'%26%23x3c%3Baa%26%23x3e%3B\'%5C%22%22 1 null {{dd}} gg'
             );
             // test partial handling-behavior
             options.data = local.templateRender('{{#undefined aa}}\n' +
