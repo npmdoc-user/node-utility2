@@ -5,7 +5,7 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 
 [![NPM](https://nodei.co/npm/utility2.png?downloads=true)](https://www.npmjs.com/package/utility2)
 
-[![package-listing](https://kaizhu256.github.io/node-utility2/build/screen-capture.gitLsTree.svg)](https://github.com/kaizhu256/node-utility2)
+[![package-listing](https://kaizhu256.github.io/node-utility2/build/screen-capture.npmPackageListing.svg)](https://github.com/kaizhu256/node-utility2)
 
 
 

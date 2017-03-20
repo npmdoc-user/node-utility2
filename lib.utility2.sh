@@ -343,7 +343,7 @@ shBuildCiInternal() {(set -e
     # create apidoc
     shBuildApidoc
     # create package-listing
-    (export MODE_BUILD=gitLsTree; shRunScreenCapture shGitLsTree)
+    shNpmPackageListingCreate
     # create recent changelog of last 50 commits
     (export MODE_BUILD=gitLog; shRunScreenCapture git log -50 --pretty="%ai\u000a%B")
     # run internal post-build
@@ -1835,9 +1835,31 @@ shNpmDeprecateAliasList() {(set -e
     done
 )}
 
+shNpmPackageListingCreate() {(set -e
+# this function will create a svg listing of the npm-package
+    shInit
+    cd "$1"
+    # init git
+    if [ ! -d .git ]
+    then
+        printf "
+*~
+.*
+node_modules
+tmp
+" > .gitignore
+        git init
+        git add .
+        git commit -m 'initial commit'
+    fi
+    export MODE_BUILD=npmPackageListing
+    shRunScreenCapture shGitLsTree
+)}
+
 shNpmPublish() {(set -e
 # this function will npm-publish the $DIR as $NAME@$VERSION with a clean repo
     cd "$1"
+    # init git
     if [ ! -d .git ]
     then
         git init
@@ -2011,6 +2033,7 @@ shNpmdocRepoListCreate() {(set -e
     # init travis-monthly-cron
     for NAME in $LIST
     do
+    (
         GITHUB_REPO="npmdoc/node-npmdoc-$NAME"
         if [ ! "$TRAVIS_REPO_CREATE_FORCE" ] && (curl -Lf \
             "https://raw.githubusercontent.com/$GITHUB_REPO/alpha/test.js" \
@@ -2054,6 +2077,7 @@ shNpmdocRepoListCreate() {(set -e
         # git commit and push
         git commit -am "[npmdoc build]"
         git push -f "https://github.com/$GITHUB_REPO.git" alpha
+    ) &
     done
 )}
 
