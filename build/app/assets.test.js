@@ -1266,10 +1266,11 @@
             local.assertJsonEqual(options.data, '{{aa}}');
             // test default handling-behavior
             options.data = local.templateRender('{{aa}} ' +
-                '{{aa jsonStringify htmlSafe encodeURIComponent decodeURIComponent trim}} ' +
+                '{{aa htmlSafe jsonStringify jsonStringify4 markdownCodeSafe ' +
+                'decodeURIComponent encodeURIComponent trim}} ' +
                 '{{bb}} {{cc}} {{dd}} {{ee.ff}}', {
                     // test string value handling-behavior
-                    aa: '<aa>',
+                    aa: '`<aa>`',
                     // test non-string value handling-behavior
                     bb: 1,
                     // test null-value handling-behavior
@@ -1281,7 +1282,7 @@
                 });
             local.assertJsonEqual(
                 options.data,
-                '<aa> &#x22;&#x3c;aa&#x3e;&#x22; 1 null {{dd}} gg'
+                '`<aa>` %22%5C%22\'%26%23x3c%3Baa%26%23x3e%3B\'%5C%22%22 1 null {{dd}} gg'
             );
             // test partial handling-behavior
             options.data = local.templateRender('{{#undefined aa}}\n' +

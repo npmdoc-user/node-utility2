@@ -5658,8 +5658,8 @@ local.testCase_FormData_default = function (options, onError) {
  * this function will test FormData&#x27;s default handling-behavior
  */
     options = {};
-    options.blob1 = new local.<span class="apidocCodeKeywordSpan">Blob</span>([&#x27;aa&#x27;, &#x27;bb&#x27;, &#x27;\u1234 &#x2\
-7;, 0]);
+    options.blob1 = new local.<span class="apidocCodeKeywordSpan">Blob</span>([&#x27;aa&#x27;, &#x27;bb&#x27;, &#x27;\u1234 &#x27
+;, 0]);
     options.blob2 = new local.Blob([&#x27;aa&#x27;, &#x27;bb&#x27;, &#x27;\u1234 &#x27;, 0], {
         type: &#x27;text/plain; charset=utf-8&#x27;
     });
@@ -6075,8 +6075,8 @@ local.ajax = function (options, onError) {
     var timerTimeout, tmp, xhr;
     onError = local.onErrorWithStack(onError);
     // init modeServerLocal
-    if (!local.env.npm_config_mode_backend &#x26;&#x26; local.<span class="apidocCodeKeywordSpan">_serverLocalUrlTest</span>(opt\
-ions.url)) {
+    if (!local.env.npm_config_mode_backend &#x26;&#x26; local.<span class="apidocCodeKeywordSpan">_serverLocalUrlTest</span>(options
+.url)) {
         xhr = new local._http.XMLHttpRequest();
     }
     // init xhr
@@ -6424,7 +6424,7 @@ xhr.addEventListener(&#x27;loadstart&#x27;, local.ajaxProgressUpdate);
         }
         element.source = (options.template === local.templateApidocHtml
             ? local.stringHtmlSafe(element.source)
-            : element.source.replace((/`/g), &#x27;_&#x27;))
+            : element.source)
             .replace((/\([\S\s]*?\)/), function (match0) {
                 // init signature
                 element.signature = match0
@@ -6450,7 +6450,7 @@ xhr.addEventListener(&#x27;loadstart&#x27;, local.ajaxProgressUpdate);
                                 local.stringHtmlSafe(match2) +
                                 &#x27;&#x3c;/span&#x3e;&#x27; +
                                 local.stringHtmlSafe(match3)
-                            : match0.replace((/`/g), &#x22;&#x27;&#x22;)
+                            : match0
                     ).trimRight() + &#x27;\n...&#x27;;
                 }
             );
@@ -6484,9 +6484,9 @@ xhr.addEventListener(&#x27;loadstart&#x27;, local.ajaxProgressUpdate);
         });
         text = text.replace(new RegExp(&#x27;^&#x27; + whitespace, &#x27;gm&#x27;), &#x27;&#x27;);
         // enforce 128 character column limit
-        while ((/^.{128}[^\\\n]/m).test(text)) {
-            text = text.replace((/^(.{128})([^\\\n]+)/gm), &#x27;$1\\\n$2&#x27;);
-        }
+        text = text.replace((/^.{128}[^\\\n]+/gm), function (match0) {
+            return match0.replace((/(.{128}(?:\b|\w+))/g), &#x27;$1\n&#x27;).trimRight();
+        });
         return text;
     };
     // init options
@@ -6494,7 +6494,7 @@ xhr.addEventListener(&#x27;loadstart&#x27;, local.ajaxProgressUpdate);
         options.dir,
         options.modulePathList || local.module.paths
     );
-    local.objectSetDefaul ...</pre></li>
+    local.objectSetDefault(options, ...</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 local.fs = require(&#x27;fs&#x27;);
 local.path = require(&#x27;path&#x27;);
@@ -7692,12 +7692,99 @@ local.testCase_buildReadme_default = local.testCase_buildReadme_default || funct
     options = {};
     options.readme = local.apidocCreate({
         dir: local.env.npm_package_buildNpmdoc,
-        header: (/\n\n[\S\s]*?\n\n\n\n/)
-            .exec(local.assetsDict[&#x27;/assets.readme.template.md&#x27;])[0]
-            .trim()
-            .replace((/kaizhu256/g), &#x27;npmdoc&#x27;)
-            .replace((/\/jslint-lite/g), &#x27;\/&#x27; + local.env.npm_package_buildNpmdoc)
-            .replace((/jslint-lite/g), local.env.npm_package_name),
+/* jslint-ignore-begin */
+header: &#x27;\
+# api-documentation for \
+ \
+utility2 (v2017.3.18) \
+ \
+\n\
+the zero-dependency swiss-army-knife tool for building, testing, and deploying webapps \
+\n\
+\n\
+[![NPM](https://nodei.co/npm/utility2.png?downloads=true)](https://www.npmjs.com/package/utility2)\
+\n\
+\n\
+\n\
+\n\
+# package.json \
+\n\
+\n\
+```json \
+\n\
+\n\
+{
+    "author": "kai zhu <kaizhu256@gmail.com>",
+    "bin": {
+        "utility2": "lib.utility2.sh",
+        "utility2-apidoc": "lib.apidoc.js",
+        "utility2-github-crud": "lib.github_crud.js",
+        "utility2-istanbul": "lib.istanbul.js",
+        "utility2-jslint": "lib.jslint.js",
+        "utility2-uglifyjs": "lib.uglifyjs.js"
+    },
+    "description": "the zero-dependency swiss-army-knife tool for building, testing, and deploying webapps",
+    "devDependencies": {
+        "electron-lite": "kaizhu256/node-electron-lite#alpha"
+    },
+    "engines": {
+        "node": ">=4.0"
+    },
+    "homepage": "https://github.com/kaizhu256/node-utility2",
+    "keywords": [
+        "browser",
+        "build",
+        "busybox",
+        "ci",
+        "code-coverage",
+        "continuous-integration",
+        "deploy",
+        "docker",
+        "electron",
+        "headless-browser",
+        "istanbul",
+        "jscover",
+        "jscoverage",
+        "phantomjs",
+        "slimerjs",
+        "swiss-army-knife",
+        "test",
+        "test-coverage",
+        "travis",
+        "travis-ci",
+        "utility2",
+        "webapp"
+    ],
+    "license": "MIT",
+    "main": "lib.utility2.js",
+    "name": "utility2",
+    "nameAlias": "utility2",
+    "nameAliasPublish": "busybox test-lite",
+    "nameOriginal": "utility2",
+    "os": [
+        "darwin",
+        "linux"
+    ],
+    "readmeParse": "1",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/kaizhu256/node-utility2.git"
+    },
+    "scripts": {
+        "build-ci": "./lib.utility2.sh shReadmeTest build_ci.sh",
+        "env": "env",
+        "heroku-postbuild": "./lib.utility2.sh shDeployHeroku",
+        "postinstall": "if [ -f npm_scripts.sh ]; then ./npm_scripts.sh postinstall; fi",
+        "start": "(set -e; export PORT=${PORT:-8080}; if [ -f assets.app.js ]; then node assets.app.js; exit; fi; export npm_config_mode_auto_restart=1; ./lib.utility2.sh shRun shIstanbulCover test.js)",
+        "test": "(set -e; export PORT=$(./lib.utility2.sh shServerPortRandom); export PORT_REPL=$(./lib.utility2.sh shServerPortRandom); export npm_config_mode_auto_restart=1; ./lib.utility2.sh test test.js)"
+    },
+    "version": "2017.3.18"
+} \
+\n\
+``` \
+\n\
+&#x27;,
+/* jslint-ignore-end */
         modulePathList: options.modulePathList,
         template: local.apidoc.templateApidocMd
     });
@@ -8322,8 +8409,8 @@ local.buildApp = function (optionsList, onError) {
 options.modeNext = 20;
 options.urlBrowser = local.env.npm_config_dir_tmp + &#x27;/electron.&#x27; +
     Date.now().toString(16) + Math.random().toString(16) + &#x27;.html&#x27;;
-local.<span class="apidocCodeKeywordSpan">fsWriteFileWithMkdirpSync</span>(options.urlBrowser, &#x27;&#x3c;style&#x3e;body {&#x2\
-7; +
+local.<span class="apidocCodeKeywordSpan">fsWriteFileWithMkdirpSync</span>(options.urlBrowser, &#x27;&#x3c;style&#x3e;body {&#x27
+; +
         &#x27;border: 1px solid black;&#x27; +
         &#x27;margin: 0;&#x27; +
         &#x27;padding: 0;&#x27; +
@@ -9363,8 +9450,8 @@ return local.tryCatchOnError(function () {
         data,
         { adata: local.sjcl.codec.base64url.toBits(adata), ks: 256, mode: &#x27;gcm&#x27; }
     ));
-    return local.<span class="apidocCodeKeywordSpan">jwtBase64UrlNormalize</span>(&#x27;eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4R0NNIn0.\
-.&#x27; +
+    return local.<span class="apidocCodeKeywordSpan">jwtBase64UrlNormalize</span>(&#x27;eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4R0NNIn0..&#
+x27; +
         data.iv + &#x27;.&#x27; + data.ct + &#x27;.&#x27; + adata);
 };
 
@@ -10054,9 +10141,9 @@ switch (local.modeJs) {
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
     // enforce 128 character column limit
-    while ((/^.{128}[^\\\n]/m).test(text)) {
-        text = text.replace((/^(.{128})([^\\\n]+)/gm), &#x27;$1\\\n$2&#x27;);
-    }
+    text = text.replace((/^.{128}[^\\\n]+/gm), function (match0) {
+        return match0.replace((/(.{128}(?:\b|\w+))/g), &#x27;$1\n&#x27;).trimRight();
+    });
     return text;
 };
 // init options
@@ -10065,9 +10152,9 @@ options.dir = local.<span class="apidocCodeKeywordSpan">moduleDirname</span>(
     options.modulePathList || local.module.paths
 );
 local.objectSetDefault(options, {
+    env: {},
     packageJson: JSON.parse(readExample(&#x27;package.json&#x27;))
 });
-local.objectSetDefault(options, { env: {
 ...</pre></li>
     </ul>
     
@@ -10533,7 +10620,7 @@ local.objectLiteralize = function (arg) {
             dbTable.ttlSet(JSON.parse(match3));
             break;
         default:
-            local.<span class="apidocCodeKeywordSpan">onErrorDefault</span>(new Error(&#x27;dbImport - invalid operation - &#x27\
+            local.<span class="apidocCodeKeywordSpan">onErrorDefault</span>(new Error(&#x27;dbImport - invalid operation - &#x27
 ; + match0));
         }
     });
@@ -11945,8 +12032,8 @@ case &#x27;htmlSafe&#x27;:
 case &#x27;jsonStringify&#x27;:
     value = JSON.stringify(value);
     break;
-default:
-    value = value[arg]();
+case &#x27;jsonStringify4&#x27;:
+    value = JSON.stringify(value, null, 4);
     break;
 ...</pre></li>
     </ul>
@@ -12195,6 +12282,12 @@ local.<span class="apidocCodeKeywordSpan">taskCreateCached</span>({
                 break;
             case &#x27;jsonStringify&#x27;:
                 value = JSON.stringify(value);
+                break;
+            case &#x27;jsonStringify4&#x27;:
+                value = JSON.stringify(value, null, 4);
+                break;
+            case &#x27;markdownCodeSafe&#x27;:
+                value = value.replace((/`/g), &#x22;&#x27;&#x22;);
                 break;
             default:
                 value = value[arg]();
@@ -13478,8 +13571,8 @@ mark:function(){this._bookmark={cursor:this._cursor,line:this._line,col:this._co
 }},reset:function(){this._bookmark&#x26;&#x26;(this._cursor=this._bookmark.cursor,this._line=
 this._bookmark.line,this._col=this._bookmark.col,delete this._bookmark)},readTo:
 function(e){var t=&#x22;&#x22;,n;while(t.length&#x3c;e.length||t.lastIndexOf(e)!=t.length-e.length
-){n=this.<span class="apidocCodeKeywordSpan">read</span>();if(!n)throw new Error(&#x27;Expected &#x22;&#x27;+e+&#x27;&#x22; at l\
-ine &#x27;+this._line+&#x22;, col &#x22;+
+){n=this.<span class="apidocCodeKeywordSpan">read</span>();if(!n)throw new Error(&#x27;Expected &#x22;&#x27;+e+&#x27;&#x22; at line
+ &#x27;+this._line+&#x22;, col &#x22;+
 this._col+&#x22;.&#x22;);t+=n}return t},readWhile:function(e){var t=&#x22;&#x22;,n=this.read();while(
 n!==null&#x26;&#x26;e(n))t+=n,n=this.read();return t},readMatch:function(e){var t=this._input
 .substring(this._cursor),n=null;return typeof e==&#x22;string&#x22;?t.indexOf(e)===0&#x26;&#x26;(n=this
@@ -13535,7 +13628,7 @@ local.moduleDirname = function (module, modulePathList) {
     var result, tmp;
     // search process.cwd()
     if (!module || module === &#x27;.&#x27; || module.indexOf(&#x27;/&#x27;) &#x3e;= 0) {
-        return require(&#x27;path&#x27;).<span class="apidocCodeKeywordSpan">resolve</span>(process.cwd(), module || &#x27;&#x27\
+        return require(&#x27;path&#x27;).<span class="apidocCodeKeywordSpan">resolve</span>(process.cwd(), module || &#x27;&#x27
 ;);
     }
     // search builtin
@@ -13876,12 +13969,12 @@ stat:function(e,t){this.stats[e]=t}},CSSLint._Reporter=Reporter,CSSLint.Util={mi
 e[n]===t)return n;return-1},forEach:function(e,t){if(e.forEach)return e.forEach(
 t);for(var n=0,r=e.length;n&#x3c;r;n++)t(e[n],n,e)}},CSSLint.addRule({id:&#x22;adjoining-classes&#x22;
 ,name:&#x22;Disallow adjoining classes&#x22;,desc:&#x22;Don&#x27;t use adjoining classes.&#x22;,browsers:&#x22;IE6&#x22;
-,init:function(e,t){var n=this;e.<span class="apidocCodeKeywordSpan">addListener</span>(&#x22;startrule&#x22;,function(r){var i=\
+,init:function(e,t){var n=this;e.<span class="apidocCodeKeywordSpan">addListener</span>(&#x22;startrule&#x22;,function(r){var i=
 r.selectors
 ,s,o,u,a,f,l,c;for(f=0;f&#x3c;i.length;f++){s=i[f];for(l=0;l&#x3c;s.parts.length;l++){o=s.
 parts[l];if(o.type==e.SELECTOR_PART_TYPE){a=0;for(c=0;c&#x3c;o.modifiers.length;c++)u=
-o.modifiers[c],u.type==&#x22;class&#x22;&#x26;&#x26;a++,a&#x3e;1&#x26;&#x26;t.report(&#x22;Don&#x27;t use adjoining classes.&#x2\
-2;
+o.modifiers[c],u.type==&#x22;class&#x22;&#x26;&#x26;a++,a&#x3e;1&#x26;&#x26;t.report(&#x22;Don&#x27;t use adjoining classes.&#x22
+;
 ,o.line,o.col,n)}}}})}}),CSSLint.addRule({id:&#x22;box-model&#x22;,name:&#x22;Beware of broken box size&#x22;
 ,desc:&#x22;Don&#x27;t use width or height when using padding or border.&#x22;,browsers:&#x22;All&#x22;,init
 :function(e,t){function u(){s={},o=!1}function a(){var e,u;if(!o){if(s.height)for(
@@ -14093,12 +14186,12 @@ stat:function(e,t){this.stats[e]=t}},CSSLint._Reporter=Reporter,CSSLint.Util={mi
 e[n]===t)return n;return-1},forEach:function(e,t){if(e.forEach)return e.forEach(
 t);for(var n=0,r=e.length;n&#x3c;r;n++)t(e[n],n,e)}},CSSLint.addRule({id:&#x22;adjoining-classes&#x22;
 ,name:&#x22;Disallow adjoining classes&#x22;,desc:&#x22;Don&#x27;t use adjoining classes.&#x22;,browsers:&#x22;IE6&#x22;
-,init:function(e,t){var n=this;e.<span class="apidocCodeKeywordSpan">addListener</span>(&#x22;startrule&#x22;,function(r){var i=\
+,init:function(e,t){var n=this;e.<span class="apidocCodeKeywordSpan">addListener</span>(&#x22;startrule&#x22;,function(r){var i=
 r.selectors
 ,s,o,u,a,f,l,c;for(f=0;f&#x3c;i.length;f++){s=i[f];for(l=0;l&#x3c;s.parts.length;l++){o=s.
 parts[l];if(o.type==e.SELECTOR_PART_TYPE){a=0;for(c=0;c&#x3c;o.modifiers.length;c++)u=
-o.modifiers[c],u.type==&#x22;class&#x22;&#x26;&#x26;a++,a&#x3e;1&#x26;&#x26;t.report(&#x22;Don&#x27;t use adjoining classes.&#x2\
-2;
+o.modifiers[c],u.type==&#x22;class&#x22;&#x26;&#x26;a++,a&#x3e;1&#x26;&#x26;t.report(&#x22;Don&#x27;t use adjoining classes.&#x22
+;
 ,o.line,o.col,n)}}}})}}),CSSLint.addRule({id:&#x22;box-model&#x22;,name:&#x22;Beware of broken box size&#x22;
 ,desc:&#x22;Don&#x27;t use width or height when using padding or border.&#x22;,browsers:&#x22;All&#x22;,init
 :function(e,t){function u(){s={},o=!1}function a(){var e,u;if(!o){if(s.height)for(
@@ -14462,8 +14555,8 @@ break;
 // init responseHeaders
 data.responseHeaders = {};
 (
-    (data.getAllResponseHeaders &#x26;&#x26; data.<span class="apidocCodeKeywordSpan">getAllResponseHeaders</span>()) || &#x27;&\
-#x27;
+    (data.getAllResponseHeaders &#x26;&#x26; data.<span class="apidocCodeKeywordSpan">getAllResponseHeaders</span>()) || &#x27;&#
+x27;
 ).replace(
     (/.+/g),
     function (item) {
@@ -14875,7 +14968,7 @@ break;
         }
         element.source = (options.template === local.templateApidocHtml
             ? local.stringHtmlSafe(element.source)
-            : element.source.replace((/`/g), &#x27;_&#x27;))
+            : element.source)
             .replace((/\([\S\s]*?\)/), function (match0) {
                 // init signature
                 element.signature = match0
@@ -14901,7 +14994,7 @@ break;
                                 local.stringHtmlSafe(match2) +
                                 &#x27;&#x3c;/span&#x3e;&#x27; +
                                 local.stringHtmlSafe(match3)
-                            : match0.replace((/`/g), &#x22;&#x27;&#x22;)
+                            : match0
                     ).trimRight() + &#x27;\n...&#x27;;
                 }
             );
@@ -14935,9 +15028,9 @@ break;
         });
         text = text.replace(new RegExp(&#x27;^&#x27; + whitespace, &#x27;gm&#x27;), &#x27;&#x27;);
         // enforce 128 character column limit
-        while ((/^.{128}[^\\\n]/m).test(text)) {
-            text = text.replace((/^(.{128})([^\\\n]+)/gm), &#x27;$1\\\n$2&#x27;);
-        }
+        text = text.replace((/^.{128}[^\\\n]+/gm), function (match0) {
+            return match0.replace((/(.{128}(?:\b|\w+))/g), &#x27;$1\n&#x27;).trimRight();
+        });
         return text;
     };
     // init options
@@ -14945,7 +15038,7 @@ break;
         options.dir,
         options.modulePathList || local.module.paths
     );
-    local.objectSetDefaul ...</pre></li>
+    local.objectSetDefault(options, ...</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 local.fs = require(&#x27;fs&#x27;);
 local.path = require(&#x27;path&#x27;);
@@ -15135,9 +15228,9 @@ local.<span class="apidocCodeKeywordSpan">apidocModuleDictAdd</span>(options, op
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
     // enforce 128 character column limit
-    while ((/^.{128}[^\\\n]/m).test(text)) {
-        text = text.replace((/^(.{128})([^\\\n]+)/gm), &#x27;$1\\\n$2&#x27;);
-    }
+    text = text.replace((/^.{128}[^\\\n]+/gm), function (match0) {
+        return match0.replace((/(.{128}(?:\b|\w+))/g), &#x27;$1\n&#x27;).trimRight();
+    });
     return text;
 };
 // init options
@@ -15146,9 +15239,9 @@ options.dir = local.<span class="apidocCodeKeywordSpan">moduleDirname</span>(
     options.modulePathList || local.module.paths
 );
 local.objectSetDefault(options, {
+    env: {},
     packageJson: JSON.parse(readExample(&#x27;package.json&#x27;))
 });
-local.objectSetDefault(options, { env: {
 ...</pre></li>
     </ul>
     
@@ -15284,8 +15377,8 @@ case &#x27;htmlSafe&#x27;:
 case &#x27;jsonStringify&#x27;:
     value = JSON.stringify(value);
     break;
-default:
-    value = value[arg]();
+case &#x27;jsonStringify4&#x27;:
+    value = JSON.stringify(value, null, 4);
     break;
 ...</pre></li>
     </ul>
@@ -15373,6 +15466,12 @@ default:
                 break;
             case &#x27;jsonStringify&#x27;:
                 value = JSON.stringify(value);
+                break;
+            case &#x27;jsonStringify4&#x27;:
+                value = JSON.stringify(value, null, 4);
+                break;
+            case &#x27;markdownCodeSafe&#x27;:
+                value = value.replace((/`/g), &#x22;&#x27;&#x22;);
                 break;
             default:
                 value = value[arg]();
@@ -15817,8 +15916,8 @@ if (!result.length) {
     return result;
 }
 if (!(query &#x26;&#x26; typeof query === &#x27;object&#x27;)) {
-    result = local.<span class="apidocCodeKeywordSpan">dbRowListGetManyByOperator</span>(result, fieldName, &#x27;$eq&#x27;, que\
-ry);
+    result = local.<span class="apidocCodeKeywordSpan">dbRowListGetManyByOperator</span>(result, fieldName, &#x27;$eq&#x27;, query
+);
     return result;
 }
 Object.keys(query).some(function (key) {
@@ -16101,7 +16200,7 @@ this.dbRowList.push(dbRow);
 *     &#x3c;script src=&#x22;assets.db-lite.js&#x22;&#x3e;&#x3c;/script&#x3e;
 *     &#x3c;script&#x3e;
 *     var dbTable1;
-*     dbTable1 = window.dbTable1 = window.utility2_db.<span class="apidocCodeKeywordSpan">dbTableCreateOne</span>({ name: &#x22;\
+*     dbTable1 = window.dbTable1 = window.utility2_db.<span class="apidocCodeKeywordSpan">dbTableCreateOne</span>({ name: &#x22;
 dbTable1&#x22; });
 *     dbTable1.idIndexCreate({ name: &#x22;field1&#x22; });
 *     dbTable1.crudSetOneById({ field1: &#x22;hello&#x22;, field2: &#x22;world&#x22; });
@@ -16426,7 +16525,7 @@ arg[key] = arg === env
             dbTable.ttlSet(JSON.parse(match3));
             break;
         default:
-            local.<span class="apidocCodeKeywordSpan">onErrorDefault</span>(new Error(&#x27;dbImport - invalid operation - &#x27\
+            local.<span class="apidocCodeKeywordSpan">onErrorDefault</span>(new Error(&#x27;dbImport - invalid operation - &#x27
 ; + match0));
         }
     });
@@ -17986,8 +18085,7 @@ if (!self.isLoaded) {
 *     var dbTable1;
 *     dbTable1 = window.dbTable1 = window.utility2_db.dbTableCreateOne({ name: &#x22;dbTable1&#x22; });
 *     dbTable1.idIndexCreate({ name: &#x22;field1&#x22; });
-*     dbTable1.<span class="apidocCodeKeywordSpan">crudSetOneById</span>({ field1: &#x22;hello&#x22;, field2: &#x22;world&#x22; \
-});
+*     dbTable1.<span class="apidocCodeKeywordSpan">crudSetOneById</span>({ field1: &#x22;hello&#x22;, field2: &#x22;world&#x22; });
 *     console.log(dbTable1.crudGetManyByQuery({
 *         limit: Infinity,
 *         query: { field1: &#x22;hello&#x22; },
@@ -18675,8 +18773,8 @@ local.onNext(options, function (error, data) {
     switch (options.modeNext) {
     case 1:
         // get sha
-        local.<span class="apidocCodeKeywordSpan">contentRequest</span>({ method: &#x27;GET&#x27;, url: options.url }, options.o\
-nNext);
+        local.<span class="apidocCodeKeywordSpan">contentRequest</span>({ method: &#x27;GET&#x27;, url: options.url }, options.onNext
+);
         break;
     case 2:
         // delete file with sha
@@ -19480,8 +19578,8 @@ if (document.querySelector(&#x27;#inputTextareaEval1&#x27;) &#x26;&#x26; (!event
 options.modeNext = 20;
 options.urlBrowser = local.env.npm_config_dir_tmp + &#x27;/electron.&#x27; +
     Date.now().toString(16) + Math.random().toString(16) + &#x27;.html&#x27;;
-local.<span class="apidocCodeKeywordSpan">fsWriteFileWithMkdirpSync</span>(options.urlBrowser, &#x27;&#x3c;style&#x3e;body {&#x2\
-7; +
+local.<span class="apidocCodeKeywordSpan">fsWriteFileWithMkdirpSync</span>(options.urlBrowser, &#x27;&#x3c;style&#x3e;body {&#x27
+; +
         &#x27;border: 1px solid black;&#x27; +
         &#x27;margin: 0;&#x27; +
         &#x27;padding: 0;&#x27; +
@@ -19794,8 +19892,7 @@ local.fsWriteFileWithMkdirpSync2(
 )}}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 (e,!0)}}),l;f.unshift({line:0,covered:null,text:new InsertionText(&#x22;&#x22;)}),this.fillTemplate
-(t,s),e.write(headerTemplate(s)),e.write(&#x27;&#x3c;pre&#x3e;&#x3c;table class=&#x22;coverage&#x22;&#x3e;\n&#x27;),annotateLine\
-s
+(t,s),e.write(headerTemplate(s)),e.write(&#x27;&#x3c;pre&#x3e;&#x3c;table class=&#x22;coverage&#x22;&#x3e;\n&#x27;),annotateLines
 (n,f),annotateBranches(n,f),annotateFunctions(n,f),annotateStatements(n,f),f.shift
 (),l={structured:f,maxLines:f.length,fileCoverage:n},e.write(detailTemplate(l)),
 e.write(&#x22;&#x3c;/table&#x3e;&#x3c;/pre&#x3e;\n&#x22;),e.write(footerTemplate(s))},writeIndexPage:function(
@@ -19828,21 +19925,20 @@ push(n),n=n.parent;for(s=0;s&#x3c;r.length;s+=1)i.push(&#x27;&#x3c;a href=&#x22;
     <li>example usage<pre class="apidocCodePre">...
 )}),t.join(&#x22;\n&#x22;)}),HtmlReport.TYPE=&#x22;html&#x22;,util.inherits(HtmlReport,Report),Report
 .mix(HtmlReport,{getPathHtml:function(e,t){var n=e.parent,r=[],i=[],s;while(n)r.
-push(n),n=n.parent;for(s=0;s&#x3c;r.length;s+=1)i.push(&#x27;&#x3c;a href=&#x22;&#x27;+t.ancestor(e,s+1)+&#x27;&#x22;&#x3e;&#x27\
+push(n),n=n.parent;for(s=0;s&#x3c;r.length;s+=1)i.push(&#x27;&#x3c;a href=&#x22;&#x27;+t.ancestor(e,s+1)+&#x27;&#x22;&#x3e;&#x27
 ;+
-(r[s].relativeName||&#x22;All files&#x22;)+&#x22;&#x3c;/a&#x3e;&#x22;);return i.reverse(),i.length&#x3e;0?i.join(&#x22; &#x26;#1\
-87; &#x22;
+(r[s].relativeName||&#x22;All files&#x22;)+&#x22;&#x3c;/a&#x3e;&#x22;);return i.reverse(),i.length&#x3e;0?i.join(&#x22; &#x26;#187
+; &#x22;
 )+&#x22; &#x26;#187; &#x22;+e.displayShortName():&#x22;&#x22;},fillTemplate:function(e,t){var n=this.opts
 ,r=n.linkMapper;t.entity=e.name||&#x22;All files&#x22;,t.metrics=e.metrics,t.reportClass=getReportClass
 (e.metrics.statements,n.watermarks.statements),t.pathHtml=pathTemplate({html:this
-.<span class="apidocCodeKeywordSpan">getPathHtml</span>(e,r)}),t.prettify={js:r.asset(e,&#x22;prettify.js&#x22;),css:r.asset(e,&\
-#x22;prettify.css&#x22;
+.<span class="apidocCodeKeywordSpan">getPathHtml</span>(e,r)}),t.prettify={js:r.asset(e,&#x22;prettify.js&#x22;),css:r.asset(e,&#
+x22;prettify.css&#x22;
 )}},writeDetailPage:function(e,t,n){var r=this.opts,i=r.sourceStore,s=r.templateData
 ,o=n.code&#x26;&#x26;Array.isArray(n.code)?n.code.join(&#x22;\n&#x22;)+&#x22;\n&#x22;:i.get(n.path),u=o.split(/(?:\r?\n)|\r/
 ),a=0,f=u.map(function(e){return a+=1,{line:a,covered:null,text:new InsertionText
 (e,!0)}}),l;f.unshift({line:0,covered:null,text:new InsertionText(&#x22;&#x22;)}),this.fillTemplate
-(t,s),e.write(headerTemplate(s)),e.write(&#x27;&#x3c;pre&#x3e;&#x3c;table class=&#x22;coverage&#x22;&#x3e;\n&#x27;),annotateLine\
-s
+(t,s),e.write(headerTemplate(s)),e.write(&#x27;&#x3c;pre&#x3e;&#x3c;table class=&#x22;coverage&#x22;&#x3e;\n&#x27;),annotateLines
 (n,f),annotateBranches(n,f),annotateFunctions(n,f),annotateStatements(n,f),f.shift
 (),l={structured:f,maxLines:f.length,fileCoverage:n},e.write(detailTemplate(l)),
 ...</pre></li>
@@ -19895,8 +19991,7 @@ error(&#x22;Writing &#x22;+s),e.writeFile(s,function(e){i.writeIndexPage(e,t)}),
 o),e.writeFile(o,function(e){i.<span class="apidocCodeKeywordSpan">writeDetailPage</span>(e,t,r.fileCoverageFor(t.fullPath(
 )))}))})},standardLinkMapper:function(){return{fromParent:function(e){var t=0,n=
 e.relativeName,r;if(SEP!==&#x22;/&#x22;){n=&#x22;&#x22;;for(t=0;t&#x3c;e.relativeName.length;t+=1)r=e.relativeName
-.charAt(t),r===SEP?n+=&#x22;/&#x22;:n+=r}return e.kind===&#x22;dir&#x22;?n+&#x22;index.html&#x22;:n+&#x22;.html&#x22;},ancestorH\
-ref
+.charAt(t),r===SEP?n+=&#x22;/&#x22;:n+=r}return e.kind===&#x22;dir&#x22;?n+&#x22;index.html&#x22;:n+&#x22;.html&#x22;},ancestorHref
 :function(e,t){var n=&#x22;&#x22;,r,i,s,o;for(s=0;s&#x3c;t;s+=1){r=e.relativeName.split(SEP),i=
 r.length-1;for(o=0;o&#x3c;i;o+=1)n+=&#x22;../&#x22;;e=e.parent}return n},ancestor:function(e,t)
 {return this.ancestorHref(e,t)+&#x22;index.html&#x22;},asset:function(e,t){var n=0,r=e.parent
@@ -19927,14 +20022,12 @@ functions,s.functions),branches:getReportClass(r.branches,s.branches)},o={metric
 (o)+&#x22;\n&#x22;)}),e.write(summaryTableFooter),e.write(footerTemplate(r))},writeFiles:function(
 e,t,n,r){var i=this,s=path.resolve(n,&#x22;index.html&#x22;),o;this.opts.verbose&#x26;&#x26;console.
 error(&#x22;Writing &#x22;+s),e.writeFile(s,function(e){i.writeIndexPage(e,t)}),t.children
-.forEach(function(t){t.kind===&#x22;dir&#x22;?i.<span class="apidocCodeKeywordSpan">writeFiles</span>(e,t,path.resolve(n,t.relat\
-iveName
+.forEach(function(t){t.kind===&#x22;dir&#x22;?i.<span class="apidocCodeKeywordSpan">writeFiles</span>(e,t,path.resolve(n,t.relativeName
 ),r):(o=path.resolve(n,t.relativeName+&#x22;.html&#x22;),i.opts.verbose&#x26;&#x26;console.error(&#x22;Writing &#x22;+
 o),e.writeFile(o,function(e){i.writeDetailPage(e,t,r.fileCoverageFor(t.fullPath(
 )))}))})},standardLinkMapper:function(){return{fromParent:function(e){var t=0,n=
 e.relativeName,r;if(SEP!==&#x22;/&#x22;){n=&#x22;&#x22;;for(t=0;t&#x3c;e.relativeName.length;t+=1)r=e.relativeName
-.charAt(t),r===SEP?n+=&#x22;/&#x22;:n+=r}return e.kind===&#x22;dir&#x22;?n+&#x22;index.html&#x22;:n+&#x22;.html&#x22;},ancestorH\
-ref
+.charAt(t),r===SEP?n+=&#x22;/&#x22;:n+=r}return e.kind===&#x22;dir&#x22;?n+&#x22;index.html&#x22;:n+&#x22;.html&#x22;},ancestorHref
 :function(e,t){var n=&#x22;&#x22;,r,i,s,o;for(s=0;s&#x3c;t;s+=1){r=e.relativeName.split(SEP),i=
 r.length-1;for(o=0;o&#x3c;i;o+=1)n+=&#x22;../&#x22;;e=e.parent}return n},ancestor:function(e,t)
 ...</pre></li>
@@ -19965,15 +20058,13 @@ functions,s.functions),branches:getReportClass(r.branches,s.branches)},o={metric
 :r,reportClasses:i,file:t.displayShortName(),output:n.fromParent(t)};e.write(summaryLineTemplate
 (o)+&#x22;\n&#x22;)}),e.write(summaryTableFooter),e.write(footerTemplate(r))},writeFiles:function(
 e,t,n,r){var i=this,s=path.resolve(n,&#x22;index.html&#x22;),o;this.opts.verbose&#x26;&#x26;console.
-error(&#x22;Writing &#x22;+s),e.writeFile(s,function(e){i.<span class="apidocCodeKeywordSpan">writeIndexPage</span>(e,t)}),t.chi\
-ldren
+error(&#x22;Writing &#x22;+s),e.writeFile(s,function(e){i.<span class="apidocCodeKeywordSpan">writeIndexPage</span>(e,t)}),t.children
 .forEach(function(t){t.kind===&#x22;dir&#x22;?i.writeFiles(e,t,path.resolve(n,t.relativeName
 ),r):(o=path.resolve(n,t.relativeName+&#x22;.html&#x22;),i.opts.verbose&#x26;&#x26;console.error(&#x22;Writing &#x22;+
 o),e.writeFile(o,function(e){i.writeDetailPage(e,t,r.fileCoverageFor(t.fullPath(
 )))}))})},standardLinkMapper:function(){return{fromParent:function(e){var t=0,n=
 e.relativeName,r;if(SEP!==&#x22;/&#x22;){n=&#x22;&#x22;;for(t=0;t&#x3c;e.relativeName.length;t+=1)r=e.relativeName
-.charAt(t),r===SEP?n+=&#x22;/&#x22;:n+=r}return e.kind===&#x22;dir&#x22;?n+&#x22;index.html&#x22;:n+&#x22;.html&#x22;},ancestorH\
-ref
+.charAt(t),r===SEP?n+=&#x22;/&#x22;:n+=r}return e.kind===&#x22;dir&#x22;?n+&#x22;index.html&#x22;:n+&#x22;.html&#x22;},ancestorHref
 :function(e,t){var n=&#x22;&#x22;,r,i,s,o;for(s=0;s&#x3c;t;s+=1){r=e.relativeName.split(SEP),i=
 ...</pre></li>
     </ul>
@@ -20099,13 +20190,12 @@ switch (local.modeJs) {
 .trackerVar),f.variable(&#x22;b&#x22;)),f.stringLiteral(e)),f.numericLiteral(t)),n);return r
 },locationsForNodes:function(e){var t=[],n;for(n=0;n&#x3c;e.length;n+=1)t.push(e[n].loc
 );return t},ifBranchInjector:function(e,t){var n=!!this.currentState.ignoring,r=
-this.currentState.currentHint,i=!n&#x26;&#x26;r&#x26;&#x26;r.type===&#x22;if&#x22;,s=!n&#x26;&#x26;r&#x26;&#x26;r.type===&#x22;e\
-lse&#x22;,o=
+this.currentState.currentHint,i=!n&#x26;&#x26;r&#x26;&#x26;r.type===&#x22;if&#x22;,s=!n&#x26;&#x26;r&#x26;&#x26;r.type===&#x22;else
+&#x22;,o=
 e.loc.start.line,u=e.loc.start.column,a=function(){return{line:o,column:u}},l=this
 .branchName(&#x22;if&#x22;,t.startLineForNode(e),[{start:a(),end:a(),skip:i||undefined},{start
 :a(),end:a(),skip:s||undefined}]),c=e.consequent.body,h=e.alternate.body,p;c.unshift
-(f.statement(this.<span class="apidocCodeKeywordSpan">branchIncrementExprAst</span>(l,0))),h.unshift(f.statement(this.branchIncr\
-ementExprAst
+(f.statement(this.<span class="apidocCodeKeywordSpan">branchIncrementExprAst</span>(l,0))),h.unshift(f.statement(this.branchIncrementExprAst
 (l,1))),i&#x26;&#x26;(p=e.consequent,p.preprocessor=this.startIgnore,p.postprocessor=this.
 endIgnore),s&#x26;&#x26;(p=e.alternate,p.preprocessor=this.startIgnore,p.postprocessor=this
 .endIgnore)},branchLocationFor:function(e,t){return this.coverState.branchMap[e]
@@ -20165,11 +20255,11 @@ u||undefined,s.push(n[o]),i.push(0);return this.coverState.b[r]=i,this.coverStat
 .trackerVar),f.variable(&#x22;b&#x22;)),f.stringLiteral(e)),f.numericLiteral(t)),n);return r
 },locationsForNodes:function(e){var t=[],n;for(n=0;n&#x3c;e.length;n+=1)t.push(e[n].loc
 );return t},ifBranchInjector:function(e,t){var n=!!this.currentState.ignoring,r=
-this.currentState.currentHint,i=!n&#x26;&#x26;r&#x26;&#x26;r.type===&#x22;if&#x22;,s=!n&#x26;&#x26;r&#x26;&#x26;r.type===&#x22;e\
-lse&#x22;,o=
+this.currentState.currentHint,i=!n&#x26;&#x26;r&#x26;&#x26;r.type===&#x22;if&#x22;,s=!n&#x26;&#x26;r&#x26;&#x26;r.type===&#x22;else
+&#x22;,o=
 e.loc.start.line,u=e.loc.start.column,a=function(){return{line:o,column:u}},l=this
-.<span class="apidocCodeKeywordSpan">branchName</span>(&#x22;if&#x22;,t.startLineForNode(e),[{start:a(),end:a(),skip:i||undefine\
-d},{start
+.<span class="apidocCodeKeywordSpan">branchName</span>(&#x22;if&#x22;,t.startLineForNode(e),[{start:a(),end:a(),skip:i||undefined
+},{start
 :a(),end:a(),skip:s||undefined}]),c=e.consequent.body,h=e.alternate.body,p;c.unshift
 (f.statement(this.branchIncrementExprAst(l,0))),h.unshift(f.statement(this.branchIncrementExprAst
 (l,1))),i&#x26;&#x26;(p=e.consequent,p.preprocessor=this.startIgnore,p.postprocessor=this.
@@ -20210,8 +20300,8 @@ this.maybeAddSkip(this.branchLocationFor(n,1)),e.consequent=f.sequence(r,e.conse
     <li>description and source-code<pre class="apidocCodePre">convertToBlock = function (e){return e?e.type===&#x22;BlockStatement&#x22;?
 e:{type:&#x22;BlockStatement&#x22;,body:[e]}:{type:&#x22;BlockStatement&#x22;,body:[]}}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-,&#x22;%VAR% = %VAR%.%GLOBAL%;&#x22;,&#x22;if (!(%VAR%[&#x27;%FILE%&#x27;])) {&#x22;,&#x22;   %VAR%[&#x27;%FILE%&#x27;] = %OBJEC\
-T%;&#x22;
+,&#x22;%VAR% = %VAR%.%GLOBAL%;&#x22;,&#x22;if (!(%VAR%[&#x27;%FILE%&#x27;])) {&#x22;,&#x22;   %VAR%[&#x27;%FILE%&#x27;] = %OBJECT
+%;&#x22;
 ,&#x22;}&#x22;,&#x22;%VAR% = %VAR%[&#x27;%FILE%&#x27;];&#x22;].join(&#x22;\n&#x22;).replace(/%STRICT%/g,u(o)).replace(/%VAR%/g
 ,u(i)).replace(/%GLOBAL%/g,u(n)).replace(/%FILE%/g,u(r)).replace(/%OBJECT%/g,u(s
 )),a},startIgnore:function(){this.currentState.ignoring+=1},endIgnore:function()
@@ -20315,8 +20405,7 @@ this.currentState.currentHint=i,this.currentState.lastHintPosition=t,t+=1}},inst
 :function(e,t,n){var r=!1,s,o,u,a,f;t=t||String((new Date).getTime())+&#x22;.js&#x22;,this
 .sourceMap=null,this.coverState={path:t,s:{},b:{},f:{},fnMap:{},statementMap:{},
 branchMap:{}},this.currentState={trackerVar:p(t,this.omitTrackerSuffix),func:0,branch
-:0,variable:0,statement:0,hints:this.<span class="apidocCodeKeywordSpan">filterHints</span>(e.comments),currentHint:null,lastHin\
-tPosition
+:0,variable:0,statement:0,hints:this.<span class="apidocCodeKeywordSpan">filterHints</span>(e.comments),currentHint:null,lastHintPosition
 :-1,ignoring:0},e.body&#x26;&#x26;e.body.length&#x3e;0&#x26;&#x26;this.isUseStrictExpression(e.body[0])&#x26;&#x26;
 (e.body.shift(),r=!0),this.walker.startWalk(e),s=this.opts.codeGenerationOptions||
 {format:{compact:!this.opts.noCompact}},s.comment=this.opts.preserveComments,o=i
@@ -20346,7 +20435,7 @@ t){var n=!!this.currentState.ignoring,r=this.currentState.currentHint,i=!n&#x26;
 .type===&#x22;next&#x22;;i&#x26;&#x26;(this.startIgnore(),t.postprocessor=this.endIgnore);if(i||n)e.
 skip=!0}},logicalExpressionBranchInjector:function(e,n){var r=n.parent(),i=[],s,
 o,u;this.maybeSkipNode(e,&#x22;next&#x22;);if(r&#x26;&#x26;r.node.type===t.LogicalExpression.name)return;
-this.<span class="apidocCodeKeywordSpan">findLeaves</span>(e,i),s=this.branchName(&#x22;binary-expr&#x22;,n.startLineForNode(e),\
+this.<span class="apidocCodeKeywordSpan">findLeaves</span>(e,i),s=this.branchName(&#x22;binary-expr&#x22;,n.startLineForNode(e),
 this.
 locationsForNodes(i.map(function(e){return e.node})));for(u=0;u&#x3c;i.length;u+=1)o=
 i[u],o.parent[o.property]=f.sequence(this.branchIncrementExprAst(s,u),o.node),o.
@@ -20419,7 +20508,7 @@ branchMap:{}},this.currentState={trackerVar:p(t,this.omitTrackerSuffix),func:0,b
 :-1,ignoring:0},e.body&#x26;&#x26;e.body.length&#x3e;0&#x26;&#x26;this.isUseStrictExpression(e.body[0])&#x26;&#x26;
 (e.body.shift(),r=!0),this.walker.startWalk(e),s=this.opts.codeGenerationOptions||
 {format:{compact:!this.opts.noCompact}},s.comment=this.opts.preserveComments,o=i
-.generate(e,s),u=this.<span class="apidocCodeKeywordSpan">getPreamble</span>(n||&#x22;&#x22;,r);if(o.map&#x26;&#x26;o.code){a=u.\
+.generate(e,s),u=this.<span class="apidocCodeKeywordSpan">getPreamble</span>(n||&#x22;&#x22;,r);if(o.map&#x26;&#x26;o.code){a=u.
 split(/\r\n|\r|\n/
 ).length;for(f=0;f&#x3c;o.map._mappings._array.length;f+=1)o.map._mappings._array[f].
 generatedLine+=a;this.sourceMap=o.map,o=o.code}return u+&#x22;\n&#x22;+o+&#x22;\n&#x22;},instrument:
@@ -20573,7 +20662,7 @@ this.currentState.currentHint=i,this.currentState.lastHintPosition=t,t+=1}},inst
 .sourceMap=null,this.coverState={path:t,s:{},b:{},f:{},fnMap:{},statementMap:{},
 branchMap:{}},this.currentState={trackerVar:p(t,this.omitTrackerSuffix),func:0,branch
 :0,variable:0,statement:0,hints:this.filterHints(e.comments),currentHint:null,lastHintPosition
-:-1,ignoring:0},e.body&#x26;&#x26;e.body.length&#x3e;0&#x26;&#x26;this.<span class="apidocCodeKeywordSpan">isUseStrictExpression\
+:-1,ignoring:0},e.body&#x26;&#x26;e.body.length&#x3e;0&#x26;&#x26;this.<span class="apidocCodeKeywordSpan">isUseStrictExpression
 </span>(e.body[0])&#x26;&#x26;
 (e.body.shift(),r=!0),this.walker.startWalk(e),s=this.opts.codeGenerationOptions||
 {format:{compact:!this.opts.noCompact}},s.comment=this.opts.preserveComments,o=i
@@ -20630,8 +20719,7 @@ function(e,t,n){!n&#x26;&#x26;typeof t==&#x22;function&#x22;&#x26;&#x26;(n=t,t=n
 ].consequent.unshift(f.statement(this.branchIncrementExprAst(r,i)))},switchCaseInjector
 :function(e){var t=e.branchLocation;delete e.branchLocation,this.maybeSkipNode(e
 ,&#x22;next&#x22;)&#x26;&#x26;(t.skip=!0)},conditionalBranchInjector:function(e,t){var n=this.branchName
-(&#x22;cond-expr&#x22;,t.startLineForNode(e),this.<span class="apidocCodeKeywordSpan">locationsForNodes</span>([e.consequent,e.a\
-lternate
+(&#x22;cond-expr&#x22;,t.startLineForNode(e),this.<span class="apidocCodeKeywordSpan">locationsForNodes</span>([e.consequent,e.alternate
 ])),r=this.branchIncrementExprAst(n,0),i=this.branchIncrementExprAst(n,1);e.consequent
 .preprocessor=this.maybeAddSkip(this.branchLocationFor(n,0)),e.alternate.preprocessor=
 this.maybeAddSkip(this.branchLocationFor(n,1)),e.consequent=f.sequence(r,e.consequent
@@ -20694,7 +20782,7 @@ skip=!0}}</pre></li>
 ,&#x22;next&#x22;)&#x26;&#x26;(t.skip=!0)},conditionalBranchInjector:function(e,t){var n=this.branchName
 (&#x22;cond-expr&#x22;,t.startLineForNode(e),this.locationsForNodes([e.consequent,e.alternate
 ])),r=this.branchIncrementExprAst(n,0),i=this.branchIncrementExprAst(n,1);e.consequent
-.preprocessor=this.<span class="apidocCodeKeywordSpan">maybeAddSkip</span>(this.branchLocationFor(n,0)),e.alternate.preprocessor\
+.preprocessor=this.<span class="apidocCodeKeywordSpan">maybeAddSkip</span>(this.branchLocationFor(n,0)),e.alternate.preprocessor
 =
 this.maybeAddSkip(this.branchLocationFor(n,1)),e.consequent=f.sequence(r,e.consequent
 ),e.alternate=f.sequence(i,e.alternate)},maybeAddSkip:function(e){return function(
@@ -20740,8 +20828,8 @@ t.ExpressionStatement.name&#x26;&#x26;e.expression&#x26;&#x26;e.expression.type=
 expression.value===&#x22;use strict&#x22;},maybeSkipNode:function(e,t){var n=!!this.currentState
 .ignoring,r=this.currentState.currentHint,i=!n&#x26;&#x26;r&#x26;&#x26;r.type===t;return i?(this.startIgnore
 (),e.postprocessor=this.endIgnore,!0):!1},coverStatement:function(e,n){var r,i,s
-;this.<span class="apidocCodeKeywordSpan">maybeSkipNode</span>(e,&#x22;next&#x22;);if(this.isUseStrictExpression(e)){s=n.ancesto\
-r(2);
+;this.<span class="apidocCodeKeywordSpan">maybeSkipNode</span>(e,&#x22;next&#x22;);if(this.isUseStrictExpression(e)){s=n.ancestor
+(2);
 if(s&#x26;&#x26;(s.node.type===t.FunctionExpression.name||s.node.type===t.FunctionDeclaration
 .name)&#x26;&#x26;n.parent().node.body[0]===e)return}e.type===t.FunctionDeclaration.name?r=
 this.statementName(e.loc,1):(r=this.statementName(e.loc),i=f.statement(f.postIncrement
@@ -20806,19 +20894,12 @@ e.handler&#x26;&#x26;e.handlers&#x26;&#x26;(e.handler=e.handlers[0])}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 ,InvalidModuleSpecifier:&#x22;Unexpected token&#x22;,IllegalImportDeclaration:&#x22;Unexpected token&#x22;
 ,IllegalExportDeclaration:&#x22;Unexpected token&#x22;,DuplicateBinding:&#x22;Duplicate binding %0&#x22;
-},u={NonAsciiIdentifierStart:/[\xAA\xB5\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0370-\u0374\u037\
-6\u0377\u037A-\u037D\u037F\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u052F\u0531-\u0556\u0559\u0561\
--\u0587\u05D0-\u05EA\u05F0-\u05F2\u0620-\u064A\u066E\u066F\u0671-\u06D3\u06D5\u06E5\u06E6\u06EE\u06EF\u06FA-\u06FC\u06FF\u0710\u\
-0712-\u072F\u074D-\u07A5\u07B1\u07CA-\u07EA\u07F4\u07F5\u07FA\u0800-\u0815\u081A\u0824\u0828\u0840-\u0858\u08A0-\u08B2\u0904-\u0\
-939\u093D\u0950\u0958-\u0961\u0971-\u0980\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BD\u09CE\u09D\
-C\u09DD\u09DF-\u09E1\u09F0\u09F1\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A59-\u\
-0A5C\u0A5E\u0A72-\u0A74\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABD\u0AD0\u0AE0\u0AE1\u0B\
-05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3D\u0B5C\u0B5D\u0B5F-\u0B61\u0B71\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BD0\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D\u0C58\u0C59\u0C60\u0C61\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBD\u0CDE\u0CE0\u0CE1\u0CF1\u0CF2\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D\u0D4E\u0D60\u0D61\u0D7A-\u0D7F\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0E01-\u0E30\u0E32\u0E33\u0E40-\u0E46\u0E81\u0E82\u0E84\u0E87\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA\u0EAB\u0EAD-\u0EB0\u0EB2\u0EB3\u0EBD\u0EC0-\u0EC4\u0EC6\u0EDC-\u0EDF\u0F00\u0F40-\u0F47\u0F49-\u0F6C\u0F88-\u0F8C\u1000-\u102A\u103F\u1050-\u1055\u105A-\u105D\u1061\u1065\u1066\u106E-\u1070\u1075-\u1081\u108E\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u1380-\u138F\u13A0-\u13F4\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F8\u1700-\u170C\u170E-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176C\u176E-\u1770\u1780-\u17B3\u17D7\u17DC\u1820-\u1877\u1880-\u18A8\u18AA\u18B0-\u18F5\u1900-\u191E\u1950-\u196D\u1970-\u1974\u1980-\u19AB\u19C1-\u19C7\u1A00-\u1A16\u1A20-\u1A54\u1AA7\u1B05-\u1B33\u1B45-\u1B4B\u1B83-\u1BA0\u1BAE\u1BAF\u1BBA-\u1BE5\u1C00-\u1C23\u1C4D-\u1C4F\u1C5A-\u1C7D\u1CE9-\u1CEC\u1CEE-\u1CF1\u1CF5\u1CF6\u1D00-\u1DBF\u1E00-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u2071\u207F\u2090-\u209C\u2102\u2107\u210A-\u2113\u2115\u2118-\u211D\u2124\u2126\u2128\u212A-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CEE\u2CF2\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D80-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303C\u3041-\u3096\u309B-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31BA\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FCC\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA61F\uA62A\uA62B\uA640-\uA66E\uA67F-\uA69D\uA6A0-\uA6EF\uA717-\uA71F\uA722-\uA788\uA78B-\uA78E\uA790-\uA7AD\uA7B0\uA7B1\uA7F7-\uA801\uA803-\uA805\uA807-\uA80A\uA80C-\uA822\uA840-\uA873\uA882-\uA8B3\uA8F2-\uA8F7\uA8FB\uA90A-\uA925\uA930-\uA946\uA960-\uA97C\uA984-\uA9B2\uA9CF\uA9E0-\uA9E4\uA9E6-\uA9EF\uA9FA-\uA9FE\uAA00-\uAA28\uAA40-\uAA42\uAA44-\uAA4B\uAA60-\uAA76\uAA7A\uAA7E-\uAAAF\uAAB1\uAAB5\uAAB6\uAAB9-\uAABD\uAAC0\uAAC2\uAADB-\uAADD\uAAE0-\uAAEA\uAAF2-\uAAF4\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB5F\uAB64\uAB65\uABC0-\uABE2\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D\uFB1F-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE70-\uFE74\uFE76-\uFEFC\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]|\uD800[\uDC00-\uDC0B\uDC0D-\uDC26\uDC28-\uDC3A\uDC3C\uDC3D\uDC3F-\uDC4D\uDC50-\uDC5D\uDC80-\uDCFA\uDD40-\uDD74\uDE80-\uDE9C\uDEA0-\uDED0\uDF00-\uDF1F\uDF30-\uDF4A\uDF50-\uDF75\uDF80-\uDF9D\uDFA0-\uDFC3\uDFC8-\uDFCF\uDFD1-\uDFD5]|\uD801[\uDC00-\uDC9D\uDD00-\uDD27\uDD30-\uDD63\uDE00-\uDF36\uDF40-\uDF55\uDF60-\uDF67]|\uD802[\uDC00-\uDC05\uDC08\uDC0A-\uDC35\uDC37\uDC38\uDC3C\uDC3F-\uDC55\uDC60-\uDC76\uDC80-\uDC9E\uDD00-\uDD15\uDD20-\uDD39\uDD80-\uDDB7\uDDBE\uDDBF\uDE00\uDE10-\uDE13\uDE15-\uDE17\uDE19-\uDE33\uDE60-\uDE7C\uDE80-\uDE9C\uDEC0-\uDEC7\uDEC9-\uDEE4\uDF00-\uDF35\uDF40-\uDF55\uDF60-\uDF72\uDF80-\uDF91]|\uD803[\uDC00-\uDC48]|\uD804[\uDC03-\uDC37\uDC83-\uDCAF\uDCD0-\uDCE8\uDD03-\uDD26\uDD50-\uDD72\uDD76\uDD83-\uDDB2\uDDC1-\uDDC4\uDDDA\uDE00-\uDE11\uDE13-\uDE2B\uDEB0-\uDEDE\uDF05-\uDF0C\uDF0F\uDF10\uDF13-\uDF28\uDF2A-\uDF30\uDF32\uDF33\uDF35-\uDF39\uDF3D\uDF5D-\uDF61]|\uD805[\uDC80-\uDCAF\uDCC4\uDCC5\uDCC7\uDD80-\uDDAE\uDE00-\uDE2F\uDE44\uDE80-\uDEAA]|\uD806[\uDCA0-\uDCDF\uDCFF\uDEC0-\uDEF8]|\uD808[\uDC00-\uDF98]|\uD809[\uDC00-\uDC6E]|[\uD80C\uD840-\uD868\uD86A-\uD86C][\uDC00-\uDFFF]|\uD80D[\uDC00-\uDC2E]|\uD81A[\uDC00-\uDE38\uDE40-\uDE5E\uDED0-\uDEED\uDF00-\uDF2F\uDF40-\uDF43\uDF63-\uDF77\uDF7D-\uDF8F]|\uD81B[\uDF00-\uDF44\uDF50\uDF93-\uDF9F]|\uD82C[\uDC00\uDC01]|\uD82F[\uDC00-\uDC6A\uDC70-\uDC7C\uDC80-\uDC88\uDC90-\uDC99]|\uD835[\uDC00-\uDC54\uDC56-\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDEA5\uDEA8-\uDEC0\uDEC2-\uDEDA\uDEDC-\uDEFA\uDEFC-\uDF14\uDF16-\uDF34\uDF36-\uDF4E\uDF50-\uDF6E\uDF70-\uDF88\uDF8A-\uDFA8\uDFAA-\uDFC2\uDFC4-\uDFCB]|\uD83A[\uDC00-\uDCC4]|\uD83B[\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB]|\uD869[\uDC00-\uDED6\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D]|\uD87E[\uDC00-\uDE1D]/
+},u={NonAsciiIdentifierStart:/[\xAA\xB5\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0370-\u0374\u0376\u0377\u037A-\u037D\u037F\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u052F\u0531-\u0556\u0559\u0561-\u0587\u05D0-\u05EA\u05F0-\u05F2\u0620-\u064A\u066E\u066F\u0671-\u06D3\u06D5\u06E5\u06E6\u06EE\u06EF\u06FA-\u06FC\u06FF\u0710\u0712-\u072F\u074D-\u07A5\u07B1\u07CA-\u07EA\u07F4\u07F5\u07FA\u0800-\u0815\u081A\u0824\u0828\u0840-\u0858\u08A0-\u08B2\u0904-\u0939\u093D\u0950\u0958-\u0961\u0971-\u0980\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BD\u09CE\u09DC\u09DD\u09DF-\u09E1\u09F0\u09F1\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A59-\u0A5C\u0A5E\u0A72-\u0A74\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABD\u0AD0\u0AE0\u0AE1\u0B05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3D\u0B5C\u0B5D\u0B5F-\u0B61\u0B71\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BD0\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D\u0C58\u0C59\u0C60\u0C61\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBD\u0CDE\u0CE0\u0CE1\u0CF1\u0CF2\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D\u0D4E\u0D60\u0D61\u0D7A-\u0D7F\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0E01-\u0E30\u0E32\u0E33\u0E40-\u0E46\u0E81\u0E82\u0E84\u0E87\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA\u0EAB\u0EAD-\u0EB0\u0EB2\u0EB3\u0EBD\u0EC0-\u0EC4\u0EC6\u0EDC-\u0EDF\u0F00\u0F40-\u0F47\u0F49-\u0F6C\u0F88-\u0F8C\u1000-\u102A\u103F\u1050-\u1055\u105A-\u105D\u1061\u1065\u1066\u106E-\u1070\u1075-\u1081\u108E\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u1380-\u138F\u13A0-\u13F4\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F8\u1700-\u170C\u170E-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176C\u176E-\u1770\u1780-\u17B3\u17D7\u17DC\u1820-\u1877\u1880-\u18A8\u18AA\u18B0-\u18F5\u1900-\u191E\u1950-\u196D\u1970-\u1974\u1980-\u19AB\u19C1-\u19C7\u1A00-\u1A16\u1A20-\u1A54\u1AA7\u1B05-\u1B33\u1B45-\u1B4B\u1B83-\u1BA0\u1BAE\u1BAF\u1BBA-\u1BE5\u1C00-\u1C23\u1C4D-\u1C4F\u1C5A-\u1C7D\u1CE9-\u1CEC\u1CEE-\u1CF1\u1CF5\u1CF6\u1D00-\u1DBF\u1E00-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u2071\u207F\u2090-\u209C\u2102\u2107\u210A-\u2113\u2115\u2118-\u211D\u2124\u2126\u2128\u212A-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CEE\u2CF2\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D80-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303C\u3041-\u3096\u309B-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31BA\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FCC\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA61F\uA62A\uA62B\uA640-\uA66E\uA67F-\uA69D\uA6A0-\uA6EF\uA717-\uA71F\uA722-\uA788\uA78B-\uA78E\uA790-\uA7AD\uA7B0\uA7B1\uA7F7-\uA801\uA803-\uA805\uA807-\uA80A\uA80C-\uA822\uA840-\uA873\uA882-\uA8B3\uA8F2-\uA8F7\uA8FB\uA90A-\uA925\uA930-\uA946\uA960-\uA97C\uA984-\uA9B2\uA9CF\uA9E0-\uA9E4\uA9E6-\uA9EF\uA9FA-\uA9FE\uAA00-\uAA28\uAA40-\uAA42\uAA44-\uAA4B\uAA60-\uAA76\uAA7A\uAA7E-\uAAAF\uAAB1\uAAB5\uAAB6\uAAB9-\uAABD\uAAC0\uAAC2\uAADB-\uAADD\uAAE0-\uAAEA\uAAF2-\uAAF4\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB5F\uAB64\uAB65\uABC0-\uABE2\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D\uFB1F-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE70-\uFE74\uFE76-\uFEFC\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]|\uD800[\uDC00-\uDC0B\uDC0D-\uDC26\uDC28-\uDC3A\uDC3C\uDC3D\uDC3F-\uDC4D\uDC50-\uDC5D\uDC80-\uDCFA\uDD40-\uDD74\uDE80-\uDE9C\uDEA0-\uDED0\uDF00-\uDF1F\uDF30-\uDF4A\uDF50-\uDF75\uDF80-\uDF9D\uDFA0-\uDFC3\uDFC8-\uDFCF\uDFD1-\uDFD5]|\uD801[\uDC00-\uDC9D\uDD00-\uDD27\uDD30-\uDD63\uDE00-\uDF36\uDF40-\uDF55\uDF60-\uDF67]|\uD802[\uDC00-\uDC05\uDC08\uDC0A-\uDC35\uDC37\uDC38\uDC3C\uDC3F-\uDC55\uDC60-\uDC76\uDC80-\uDC9E\uDD00-\uDD15\uDD20-\uDD39\uDD80-\uDDB7\uDDBE\uDDBF\uDE00\uDE10-\uDE13\uDE15-\uDE17\uDE19-\uDE33\uDE60-\uDE7C\uDE80-\uDE9C\uDEC0-\uDEC7\uDEC9-\uDEE4\uDF00-\uDF35\uDF40-\uDF55\uDF60-\uDF72\uDF80-\uDF91]|\uD803[\uDC00-\uDC48]|\uD804[\uDC03-\uDC37\uDC83-\uDCAF\uDCD0-\uDCE8\uDD03-\uDD26\uDD50-\uDD72\uDD76\uDD83-\uDDB2\uDDC1-\uDDC4\uDDDA\uDE00-\uDE11\uDE13-\uDE2B\uDEB0-\uDEDE\uDF05-\uDF0C\uDF0F\uDF10\uDF13-\uDF28\uDF2A-\uDF30\uDF32\uDF33\uDF35-\uDF39\uDF3D\uDF5D-\uDF61]|\uD805[\uDC80-\uDCAF\uDCC4\uDCC5\uDCC7\uDD80-\uDDAE\uDE00-\uDE2F\uDE44\uDE80-\uDEAA]|\uD806[\uDCA0-\uDCDF\uDCFF\uDEC0-\uDEF8]|\uD808[\uDC00-\uDF98]|\uD809[\uDC00-\uDC6E]|[\uD80C\uD840-\uD868\uD86A-\uD86C][\uDC00-\uDFFF]|\uD80D[\uDC00-\uDC2E]|\uD81A[\uDC00-\uDE38\uDE40-\uDE5E\uDED0-\uDEED\uDF00-\uDF2F\uDF40-\uDF43\uDF63-\uDF77\uDF7D-\uDF8F]|\uD81B[\uDF00-\uDF44\uDF50\uDF93-\uDF9F]|\uD82C[\uDC00\uDC01]|\uD82F[\uDC00-\uDC6A\uDC70-\uDC7C\uDC80-\uDC88\uDC90-\uDC99]|\uD835[\uDC00-\uDC54\uDC56-\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDEA5\uDEA8-\uDEC0\uDEC2-\uDEDA\uDEDC-\uDEFA\uDEFC-\uDF14\uDF16-\uDF34\uDF36-\uDF4E\uDF50-\uDF6E\uDF70-\uDF88\uDF8A-\uDFA8\uDFAA-\uDFC2\uDFC4-\uDFCB]|\uD83A[\uDC00-\uDCC4]|\uD83B[\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB]|\uD869[\uDC00-\uDED6\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D]|\uD87E[\uDC00-\uDE1D]/
 ,NonAsciiIdentifierPart:/[\xAA\xB5\xB7\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0300-\u0374\u0376\u0377\u037A-\u037D\u037F\u0386-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u0483-\u0487\u048A-\u052F\u0531-\u0556\u0559\u0561-\u0587\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7\u05D0-\u05EA\u05F0-\u05F2\u0610-\u061A\u0620-\u0669\u066E-\u06D3\u06D5-\u06DC\u06DF-\u06E8\u06EA-\u06FC\u06FF\u0710-\u074A\u074D-\u07B1\u07C0-\u07F5\u07FA\u0800-\u082D\u0840-\u085B\u08A0-\u08B2\u08E4-\u0963\u0966-\u096F\u0971-\u0983\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BC-\u09C4\u09C7\u09C8\u09CB-\u09CE\u09D7\u09DC\u09DD\u09DF-\u09E3\u09E6-\u09F1\u0A01-\u0A03\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A3C\u0A3E-\u0A42\u0A47\u0A48\u0A4B-\u0A4D\u0A51\u0A59-\u0A5C\u0A5E\u0A66-\u0A75\u0A81-\u0A83\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABC-\u0AC5\u0AC7-\u0AC9\u0ACB-\u0ACD\u0AD0\u0AE0-\u0AE3\u0AE6-\u0AEF\u0B01-\u0B03\u0B05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3C-\u0B44\u0B47\u0B48\u0B4B-\u0B4D\u0B56\u0B57\u0B5C\u0B5D\u0B5F-\u0B63\u0B66-\u0B6F\u0B71\u0B82\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BBE-\u0BC2\u0BC6-\u0BC8\u0BCA-\u0BCD\u0BD0\u0BD7\u0BE6-\u0BEF\u0C00-\u0C03\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D-\u0C44\u0C46-\u0C48\u0C4A-\u0C4D\u0C55\u0C56\u0C58\u0C59\u0C60-\u0C63\u0C66-\u0C6F\u0C81-\u0C83\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBC-\u0CC4\u0CC6-\u0CC8\u0CCA-\u0CCD\u0CD5\u0CD6\u0CDE\u0CE0-\u0CE3\u0CE6-\u0CEF\u0CF1\u0CF2\u0D01-\u0D03\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D-\u0D44\u0D46-\u0D48\u0D4A-\u0D4E\u0D57\u0D60-\u0D63\u0D66-\u0D6F\u0D7A-\u0D7F\u0D82\u0D83\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0DCA\u0DCF-\u0DD4\u0DD6\u0DD8-\u0DDF\u0DE6-\u0DEF\u0DF2\u0DF3\u0E01-\u0E3A\u0E40-\u0E4E\u0E50-\u0E59\u0E81\u0E82\u0E84\u0E87\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA\u0EAB\u0EAD-\u0EB9\u0EBB-\u0EBD\u0EC0-\u0EC4\u0EC6\u0EC8-\u0ECD\u0ED0-\u0ED9\u0EDC-\u0EDF\u0F00\u0F18\u0F19\u0F20-\u0F29\u0F35\u0F37\u0F39\u0F3E-\u0F47\u0F49-\u0F6C\u0F71-\u0F84\u0F86-\u0F97\u0F99-\u0FBC\u0FC6\u1000-\u1049\u1050-\u109D\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u135D-\u135F\u1369-\u1371\u1380-\u138F\u13A0-\u13F4\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F8\u1700-\u170C\u170E-\u1714\u1720-\u1734\u1740-\u1753\u1760-\u176C\u176E-\u1770\u1772\u1773\u1780-\u17D3\u17D7\u17DC\u17DD\u17E0-\u17E9\u180B-\u180D\u1810-\u1819\u1820-\u1877\u1880-\u18AA\u18B0-\u18F5\u1900-\u191E\u1920-\u192B\u1930-\u193B\u1946-\u196D\u1970-\u1974\u1980-\u19AB\u19B0-\u19C9\u19D0-\u19DA\u1A00-\u1A1B\u1A20-\u1A5E\u1A60-\u1A7C\u1A7F-\u1A89\u1A90-\u1A99\u1AA7\u1AB0-\u1ABD\u1B00-\u1B4B\u1B50-\u1B59\u1B6B-\u1B73\u1B80-\u1BF3\u1C00-\u1C37\u1C40-\u1C49\u1C4D-\u1C7D\u1CD0-\u1CD2\u1CD4-\u1CF6\u1CF8\u1CF9\u1D00-\u1DF5\u1DFC-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u200C\u200D\u203F\u2040\u2054\u2071\u207F\u2090-\u209C\u20D0-\u20DC\u20E1\u20E5-\u20F0\u2102\u2107\u210A-\u2113\u2115\u2118-\u211D\u2124\u2126\u2128\u212A-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D7F-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u2DE0-\u2DFF\u3005-\u3007\u3021-\u302F\u3031-\u3035\u3038-\u303C\u3041-\u3096\u3099-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31BA\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FCC\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA62B\uA640-\uA66F\uA674-\uA67D\uA67F-\uA69D\uA69F-\uA6F1\uA717-\uA71F\uA722-\uA788\uA78B-\uA78E\uA790-\uA7AD\uA7B0\uA7B1\uA7F7-\uA827\uA840-\uA873\uA880-\uA8C4\uA8D0-\uA8D9\uA8E0-\uA8F7\uA8FB\uA900-\uA92D\uA930-\uA953\uA960-\uA97C\uA980-\uA9C0\uA9CF-\uA9D9\uA9E0-\uA9FE\uAA00-\uAA36\uAA40-\uAA4D\uAA50-\uAA59\uAA60-\uAA76\uAA7A-\uAAC2\uAADB-\uAADD\uAAE0-\uAAEF\uAAF2-\uAAF6\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB5F\uAB64\uAB65\uABC0-\uABEA\uABEC\uABED\uABF0-\uABF9\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE00-\uFE0F\uFE20-\uFE2D\uFE33\uFE34\uFE4D-\uFE4F\uFE70-\uFE74\uFE76-\uFEFC\uFF10-\uFF19\uFF21-\uFF3A\uFF3F\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]|\uD800[\uDC00-\uDC0B\uDC0D-\uDC26\uDC28-\uDC3A\uDC3C\uDC3D\uDC3F-\uDC4D\uDC50-\uDC5D\uDC80-\uDCFA\uDD40-\uDD74\uDDFD\uDE80-\uDE9C\uDEA0-\uDED0\uDEE0\uDF00-\uDF1F\uDF30-\uDF4A\uDF50-\uDF7A\uDF80-\uDF9D\uDFA0-\uDFC3\uDFC8-\uDFCF\uDFD1-\uDFD5]|\uD801[\uDC00-\uDC9D\uDCA0-\uDCA9\uDD00-\uDD27\uDD30-\uDD63\uDE00-\uDF36\uDF40-\uDF55\uDF60-\uDF67]|\uD802[\uDC00-\uDC05\uDC08\uDC0A-\uDC35\uDC37\uDC38\uDC3C\uDC3F-\uDC55\uDC60-\uDC76\uDC80-\uDC9E\uDD00-\uDD15\uDD20-\uDD39\uDD80-\uDDB7\uDDBE\uDDBF\uDE00-\uDE03\uDE05\uDE06\uDE0C-\uDE13\uDE15-\uDE17\uDE19-\uDE33\uDE38-\uDE3A\uDE3F\uDE60-\uDE7C\uDE80-\uDE9C\uDEC0-\uDEC7\uDEC9-\uDEE6\uDF00-\uDF35\uDF40-\uDF55\uDF60-\uDF72\uDF80-\uDF91]|\uD803[\uDC00-\uDC48]|\uD804[\uDC00-\uDC46\uDC66-\uDC6F\uDC7F-\uDCBA\uDCD0-\uDCE8\uDCF0-\uDCF9\uDD00-\uDD34\uDD36-\uDD3F\uDD50-\uDD73\uDD76\uDD80-\uDDC4\uDDD0-\uDDDA\uDE00-\uDE11\uDE13-\uDE37\uDEB0-\uDEEA\uDEF0-\uDEF9\uDF01-\uDF03\uDF05-\uDF0C\uDF0F\uDF10\uDF13-\uDF28\uDF2A-\uDF30\uDF32\uDF33\uDF35-\uDF39\uDF3C-\uDF44\uDF47\uDF48\uDF4B-\uDF4D\uDF57\uDF5D-\uDF63\uDF66-\uDF6C\uDF70-\uDF74]|\uD805[\uDC80-\uDCC5\uDCC7\uDCD0-\uDCD9\uDD80-\uDDB5\uDDB8-\uDDC0\uDE00-\uDE40\uDE44\uDE50-\uDE59\uDE80-\uDEB7\uDEC0-\uDEC9]|\uD806[\uDCA0-\uDCE9\uDCFF\uDEC0-\uDEF8]|\uD808[\uDC00-\uDF98]|\uD809[\uDC00-\uDC6E]|[\uD80C\uD840-\uD868\uD86A-\uD86C][\uDC00-\uDFFF]|\uD80D[\uDC00-\uDC2E]|\uD81A[\uDC00-\uDE38\uDE40-\uDE5E\uDE60-\uDE69\uDED0-\uDEED\uDEF0-\uDEF4\uDF00-\uDF36\uDF40-\uDF43\uDF50-\uDF59\uDF63-\uDF77\uDF7D-\uDF8F]|\uD81B[\uDF00-\uDF44\uDF50-\uDF7E\uDF8F-\uDF9F]|\uD82C[\uDC00\uDC01]|\uD82F[\uDC00-\uDC6A\uDC70-\uDC7C\uDC80-\uDC88\uDC90-\uDC99\uDC9D\uDC9E]|\uD834[\uDD65-\uDD69\uDD6D-\uDD72\uDD7B-\uDD82\uDD85-\uDD8B\uDDAA-\uDDAD\uDE42-\uDE44]|\uD835[\uDC00-\uDC54\uDC56-\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDEA5\uDEA8-\uDEC0\uDEC2-\uDEDA\uDEDC-\uDEFA\uDEFC-\uDF14\uDF16-\uDF34\uDF36-\uDF4E\uDF50-\uDF6E\uDF70-\uDF88\uDF8A-\uDFA8\uDFAA-\uDFC2\uDFC4-\uDFCB\uDFCE-\uDFFF]|\uD83A[\uDC00-\uDCC4\uDCD0-\uDCD6]|\uD83B[\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB]|\uD869[\uDC00-\uDED6\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D]|\uD87E[\uDC00-\uDE1D]|\uDB40[\uDD00-\uDDEF]/
 },St.prototype=Et.prototype={processComment:function(){var e,t,n,r=N.bottomRightStack
 ,s,o,u=r[r.length-1];if(this.type===i.Program&#x26;&#x26;this.body.length&#x3e;0)return;if(N.trailingComments
 .length&#x3e;0){n=[];for(s=N.trailingComments.length-1;s&#x3e;=0;--s)o=N.trailingComments[
-s],o.range[0]&#x3e;=this.range[1]&#x26;&#x26;(n.unshift(o),N.trailingComments.<span class="apidocCodeKeywordSpan">splice</span>(\
+s],o.range[0]&#x3e;=this.range[1]&#x26;&#x26;(n.unshift(o),N.trailingComments.<span class="apidocCodeKeywordSpan">splice</span>(
 s,1));N.trailingComments=
 []}else u&#x26;&#x26;u.trailingComments&#x26;&#x26;u.trailingComments[0].range[0]&#x3e;=this.range[1]&#x26;&#x26;(n=
 u.trailingComments,delete u.trailingComments);while(u&#x26;&#x26;u.range[0]&#x3e;=this.range[0]
@@ -20848,8 +20929,8 @@ o),e.leadingComments.splice(s,1));e.leadingComments.length||(e.leadingComments=u
 this.maybeAddSkip(this.branchLocationFor(n,1)),e.consequent=f.sequence(r,e.consequent
 ),e.alternate=f.sequence(i,e.alternate)},maybeAddSkip:function(e){return function(
 t){var n=!!this.currentState.ignoring,r=this.currentState.currentHint,i=!n&#x26;&#x26;r&#x26;&#x26;r
-.type===&#x22;next&#x22;;i&#x26;&#x26;(this.<span class="apidocCodeKeywordSpan">startIgnore</span>(),t.postprocessor=this.endIgn\
-ore);if(i||n)e.
+.type===&#x22;next&#x22;;i&#x26;&#x26;(this.<span class="apidocCodeKeywordSpan">startIgnore</span>(),t.postprocessor=this.endIgnore
+);if(i||n)e.
 skip=!0}},logicalExpressionBranchInjector:function(e,n){var r=n.parent(),i=[],s,
 o,u;this.maybeSkipNode(e,&#x22;next&#x22;);if(r&#x26;&#x26;r.node.type===t.LogicalExpression.name)return;
 this.findLeaves(e,i),s=this.branchName(&#x22;binary-expr&#x22;,n.startLineForNode(e),this.
@@ -20881,8 +20962,7 @@ expression.value===&#x22;use strict&#x22;},maybeSkipNode:function(e,t){var n=!!t
 ;this.maybeSkipNode(e,&#x22;next&#x22;);if(this.isUseStrictExpression(e)){s=n.ancestor(2);
 if(s&#x26;&#x26;(s.node.type===t.FunctionExpression.name||s.node.type===t.FunctionDeclaration
 .name)&#x26;&#x26;n.parent().node.body[0]===e)return}e.type===t.FunctionDeclaration.name?r=
-this.<span class="apidocCodeKeywordSpan">statementName</span>(e.loc,1):(r=this.statementName(e.loc),i=f.statement(f.postIncremen\
-t
+this.<span class="apidocCodeKeywordSpan">statementName</span>(e.loc,1):(r=this.statementName(e.loc),i=f.statement(f.postIncrement
 (f.subscript(f.dot(f.variable(this.currentState.trackerVar),f.variable(&#x22;s&#x22;)),f.stringLiteral
 (r)))),this.splice(i,e,n))},splice:function(e,t,n){var r=n.isLabeled()?n.parent(
 ).node:t;r.prepend=r.prepend||[],d(r.prepend,e)},functionName:function(e,t,n){this
@@ -21041,8 +21121,7 @@ error(&#x22;Writing &#x22;+s),e.writeFile(s,function(e){i.writeIndexPage(e,t)}),
 o),e.writeFile(o,function(e){i.writeDetailPage(e,t,r.<span class="apidocCodeKeywordSpan">fileCoverageFor</span>(t.fullPath(
 )))}))})},standardLinkMapper:function(){return{fromParent:function(e){var t=0,n=
 e.relativeName,r;if(SEP!==&#x22;/&#x22;){n=&#x22;&#x22;;for(t=0;t&#x3c;e.relativeName.length;t+=1)r=e.relativeName
-.charAt(t),r===SEP?n+=&#x22;/&#x22;:n+=r}return e.kind===&#x22;dir&#x22;?n+&#x22;index.html&#x22;:n+&#x22;.html&#x22;},ancestorH\
-ref
+.charAt(t),r===SEP?n+=&#x22;/&#x22;:n+=r}return e.kind===&#x22;dir&#x22;?n+&#x22;index.html&#x22;:n+&#x22;.html&#x22;},ancestorHref
 :function(e,t){var n=&#x22;&#x22;,r,i,s,o;for(s=0;s&#x3c;t;s+=1){r=e.relativeName.split(SEP),i=
 r.length-1;for(o=0;o&#x3c;i;o+=1)n+=&#x22;../&#x22;;e=e.parent}return n},ancestor:function(e,t)
 {return this.ancestorHref(e,t)+&#x22;index.html&#x22;},asset:function(e,t){var n=0,r=e.parent
@@ -21071,15 +21150,13 @@ r.length-1;for(o=0;o&#x3c;i;o+=1)n+=&#x22;../&#x22;;e=e.parent}return n},ancesto
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 e.relativeName,r;if(SEP!==&#x22;/&#x22;){n=&#x22;&#x22;;for(t=0;t&#x3c;e.relativeName.length;t+=1)r=e.relativeName
-.charAt(t),r===SEP?n+=&#x22;/&#x22;:n+=r}return e.kind===&#x22;dir&#x22;?n+&#x22;index.html&#x22;:n+&#x22;.html&#x22;},ancestorH\
-ref
+.charAt(t),r===SEP?n+=&#x22;/&#x22;:n+=r}return e.kind===&#x22;dir&#x22;?n+&#x22;index.html&#x22;:n+&#x22;.html&#x22;},ancestorHref
 :function(e,t){var n=&#x22;&#x22;,r,i,s,o;for(s=0;s&#x3c;t;s+=1){r=e.relativeName.split(SEP),i=
 r.length-1;for(o=0;o&#x3c;i;o+=1)n+=&#x22;../&#x22;;e=e.parent}return n},ancestor:function(e,t)
 {return this.ancestorHref(e,t)+&#x22;index.html&#x22;},asset:function(e,t){var n=0,r=e.parent
 ;while(r)n+=1,r=r.parent;return this.ancestorHref(e,n)+t}}},writeReport:function(
 e,t){var n=this.opts,r=n.dir,i=new TreeSummarizer,s=n.writer||new FileWriter(t),
-o;e.<span class="apidocCodeKeywordSpan">files</span>().forEach(function(t){i.addFileCoverageSummary(t,utils.summarizeFileCoverag\
-e
+o;e.<span class="apidocCodeKeywordSpan">files</span>().forEach(function(t){i.addFileCoverageSummary(t,utils.summarizeFileCoverage
 (e.fileCoverageFor(t)))}),o=i.getTreeSummary(),fs.readdirSync(path.resolve(__dirname
 ,&#x22;..&#x22;,&#x22;vendor&#x22;)).forEach(function(e){var t=path.resolve(__dirname,&#x22;..&#x22;,&#x22;vendor&#x22;,
 e),i=path.resolve(r,e),o=fs.statSync(t);o.isFile()&#x26;&#x26;(n.verbose&#x26;&#x26;console.log(&#x22;Write asset: &#x22;+
@@ -21267,7 +21344,7 @@ function(){var e=this.parent();return e&#x26;&#x26;e.node.type===t.LabeledStatem
 ,g.prototype={instrumentSync:function(e,n){var s;if(typeof e!=&#x22;string&#x22;)throw new
 Error(&#x22;Code must be string&#x22;);return e.charAt(0)===&#x22;#&#x22;&#x26;&#x26;(e=&#x22;//&#x22;+e),this.opts.noAutoWrap||
 (e=o+e+u),s=r.parse(e,{loc:!0,range:!0,tokens:this.opts.preserveComments,comment
-:!0}),this.opts.preserveComments&#x26;&#x26;(s=i.<span class="apidocCodeKeywordSpan">attachComments</span>(s,s.comments,s.tokens\
+:!0}),this.opts.preserveComments&#x26;&#x26;(s=i.<span class="apidocCodeKeywordSpan">attachComments</span>(s,s.comments,s.tokens
 )),this
 .opts.noAutoWrap||(s={type:t.Program.name,body:s.body[0].expression.callee.body.
 body,comments:s.comments}),this.instrumentASTSync(s,n,e)},filterHints:function(e
@@ -21309,7 +21386,7 @@ branchMap:{}},this.currentState={trackerVar:p(t,this.omitTrackerSuffix),func:0,b
 :-1,ignoring:0},e.body&#x26;&#x26;e.body.length&#x3e;0&#x26;&#x26;this.isUseStrictExpression(e.body[0])&#x26;&#x26;
 (e.body.shift(),r=!0),this.walker.startWalk(e),s=this.opts.codeGenerationOptions||
 {format:{compact:!this.opts.noCompact}},s.comment=this.opts.preserveComments,o=i
-.<span class="apidocCodeKeywordSpan">generate</span>(e,s),u=this.getPreamble(n||&#x22;&#x22;,r);if(o.map&#x26;&#x26;o.code){a=u.\
+.<span class="apidocCodeKeywordSpan">generate</span>(e,s),u=this.getPreamble(n||&#x22;&#x22;,r);if(o.map&#x26;&#x26;o.code){a=u.
 split(/\r\n|\r|\n/
 ).length;for(f=0;f&#x3c;o.map._mappings._array.length;f+=1)o.map._mappings._array[f].
 generatedLine+=a;this.sourceMap=o.map,o=o.code}return u+&#x22;\n&#x22;+o+&#x22;\n&#x22;},instrument:
@@ -21363,8 +21440,7 @@ try {
     document.querySelector(&#x27;#outputPreJsonStringify1&#x27;).textContent = &#x27;&#x27;;
     document.querySelector(&#x27;#outputPreJsonStringify1&#x27;).textContent =
         local.jsonStringifyOrdered(
-            JSON.<span class="apidocCodeKeywordSpan">parse</span>(document.querySelector(&#x27;#inputTextareaEval1&#x27;).value)\
-,
+            JSON.<span class="apidocCodeKeywordSpan">parse</span>(document.querySelector(&#x27;#inputTextareaEval1&#x27;).value),
             null,
             4
         );
@@ -21449,7 +21525,7 @@ function(){var e=this.parent();return e&#x26;&#x26;e.node.type===t.LabeledStatem
 ,g.prototype={instrumentSync:function(e,n){var s;if(typeof e!=&#x22;string&#x22;)throw new
 Error(&#x22;Code must be string&#x22;);return e.charAt(0)===&#x22;#&#x22;&#x26;&#x26;(e=&#x22;//&#x22;+e),this.opts.noAutoWrap||
 (e=o+e+u),s=r.parse(e,{loc:!0,range:!0,tokens:this.opts.preserveComments,comment
-:!0}),this.opts.preserveComments&#x26;&#x26;(s=i.<span class="apidocCodeKeywordSpan">attachComments</span>(s,s.comments,s.tokens\
+:!0}),this.opts.preserveComments&#x26;&#x26;(s=i.<span class="apidocCodeKeywordSpan">attachComments</span>(s,s.comments,s.tokens
 )),this
 .opts.noAutoWrap||(s={type:t.Program.name,body:s.body[0].expression.callee.body.
 body,comments:s.comments}),this.instrumentASTSync(s,n,e)},filterHints:function(e
@@ -21633,8 +21709,8 @@ v=g.length;while((v-=1)&#x3e;=0){if(!g[v])continue;if(E(c,m[d]))o=new y(g[v],[p,
     <ul>
     <li>description and source-code<pre class="apidocCodePre">current = function ( ){return this.__current.node}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-:[&#x22;id&#x22;,&#x22;init&#x22;],WhileStatement:[&#x22;test&#x22;,&#x22;body&#x22;],WithStatement:[&#x22;object&#x22;,&#x22;bo\
-dy&#x22;],YieldExpression
+:[&#x22;id&#x22;,&#x22;init&#x22;],WhileStatement:[&#x22;test&#x22;,&#x22;body&#x22;],WithStatement:[&#x22;object&#x22;,&#x22;body
+&#x22;],YieldExpression
 :[&#x22;argument&#x22;]},a={},f={},l={},i={Break:a,Skip:f,Remove:l},g.prototype.replace=function(
 t){this.parent[this.key]=t},g.prototype.remove=function(){return r(this.parent)?
 (this.parent.splice(this.key,1),!0):(this.replace(null),!1)},b.prototype.path=function(
@@ -21670,8 +21746,8 @@ length;t&#x3c;n;++t)r.push(this.__leavelist[t].node);return r},b.prototype.curre
 undefined,r=this.__current,this.__current=n,this.__state=null,t&#x26;&#x26;(i=t.call(this,
 n.node,this.__leavelist[this.__leavelist.length-1].node)),this.__current=r,i},b.
 prototype.notify=function(t){this.__state=t},b.prototype.skip=function(){this.notify
-(f)},b.prototype[&#x22;break&#x22;]=function(){this.<span class="apidocCodeKeywordSpan">notify</span>(a)},b.prototype.remove=fun\
-ction(
+(f)},b.prototype[&#x22;break&#x22;]=function(){this.<span class="apidocCodeKeywordSpan">notify</span>(a)},b.prototype.remove=function
+(
 ){this.notify(l)},b.prototype.__initialize=function(e,t){this.visitor=t,this.root=
 e,this.__worklist=[],this.__leavelist=[],this.__current=null,this.__state=null,this
 .__fallback=t.fallback===&#x22;iteration&#x22;,this.__keys=s,t.keys&#x26;&#x26;(this.__keys=m(o(this
@@ -21920,10 +21996,10 @@ local.assetsDict[&#x27;/assets.example.js&#x27;] =
 local.assetsDict[&#x27;/assets.utility2.rollup.js&#x27;] =
     local.assetsDict[&#x27;/assets.utility2.rollup.js&#x27;] ||
     local.fs.readFileSync(
+        // npmdoc-hack
         local.utility2.__dirname +
             &#x27;/lib.utility2.js&#x27;,
         &#x27;utf8&#x27;
-    ).replace((/^#!/), &#x27;//&#x27;);
 ...</pre></li>
     </ul>
     
@@ -22038,25 +22114,25 @@ create(&#x22;fslookup&#x22;),this.opts.linkMapper=this.opts.linkMapper||this.sta
 (),this.opts.writer=this.opts.writer||null,this.opts.templateData={datetime:Date
 ()},this.opts.watermarks=this.opts.watermarks||defaults.watermarks()}var handlebars=
 require(&#x22;handlebars&#x22;),defaults=require(&#x22;./common/defaults&#x22;),path=require(&#x22;path&#x22;)
-,SEP=path.sep||&#x22;/&#x22;,fs=require(&#x22;fs&#x22;),util=require(&#x22;util&#x22;),FileWriter=require(&#x22;../util/file-wri\
-ter&#x22;
-),Report=require(&#x22;./index&#x22;),Store=require(&#x22;../store&#x22;),InsertionText=require(&#x22;../util/insertion-text&#x2\
-2;
+,SEP=path.sep||&#x22;/&#x22;,fs=require(&#x22;fs&#x22;),util=require(&#x22;util&#x22;),FileWriter=require(&#x22;../util/file-writer
+&#x22;
+),Report=require(&#x22;./index&#x22;),Store=require(&#x22;../store&#x22;),InsertionText=require(&#x22;../util/insertion-text&#x22
+;
 ),TreeSummarizer=require(&#x22;../util/tree-summarizer&#x22;),utils=require(&#x22;../object-utils&#x22;
 ),templateFor=function(e){return handlebars.<span class="apidocCodeKeywordSpan">compile</span>(fs.readFileSync(path.resolve
-(__dirname,&#x22;templates&#x22;,e+&#x22;.txt&#x22;),&#x22;utf8&#x22;))},headerTemplate=templateFor(&#x22;head&#x22;),footerTemp\
-late=
-templateFor(&#x22;foot&#x22;),pathTemplate=handlebars.compile(&#x27;&#x3c;div class=&#x22;path&#x22;&#x3e;{{{html}}}&#x3c;/div&#\
+(__dirname,&#x22;templates&#x22;,e+&#x22;.txt&#x22;),&#x22;utf8&#x22;))},headerTemplate=templateFor(&#x22;head&#x22;),footerTemplate
+=
+templateFor(&#x22;foot&#x22;),pathTemplate=handlebars.compile(&#x27;&#x3c;div class=&#x22;path&#x22;&#x3e;{{{html}}}&#x3c;/div&#
 x3e;&#x27;
-),detailTemplate=handlebars.compile([&#x22;&#x3c;tr&#x3e;&#x22;,&#x27;&#x3c;td class=&#x22;line-count&#x22;&#x3e;{{#show_lines}}\
-{{maxLines}}{{/show_lines}}&#x3c;/td&#x3e;&#x27;
-,&#x27;&#x3c;td class=&#x22;line-coverage&#x22;&#x3e;{{#show_line_execution_counts fileCoverage}}{{maxLines}}{{/show_line_execut\
-ion_counts}}&#x3c;/td&#x3e;&#x27;
-,&#x27;&#x3c;td class=&#x22;text&#x22;&#x3e;&#x3c;pre class=&#x22;prettyprint lang-js&#x22;&#x3e;{{#show_code structured}}{{/sho\
-w_code}}&#x3c;/pre&#x3e;&#x3c;/td&#x3e;&#x27;
-,&#x22;&#x3c;/tr&#x3e;\n&#x22;].join(&#x22;&#x22;)),summaryTableHeader=[&#x27;&#x3c;div class=&#x22;coverage-summary&#x22;&#x3e;\
-&#x27;,&#x22;&#x3c;table&#x3e;&#x22;
-,&#x22;&#x3c;thead&#x3e;&#x22;,&#x22;&#x3c;tr&#x3e;&#x22;,&#x27;   &#x3c;th data-col=&#x22;file&#x22; data-fmt=&#x22;html&#x22; \
+),detailTemplate=handlebars.compile([&#x22;&#x3c;tr&#x3e;&#x22;,&#x27;&#x3c;td class=&#x22;line-count&#x22;&#x3e;{{#show_lines}}{{
+maxLines}}{{/show_lines}}&#x3c;/td&#x3e;&#x27;
+,&#x27;&#x3c;td class=&#x22;line-coverage&#x22;&#x3e;{{#show_line_execution_counts fileCoverage}}{{maxLines}}{{/show_line_execution_counts
+}}&#x3c;/td&#x3e;&#x27;
+,&#x27;&#x3c;td class=&#x22;text&#x22;&#x3e;&#x3c;pre class=&#x22;prettyprint lang-js&#x22;&#x3e;{{#show_code structured}}{{/show_code
+}}&#x3c;/pre&#x3e;&#x3c;/td&#x3e;&#x27;
+,&#x22;&#x3c;/tr&#x3e;\n&#x22;].join(&#x22;&#x22;)),summaryTableHeader=[&#x27;&#x3c;div class=&#x22;coverage-summary&#x22;&#x3e;&#
+x27;,&#x22;&#x3c;table&#x3e;&#x22;
+,&#x22;&#x3c;thead&#x3e;&#x22;,&#x22;&#x3c;tr&#x3e;&#x22;,&#x27;   &#x3c;th data-col=&#x22;file&#x22; data-fmt=&#x22;html&#x22; 
 data-html=&#x22;true&#x22; class=&#x22;file&#x22;&#x3e;File&#x3c;/th&#x3e;&#x27;
 ...</pre></li>
     </ul>
@@ -22082,33 +22158,33 @@ data-html=&#x22;true&#x22; class=&#x22;file&#x22;&#x3e;File&#x3c;/th&#x3e;&#x27;
     };
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-,&#x27;&#x3c;td data-value=&#x22;{{metrics.branches.total}}&#x22; class=&#x22;abs {{reportClasses.branches}}&#x22;&#x3e;({{metri\
-cs.branches.covered}}&#x26;nbsp;/&#x26;nbsp;{{metrics.branches.total}})&#x3c;/td&#x3e;&#x27;
-,&#x27;&#x3c;td data-value=&#x22;{{metrics.functions.pct}}&#x22; class=&#x22;pct {{reportClasses.functions}}&#x22;&#x3e;{{metric\
-s.functions.pct}}%&#x3c;/td&#x3e;&#x27;
-,&#x27;&#x3c;td data-value=&#x22;{{metrics.functions.total}}&#x22; class=&#x22;abs {{reportClasses.functions}}&#x22;&#x3e;({{met\
-rics.functions.covered}}&#x26;nbsp;/&#x26;nbsp;{{metrics.functions.total}})&#x3c;/td&#x3e;&#x27;
-,&#x27;&#x3c;td data-value=&#x22;{{metrics.lines.pct}}&#x22; class=&#x22;pct {{reportClasses.lines}}&#x22;&#x3e;{{metrics.lines.\
+,&#x27;&#x3c;td data-value=&#x22;{{metrics.branches.total}}&#x22; class=&#x22;abs {{reportClasses.branches}}&#x22;&#x3e;({{metrics
+.branches.covered}}&#x26;nbsp;/&#x26;nbsp;{{metrics.branches.total}})&#x3c;/td&#x3e;&#x27;
+,&#x27;&#x3c;td data-value=&#x22;{{metrics.functions.pct}}&#x22; class=&#x22;pct {{reportClasses.functions}}&#x22;&#x3e;{{metrics
+.functions.pct}}%&#x3c;/td&#x3e;&#x27;
+,&#x27;&#x3c;td data-value=&#x22;{{metrics.functions.total}}&#x22; class=&#x22;abs {{reportClasses.functions}}&#x22;&#x3e;({{metrics
+.functions.covered}}&#x26;nbsp;/&#x26;nbsp;{{metrics.functions.total}})&#x3c;/td&#x3e;&#x27;
+,&#x27;&#x3c;td data-value=&#x22;{{metrics.lines.pct}}&#x22; class=&#x22;pct {{reportClasses.lines}}&#x22;&#x3e;{{metrics.lines.
 pct}}%&#x3c;/td&#x3e;&#x27;
-,&#x27;&#x3c;td data-value=&#x22;{{metrics.lines.total}}&#x22; class=&#x22;abs {{reportClasses.lines}}&#x22;&#x3e;({{metrics.lin\
-es.covered}}&#x26;nbsp;/&#x26;nbsp;{{metrics.lines.total}})&#x3c;/td&#x3e;&#x27;
-,&#x22;&#x3c;/tr&#x3e;\n&#x22;].join(&#x22;\n	&#x22;)),summaryTableFooter=[&#x22;&#x3c;/tbody&#x3e;&#x22;,&#x22;&#x3c;/table&#x3\
-e;&#x22;,&#x22;&#x3c;/div&#x3e;&#x22;].join
-(&#x22;\n&#x22;),lt=&#x22;&#x22;,gt=&#x22;&#x22;,RE_LT=/&#x3c;/g,RE_GT=/&#x3e;/g,RE_AMP=/&#x26;/g,RE_lt=/\u0001/g,RE_gt=/\u000\
-2/g
-;handlebars.<span class="apidocCodeKeywordSpan">registerHelper</span>(&#x22;show_picture&#x22;,function(e){var t=Number(e.fn(thi\
-s)),n
-,r=&#x22;&#x22;;return isFinite(t)?(t===100&#x26;&#x26;(r=&#x22; cover-full&#x22;),t=Math.floor(t),n=100-t,&#x27;&#x3c;span clas\
-s=&#x22;cover-fill&#x27;+
-r+&#x27;&#x22; style=&#x22;width: &#x27;+t+&#x27;px;&#x22;&#x3e;&#x3c;/span&#x3e;&#x27;+&#x27;&#x3c;span class=&#x22;cover-empty\
+,&#x27;&#x3c;td data-value=&#x22;{{metrics.lines.total}}&#x22; class=&#x22;abs {{reportClasses.lines}}&#x22;&#x3e;({{metrics.lines
+.covered}}&#x26;nbsp;/&#x26;nbsp;{{metrics.lines.total}})&#x3c;/td&#x3e;&#x27;
+,&#x22;&#x3c;/tr&#x3e;\n&#x22;].join(&#x22;\n	&#x22;)),summaryTableFooter=[&#x22;&#x3c;/tbody&#x3e;&#x22;,&#x22;&#x3c;/table&#x3e
+;&#x22;,&#x22;&#x3c;/div&#x3e;&#x22;].join
+(&#x22;\n&#x22;),lt=&#x22;&#x22;,gt=&#x22;&#x22;,RE_LT=/&#x3c;/g,RE_GT=/&#x3e;/g,RE_AMP=/&#x26;/g,RE_lt=/\u0001/g,RE_gt=/\u0002
+/g
+;handlebars.<span class="apidocCodeKeywordSpan">registerHelper</span>(&#x22;show_picture&#x22;,function(e){var t=Number(e.fn(this
+)),n
+,r=&#x22;&#x22;;return isFinite(t)?(t===100&#x26;&#x26;(r=&#x22; cover-full&#x22;),t=Math.floor(t),n=100-t,&#x27;&#x3c;span class
+=&#x22;cover-fill&#x27;+
+r+&#x27;&#x22; style=&#x22;width: &#x27;+t+&#x27;px;&#x22;&#x3e;&#x3c;/span&#x3e;&#x27;+&#x27;&#x3c;span class=&#x22;cover-empty
 &#x22; style=&#x22;width:&#x27;+
-n+&#x27;px;&#x22;&#x3e;&#x3c;/span&#x3e;&#x27;):&#x22;&#x22;}),handlebars.registerHelper(&#x22;show_ignores&#x22;,function(e){va\
-r t=
+n+&#x27;px;&#x22;&#x3e;&#x3c;/span&#x3e;&#x27;):&#x22;&#x22;}),handlebars.registerHelper(&#x22;show_ignores&#x22;,function(e){var
+ t=
 e.statements.skipped,n=e.functions.skipped,r=e.branches.skipped,i;return t===0&#x26;&#x26;
-n===0&#x26;&#x26;r===0?&#x27;&#x3c;span class=&#x22;ignore-none&#x22;&#x3e;none&#x3c;/span&#x3e;&#x27;:(i=[],t&#x3e;0&#x26;&#x26\
+n===0&#x26;&#x26;r===0?&#x27;&#x3c;span class=&#x22;ignore-none&#x22;&#x3e;none&#x3c;/span&#x3e;&#x27;:(i=[],t&#x3e;0&#x26;&#x26
 ;i.push(t===1?&#x22;1 statement&#x22;
-:t+&#x22; statements&#x22;),n&#x3e;0&#x26;&#x26;i.push(n===1?&#x22;1 function&#x22;:n+&#x22; functions&#x22;),r&#x3e;0&#x26;&#x2\
-6;i.push(r===1?&#x22;1 branch&#x22;
+:t+&#x22; statements&#x22;),n&#x3e;0&#x26;&#x26;i.push(n===1?&#x22;1 function&#x22;:n+&#x22; functions&#x22;),r&#x3e;0&#x26;&#x26
+;i.push(r===1?&#x22;1 branch&#x22;
 :r+&#x22; branches&#x22;),i.join(&#x22;, &#x22;))}),handlebars.registerHelper(&#x22;show_lines&#x22;,function(
 ...</pre></li>
     </ul>
@@ -22386,7 +22462,7 @@ local.moduleDirname = function (module, modulePathList) {
     var result, tmp;
     // search process.cwd()
     if (!module || module === &#x27;.&#x27; || module.indexOf(&#x27;/&#x27;) &#x3e;= 0) {
-        return require(&#x27;path&#x27;).<span class="apidocCodeKeywordSpan">resolve</span>(process.cwd(), module || &#x27;&#x27\
+        return require(&#x27;path&#x27;).<span class="apidocCodeKeywordSpan">resolve</span>(process.cwd(), module || &#x27;&#x27
 ;);
     }
     // search builtin
@@ -22429,18 +22505,18 @@ local.moduleDirname = function (module, modulePathList) {
 e){var t=Number(e.fn(this)),n,r=[];for(n=0;n&#x3c;t;n+=1)r[n]=n+1;return r.join(&#x22;\n&#x22;)
 }),handlebars.registerHelper(&#x22;show_line_execution_counts&#x22;,function(e,t){var n=e.
 l,r=Number(t.fn(this)),i,s,o=[],u,a=&#x22;&#x22;;for(i=0;i&#x3c;r;i+=1)s=i+1,a=&#x22;&#x26;nbsp;&#x22;,u=&#x22;neutral&#x22;
-,n.hasOwnProperty(s)&#x26;&#x26;(n[s]&#x3e;0?(u=&#x22;yes&#x22;,a=n[s]):u=&#x22;no&#x22;),o.push(&#x27;&#x3c;span class=&#x22;cl\
-ine-any cline-&#x27;+
-u+&#x27;&#x22;&#x3e;&#x27;+a+&#x22;&#x3c;/span&#x3e;&#x22;);return o.join(&#x22;\n&#x22;)}),handlebars.registerHelper(&#x22;show\
-_code&#x22;,
+,n.hasOwnProperty(s)&#x26;&#x26;(n[s]&#x3e;0?(u=&#x22;yes&#x22;,a=n[s]):u=&#x22;no&#x22;),o.push(&#x27;&#x3c;span class=&#x22;cline
+-any cline-&#x27;+
+u+&#x27;&#x22;&#x3e;&#x27;+a+&#x22;&#x3c;/span&#x3e;&#x22;);return o.join(&#x22;\n&#x22;)}),handlebars.registerHelper(&#x22;show_code
+&#x22;,
 function(e){var t=[];return e.forEach(function(e){t.push(customEscape(e.text)||&#x22;&#x26;nbsp;&#x22;
-)}),t.join(&#x22;\n&#x22;)}),HtmlReport.TYPE=&#x22;html&#x22;,util.<span class="apidocCodeKeywordSpan">inherits</span>(HtmlRepor\
-t,Report),Report
+)}),t.join(&#x22;\n&#x22;)}),HtmlReport.TYPE=&#x22;html&#x22;,util.<span class="apidocCodeKeywordSpan">inherits</span>(HtmlReport
+,Report),Report
 .mix(HtmlReport,{getPathHtml:function(e,t){var n=e.parent,r=[],i=[],s;while(n)r.
-push(n),n=n.parent;for(s=0;s&#x3c;r.length;s+=1)i.push(&#x27;&#x3c;a href=&#x22;&#x27;+t.ancestor(e,s+1)+&#x27;&#x22;&#x3e;&#x27\
+push(n),n=n.parent;for(s=0;s&#x3c;r.length;s+=1)i.push(&#x27;&#x3c;a href=&#x22;&#x27;+t.ancestor(e,s+1)+&#x27;&#x22;&#x3e;&#x27
 ;+
-(r[s].relativeName||&#x22;All files&#x22;)+&#x22;&#x3c;/a&#x3e;&#x22;);return i.reverse(),i.length&#x3e;0?i.join(&#x22; &#x26;#1\
-87; &#x22;
+(r[s].relativeName||&#x22;All files&#x22;)+&#x22;&#x3c;/a&#x3e;&#x22;);return i.reverse(),i.length&#x3e;0?i.join(&#x22; &#x26;#187
+; &#x22;
 )+&#x22; &#x26;#187; &#x22;+e.displayShortName():&#x22;&#x22;},fillTemplate:function(e,t){var n=this.opts
 ,r=n.linkMapper;t.entity=e.name||&#x22;All files&#x22;,t.metrics=e.metrics,t.reportClass=getReportClass
 (e.metrics.statements,n.watermarks.statements),t.pathHtml=pathTemplate({html:this
@@ -22794,27 +22870,27 @@ t.line||e.column-t.column})}}</pre></li>
     <li>description and source-code<pre class="apidocCodePre">addFormatter = function (e){
 t[e.id]=e}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-({id:&#x22;checkstyle-xml&#x22;,name:&#x22;Checkstyle XML format&#x22;,startFormat:function(){return&#x27;&#x3c;?xml version=&#x\
-22;1.0&#x22; encoding=&#x22;utf-8&#x22;?&#x3e;&#x3c;checkstyle&#x3e;&#x27;
-},endFormat:function(){return&#x22;&#x3c;/checkstyle&#x3e;&#x22;},readError:function(t,n){return&#x27;&#x3c;file name=&#x22;&#x2\
-7;+
-e(t)+&#x27;&#x22;&#x3e;&#x3c;error line=&#x22;0&#x22; column=&#x22;0&#x22; severty=&#x22;error&#x22; message=&#x22;&#x27;+e(n)+&\
-#x27;&#x22;&#x3e;&#x3c;/error&#x3e;&#x3c;/file&#x3e;&#x27;
+({id:&#x22;checkstyle-xml&#x22;,name:&#x22;Checkstyle XML format&#x22;,startFormat:function(){return&#x27;&#x3c;?xml version=&#x22
+;1.0&#x22; encoding=&#x22;utf-8&#x22;?&#x3e;&#x3c;checkstyle&#x3e;&#x27;
+},endFormat:function(){return&#x22;&#x3c;/checkstyle&#x3e;&#x22;},readError:function(t,n){return&#x27;&#x3c;file name=&#x22;&#x27
+;+
+e(t)+&#x27;&#x22;&#x3e;&#x3c;error line=&#x22;0&#x22; column=&#x22;0&#x22; severty=&#x22;error&#x22; message=&#x22;&#x27;+e(n)+&#
+x27;&#x22;&#x3e;&#x3c;/error&#x3e;&#x3c;/file&#x3e;&#x27;
 },formatResults:function(t,n,r){var i=t.messages,s=[],o=function(e){return!!e&#x26;&#x26;&#x22;name&#x22;in
-e?&#x22;net.csslint.&#x22;+e.name.replace(/\s/g,&#x22;&#x22;):&#x22;&#x22;};return i.length&#x3e;0&#x26;&#x26;(s.push(&#x27;&#x3\
-c;file name=&#x22;&#x27;+
+e?&#x22;net.csslint.&#x22;+e.name.replace(/\s/g,&#x22;&#x22;):&#x22;&#x22;};return i.length&#x3e;0&#x26;&#x26;(s.push(&#x27;&#x3c
+;file name=&#x22;&#x27;+
 n+&#x27;&#x22;&#x3e;&#x27;),CSSLint.Util.forEach(i,function(t,n){t.rollup||s.push(&#x27;&#x3c;error line=&#x22;&#x27;+t.
-line+&#x27;&#x22; column=&#x22;&#x27;+t.col+&#x27;&#x22; severity=&#x22;&#x27;+t.type+&#x27;&#x22;&#x27;+&#x27; message=&#x22;&#\
+line+&#x27;&#x22; column=&#x22;&#x27;+t.col+&#x27;&#x22; severity=&#x22;&#x27;+t.type+&#x27;&#x22;&#x27;+&#x27; message=&#x22;&#
 x27;+e(t.message)+&#x27;&#x22; source=&#x22;&#x27;+
-o(t.rule)+&#x27;&#x22;/&#x3e;&#x27;)}),s.push(&#x22;&#x3c;/file&#x3e;&#x22;)),s.join(&#x22;&#x22;)}})}(),CSSLint.<span class="ap\
-idocCodeKeywordSpan">addFormatter</span>({id:&#x22;compact&#x22;
+o(t.rule)+&#x27;&#x22;/&#x3e;&#x27;)}),s.push(&#x22;&#x3c;/file&#x3e;&#x22;)),s.join(&#x22;&#x22;)}})}(),CSSLint.<span class="apidocCodeKeywordSpan
+">addFormatter</span>({id:&#x22;compact&#x22;
 ,name:&#x22;Compact, &#x27;porcelain&#x27; format&#x22;,startFormat:function(){return&#x22;&#x22;},endFormat:function(
 ){return&#x22;&#x22;},formatResults:function(e,t,n){var r=e.messages,i=&#x22;&#x22;;n=n||{};var s=function(
 e){return e.charAt(0).toUpperCase()+e.slice(1)};return r.length===0?n.quiet?&#x22;&#x22;:t+&#x22;: Lint Free!&#x22;
 :(CSSLint.Util.forEach(r,function(e,n){e.rollup?i+=t+&#x22;: &#x22;+s(e.type)+&#x22; - &#x22;+e.message+&#x22;\n&#x22;
 :i+=t+&#x22;: &#x22;+&#x22;line &#x22;+e.line+&#x22;, col &#x22;+e.col+&#x22;, &#x22;+s(e.type)+&#x22; - &#x22;+e.message+&#x22;\n&#x22;}),i
 )}}),CSSLint.addFormatter({id:&#x22;csslint-xml&#x22;,name:&#x22;CSSLint XML format&#x22;,startFormat
-:function(){return&#x27;&#x3c;?xml version=&#x22;1.0&#x22; encoding=&#x22;utf-8&#x22;?&#x3e;&#x3c;csslint&#x3e;&#x27;},endFormat\
+:function(){return&#x27;&#x3c;?xml version=&#x22;1.0&#x22; encoding=&#x22;utf-8&#x22;?&#x3e;&#x3c;csslint&#x3e;&#x27;},endFormat
 :function(
 ...</pre></li>
     </ul>
@@ -22837,14 +22913,14 @@ stat:function(e,t){this.stats[e]=t}},CSSLint._Reporter=Reporter,CSSLint.Util={mi
 :function(e,t){var n;for(n in t)t.hasOwnProperty(n)&#x26;&#x26;(e[n]=t[n]);return n},indexOf
 :function(e,t){if(e.indexOf)return e.indexOf(t);for(var n=0,r=e.length;n&#x3c;r;n++)if(
 e[n]===t)return n;return-1},forEach:function(e,t){if(e.forEach)return e.forEach(
-t);for(var n=0,r=e.length;n&#x3c;r;n++)t(e[n],n,e)}},CSSLint.<span class="apidocCodeKeywordSpan">addRule</span>({id:&#x22;adjoin\
-ing-classes&#x22;
+t);for(var n=0,r=e.length;n&#x3c;r;n++)t(e[n],n,e)}},CSSLint.<span class="apidocCodeKeywordSpan">addRule</span>({id:&#x22;adjoining
+-classes&#x22;
 ,name:&#x22;Disallow adjoining classes&#x22;,desc:&#x22;Don&#x27;t use adjoining classes.&#x22;,browsers:&#x22;IE6&#x22;
 ,init:function(e,t){var n=this;e.addListener(&#x22;startrule&#x22;,function(r){var i=r.selectors
 ,s,o,u,a,f,l,c;for(f=0;f&#x3c;i.length;f++){s=i[f];for(l=0;l&#x3c;s.parts.length;l++){o=s.
 parts[l];if(o.type==e.SELECTOR_PART_TYPE){a=0;for(c=0;c&#x3c;o.modifiers.length;c++)u=
-o.modifiers[c],u.type==&#x22;class&#x22;&#x26;&#x26;a++,a&#x3e;1&#x26;&#x26;t.report(&#x22;Don&#x27;t use adjoining classes.&#x2\
-2;
+o.modifiers[c],u.type==&#x22;class&#x22;&#x26;&#x26;a++,a&#x3e;1&#x26;&#x26;t.report(&#x22;Don&#x27;t use adjoining classes.&#x22
+;
 ,o.line,o.col,n)}}}})}}),CSSLint.addRule({id:&#x22;box-model&#x22;,name:&#x22;Beware of broken box size&#x22;
 ,desc:&#x22;Don&#x27;t use width or height when using padding or border.&#x22;,browsers:&#x22;All&#x22;,init
 ...</pre></li>
@@ -22896,7 +22972,7 @@ r||{}),s+=i.endFormat()),s}</pre></li>
 ].concat(e).sort(function(e,t){return e.id&#x3e;t.id?1:0})},r.getRuleset=function(){var t=
 {},n=0,r=e.length;while(n&#x3c;r)t[e[n++].id]=1;return t},r.addFormatter=function(e){
 t[e.id]=e},r.getFormatter=function(e){return t[e]},r.format=function(e,t,n,r){var i=
-this.<span class="apidocCodeKeywordSpan">getFormatter</span>(n),s=null;return i&#x26;&#x26;(s=i.startFormat(),s+=i.formatResults\
+this.<span class="apidocCodeKeywordSpan">getFormatter</span>(n),s=null;return i&#x26;&#x26;(s=i.startFormat(),s+=i.formatResults
 (e,t,
 r||{}),s+=i.endFormat()),s},r.hasFormat=function(e){return t.hasOwnProperty(e)},
 r.verify=function(t,r){var s=0,o=e.length,u,a,f,l=new parserlib.css.Parser({starHack
@@ -22941,7 +23017,7 @@ this.getFormatter(n),s=null;return i&#x26;&#x26;(s=i.startFormat(),s+=i.formatRe
 r||{}),s+=i.endFormat()),s},r.hasFormat=function(e){return t.hasOwnProperty(e)},
 r.verify=function(t,r){var s=0,o=e.length,u,a,f,l=new parserlib.css.Parser({starHack
 :!0,ieFilters:!0,underscoreHack:!0,strict:!1});a=t.replace(/\n\r?/g,&#x22;$split$&#x22;).split
-(&#x22;$split$&#x22;),r||(r=this.<span class="apidocCodeKeywordSpan">getRuleset</span>()),n.test(t)&#x26;&#x26;(r=i(t,r)),u=new \
+(&#x22;$split$&#x22;),r||(r=this.<span class="apidocCodeKeywordSpan">getRuleset</span>()),n.test(t)&#x26;&#x26;(r=i(t,r)),u=new 
 Reporter(a,r),r
 .errors=2;for(s in r)r.hasOwnProperty(s)&#x26;&#x26;r[s]&#x26;&#x26;e[s]&#x26;&#x26;e[s].init(l,u);try{l.parse
 (t)}catch(c){u.error(&#x22;Fatal error, cannot continue: &#x22;+c.message,c.line,c.col,{})
@@ -23127,18 +23203,18 @@ stat:function(e,t){this.stats[e]=t}},CSSLint._Reporter=Reporter,CSSLint.Util={mi
     <ul>
     <li>description and source-code<pre class="apidocCodePre">rollupWarn = function (e, t){this.messages.push({type:&#x22;warning&#x22;,rollup:!0,message:e,rule:t})}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-a&#x3c;l)u[a].type==&#x22;color&#x22;&#x26;&#x26;(&#x22;alpha&#x22;in u[a]||&#x22;hue&#x22;in u[a]?(/([^\)]+)\(/.test(u[a])&#x26\
+a&#x3c;l)u[a].type==&#x22;color&#x22;&#x26;&#x26;(&#x22;alpha&#x22;in u[a]||&#x22;hue&#x22;in u[a]?(/([^\)]+)\(/.test(u[a])&#x26
 ;&#x26;
 (f=RegExp.$1.toUpperCase()),(!r||r.property.text.toLowerCase()!=o||r.colorType!=&#x22;compat&#x22;
-)&#x26;&#x26;t.report(&#x22;Fallback &#x22;+o+&#x22; (hex or RGB) should precede &#x22;+f+&#x22; &#x22;+o+&#x22;.&#x22;,e.line,e\
+)&#x26;&#x26;t.report(&#x22;Fallback &#x22;+o+&#x22; (hex or RGB) should precede &#x22;+f+&#x22; &#x22;+o+&#x22;.&#x22;,e.line,e
 .col
-,n)):e.colorType=&#x22;compat&#x22;),a++;r=e})}}),CSSLint.addRule({id:&#x22;floats&#x22;,name:&#x22;Disallow too many floats&#x2\
-2;
+,n)):e.colorType=&#x22;compat&#x22;),a++;r=e})}}),CSSLint.addRule({id:&#x22;floats&#x22;,name:&#x22;Disallow too many floats&#x22
+;
 ,desc:&#x22;This rule tests if the float property is used too many times&#x22;,browsers:&#x22;All&#x22;
 ,init:function(e,t){var n=this,r=0;e.addListener(&#x22;property&#x22;,function(e){e.property
 .text.toLowerCase()==&#x22;float&#x22;&#x26;&#x26;e.value.text.toLowerCase()!=&#x22;none&#x22;&#x26;&#x26;r++}),e.addListener
-(&#x22;endstylesheet&#x22;,function(){t.stat(&#x22;floats&#x22;,r),r&#x3e;=10&#x26;&#x26;t.<span class="apidocCodeKeywordSpan">r\
-ollupWarn</span>(&#x22;Too many floats (&#x22;+
+(&#x22;endstylesheet&#x22;,function(){t.stat(&#x22;floats&#x22;,r),r&#x3e;=10&#x26;&#x26;t.<span class="apidocCodeKeywordSpan">rollupWarn
+</span>(&#x22;Too many floats (&#x22;+
 r+&#x22;), you&#x27;re probably using them for layout. Consider using a grid system instead.&#x22;
 ,n)})}}),CSSLint.addRule({id:&#x22;font-faces&#x22;,name:&#x22;Don&#x27;t use too many web fonts&#x22;,desc
 :&#x22;Too many different web fonts in the same stylesheet.&#x22;,browsers:&#x22;All&#x22;,init:function(
@@ -23160,17 +23236,17 @@ r+&#x22;).&#x22;,n)})}}),CSSLint.addRule({id:&#x22;font-sizes&#x22;,name:&#x22;D
     <ul>
     <li>description and source-code<pre class="apidocCodePre">stat = function (e, t){this.stats[e]=t}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-a&#x3c;l)u[a].type==&#x22;color&#x22;&#x26;&#x26;(&#x22;alpha&#x22;in u[a]||&#x22;hue&#x22;in u[a]?(/([^\)]+)\(/.test(u[a])&#x26\
+a&#x3c;l)u[a].type==&#x22;color&#x22;&#x26;&#x26;(&#x22;alpha&#x22;in u[a]||&#x22;hue&#x22;in u[a]?(/([^\)]+)\(/.test(u[a])&#x26
 ;&#x26;
 (f=RegExp.$1.toUpperCase()),(!r||r.property.text.toLowerCase()!=o||r.colorType!=&#x22;compat&#x22;
-)&#x26;&#x26;t.report(&#x22;Fallback &#x22;+o+&#x22; (hex or RGB) should precede &#x22;+f+&#x22; &#x22;+o+&#x22;.&#x22;,e.line,e\
+)&#x26;&#x26;t.report(&#x22;Fallback &#x22;+o+&#x22; (hex or RGB) should precede &#x22;+f+&#x22; &#x22;+o+&#x22;.&#x22;,e.line,e
 .col
-,n)):e.colorType=&#x22;compat&#x22;),a++;r=e})}}),CSSLint.addRule({id:&#x22;floats&#x22;,name:&#x22;Disallow too many floats&#x2\
-2;
+,n)):e.colorType=&#x22;compat&#x22;),a++;r=e})}}),CSSLint.addRule({id:&#x22;floats&#x22;,name:&#x22;Disallow too many floats&#x22
+;
 ,desc:&#x22;This rule tests if the float property is used too many times&#x22;,browsers:&#x22;All&#x22;
 ,init:function(e,t){var n=this,r=0;e.addListener(&#x22;property&#x22;,function(e){e.property
 .text.toLowerCase()==&#x22;float&#x22;&#x26;&#x26;e.value.text.toLowerCase()!=&#x22;none&#x22;&#x26;&#x26;r++}),e.addListener
-(&#x22;endstylesheet&#x22;,function(){t.<span class="apidocCodeKeywordSpan">stat</span>(&#x22;floats&#x22;,r),r&#x3e;=10&#x26;&#\
+(&#x22;endstylesheet&#x22;,function(){t.<span class="apidocCodeKeywordSpan">stat</span>(&#x22;floats&#x22;,r),r&#x3e;=10&#x26;&#
 x26;t.rollupWarn(&#x22;Too many floats (&#x22;+
 r+&#x22;), you&#x27;re probably using them for layout. Consider using a grid system instead.&#x22;
 ,n)})}}),CSSLint.addRule({id:&#x22;font-faces&#x22;,name:&#x22;Don&#x27;t use too many web fonts&#x22;,desc
@@ -23198,16 +23274,15 @@ r+&#x22;).&#x22;,n)})}}),CSSLint.addRule({id:&#x22;font-sizes&#x22;,name:&#x22;D
 message:u.scanned_a_b.supplant({a:u[e]||e,b:Math.floor(t/N.length*100)})}}function ft
 (e,t,n,r,i,s,o){var a={id:&#x22;(error)&#x22;,raw:u[e]||e,code:e,evidence:N[t-1]||&#x22;&#x22;,line:
 t,character:n,a:r||ut(this),b:i,c:s,d:o};return a.reason=a.raw.supplant(a),S.errors
-.push(a),M.passfail&#x26;&#x26;at(&#x22;stopping&#x22;,t,n),J+=1,J&#x3e;=M.maxerr&#x26;&#x26;at(&#x22;too_many&#x22;,t,n),a}func\
-tion lt
+.push(a),M.passfail&#x26;&#x26;at(&#x22;stopping&#x22;,t,n),J+=1,J&#x3e;=M.maxerr&#x26;&#x26;at(&#x22;too_many&#x22;,t,n),a}function
+ lt
 (e,t,n,r,i,s,o){var u=ft(e,t,n,r,i,s,o);at(&#x22;stopping&#x22;,u.line,u.character)}function ct
-(e){!M.white&#x26;&#x26;O.from!==e&#x26;&#x26;O.<span class="apidocCodeKeywordSpan">warn</span>(&#x22;expected_a_at_b_c&#x22;,&#\
+(e){!M.white&#x26;&#x26;O.from!==e&#x26;&#x26;O.<span class="apidocCodeKeywordSpan">warn</span>(&#x22;expected_a_at_b_c&#x22;,&#
 x22;&#x22;,e,O.from)}function ht(e,
 t){var n=t.string,r=q[n];t.dead=!1,t.init=!1,t.kind=e,t.master=r,t.used=0,t.writeable=!0
 ,e===&#x22;var&#x22;&#x26;&#x26;m===y?r||(_[n]===!1&#x26;&#x26;(t.writeable=!1),b[n]=t):(r&#x26;&#x26;(r.function===m?(r
-.kind!==&#x22;exception&#x22;||e!==&#x22;exception&#x22;||!r.dead)&#x26;&#x26;t.warn(&#x22;already_defined&#x22;,n):r.function!=\
-=
-y&#x26;&#x26;e===&#x22;var&#x22;&#x26;&#x26;t.warn(&#x22;redefinition_a_b&#x22;,n,r.line)),q[n]=t,e===&#x22;var&#x22;&#x26;&#x26\
+.kind!==&#x22;exception&#x22;||e!==&#x22;exception&#x22;||!r.dead)&#x26;&#x26;t.warn(&#x22;already_defined&#x22;,n):r.function!==
+y&#x26;&#x26;e===&#x22;var&#x22;&#x26;&#x26;t.warn(&#x22;redefinition_a_b&#x22;,n,r.line)),q[n]=t,e===&#x22;var&#x22;&#x26;&#x26
 ;s.push(n))}
 function pt(e){var t,n=0;e=e||0;while(n&#x3c;=e)t=C[n],t||(t=C[n]=T.token()),n+=1;return t
 }function dt(e,t){if(E){if($&#x26;&#x26;O.line!==X.line){if(($!==E||!O.edge)&#x26;&#x26;O.from===E.at-
@@ -23485,8 +23560,8 @@ e.offsetX||0,n=e.y||e.clientY||e.offsetY||0}catch(r){n=t=0}0!=t&#x26;&#x26;0!=n&
 )},aa:function(){E(2)},U:function(e){e=e.accelerationIncludingGravity.x||e.accelerationIncludingGravity
 .y||e.accelerationIncludingGravity.z;if(window.orientation){var t=window.orientation
 ;&#x22;number&#x22;==typeof t&#x26;&#x26;sjcl.random.addEntropy(t,1,&#x22;accelerometer&#x22;)}e&#x26;&#x26;sjcl.random.
-addEntropy(e,2,&#x22;accelerometer&#x22;),E(0)}},sjcl.random=new sjcl.<span class="apidocCodeKeywordSpan">prng</span>(6);e:try{v\
-ar F,
+addEntropy(e,2,&#x22;accelerometer&#x22;),E(0)}},sjcl.random=new sjcl.<span class="apidocCodeKeywordSpan">prng</span>(6);e:try{var
+ F,
 G,H,I;if(I=&#x22;undefined&#x22;!=typeof module){var J;if(J=module.exports){var K;try{K=require
 (&#x22;crypto&#x22;)}catch(L){K=null}J=(G=K)&#x26;&#x26;G.randomBytes}I=J}if(I)F=G.randomBytes(128),
 F=new Uint32Array((new Uint8Array(F)).buffer),sjcl.random.addEntropy(F,1024,&#x22;crypto[&#x27;randomBytes&#x27;]&#x22;
@@ -23541,16 +23616,16 @@ e[i]&#x3c;&#x3c;32-t;return i=e.length?e[e.length-1]:0,e=sjcl.bitArray.getPartia
 .cipher.aes.prototype={encrypt:function(e){return w(this,e,0)},decrypt:function(
 e){return w(this,e,1)},k:[[[],[],[],[],[]],[[],[],[],[],[]]],D:function(){var e=
 this.k[0],t=this.k[1],n=e[4],r=t[4],i,s,o,u=[],a=[],f,l,c,h;for(i=0;256&#x3e;i;i++)a[
-(u[i]=i&#x3c;&#x3c;1^283*(i&#x3e;&#x3e;7))^i]=i;for(s=o=0;!n[s];s^=f||1,o=a[o]||1){c=o^o&#x3c;&#x3c;1^o&#x3c;&#x3c;2^o&#x3c;&#x3\
-c;3^
+(u[i]=i&#x3c;&#x3c;1^283*(i&#x3e;&#x3e;7))^i]=i;for(s=o=0;!n[s];s^=f||1,o=a[o]||1){c=o^o&#x3c;&#x3c;1^o&#x3c;&#x3c;2^o&#x3c;&#x3c
+;3^
 o&#x3c;&#x3c;4,c=c&#x3e;&#x3e;8^c&#x26;255^99,n[s]=c,r[c]=s,l=u[i=u[f=u[s]]],h=16843009*l^65537*i^257*f^16843008*
-s,l=257*u[c]^16843008*c;for(i=0;4&#x3e;i;i++)e[i][s]=l=l&#x3c;&#x3c;24^l&#x3e;&#x3e;&#x3e;8,t[i][c]=h=h&#x3c;&#x3c;24^h&#x3e;&#x\
-3e;&#x3e;8
+s,l=257*u[c]^16843008*c;for(i=0;4&#x3e;i;i++)e[i][s]=l=l&#x3c;&#x3c;24^l&#x3e;&#x3e;&#x3e;8,t[i][c]=h=h&#x3c;&#x3c;24^h&#x3e;&#x3e
+;&#x3e;8
 }for(i=0;5&#x3e;i;i++)e[i]=e[i].slice(0),t[i]=t[i].slice(0)}},sjcl.bitArray={bitSlice
 :function(e,t,n){return e=sjcl.bitArray.<span class="apidocCodeKeywordSpan">P</span>(e.slice(t/32),32-(t&#x26;31)).slice(1),n===
 s?e:sjcl.bitArray.clamp(e,n-t)},extract:function(e,t,n){var r=Math.floor(-t-n&#x26;31
-);return((t+n-1^t)&#x26;-32?e[t/32|0]&#x3c;&#x3c;32-r^e[t/32+1|0]&#x3e;&#x3e;&#x3e;r:e[t/32|0]&#x3e;&#x3e;&#x3e;r)&#x26;(1&#x3c;\
-&#x3c;n)-1},
+);return((t+n-1^t)&#x26;-32?e[t/32|0]&#x3c;&#x3c;32-r^e[t/32+1|0]&#x3e;&#x3e;&#x3e;r:e[t/32|0]&#x3e;&#x3e;&#x3e;r)&#x26;(1&#x3c;&#
+x3c;n)-1},
 concat:function(e,t){if(0===e.length||0===t.length)return e.concat(t);var n=e[e.
 length-1],r=sjcl.bitArray.getPartial(n);return 32===r?e.concat(t):sjcl.bitArray.
 P(t,r,n|0,e.slice(0,e.length-1))},bitLength:function(e){var t=e.length;return 0===
@@ -23585,7 +23660,7 @@ sjcl.bitArray.bitLength(t))return u;var n=0,r;for(r=0;r&#x3c;e.length;r++)n|=e[r
 e[i]&#x3c;&#x3c;32-t;return i=e.length?e[e.length-1]:0,e=sjcl.bitArray.getPartial(i),r.push
 (sjcl.bitArray.partial(t+e&#x26;31,32&#x3c;t+e?n:r.pop(),1)),r},l:function(e,t){return[e[0
 ]^t[0],e[1]^t[1],e[2]^t[2],e[3]^t[3]]},byteswapM:function(e){var t,n;for(t=0;t&#x3c;e
-.length;++t)n=e[t],e[t]=n&#x3e;&#x3e;&#x3e;24|n&#x3e;&#x3e;&#x3e;8&#x26;65280|(n&#x26;65280)&#x3c;&#x3c;8|n&#x3c;&#x3c;24;return\
+.length;++t)n=e[t],e[t]=n&#x3e;&#x3e;&#x3e;24|n&#x3e;&#x3e;&#x3e;8&#x26;65280|(n&#x26;65280)&#x3c;&#x3c;8|n&#x3c;&#x3c;24;return
  e}},sjcl.codec
 ...</pre></li>
     </ul>
@@ -23609,10 +23684,10 @@ s?e:sjcl.bitArray.clamp(e,n-t)}</pre></li>
 ;4&#x3e;s&#x26;&#x26;f&#x3e;&#x3e;&#x3e;8*s;s++);return s&#x3c;15-a&#x26;&#x26;(s=15-a),n=u.clamp(n,8*(15-s)),t=sjcl.mode.ccm
 .L(e,t,n,r,i,s),o=sjcl.mode.ccm.p(e,o,n,t,i,s),u.concat(o.data,o.tag)},decrypt:function(
 e,t,n,r,i){i=i||64,r=r||[];var s=sjcl.bitArray,o=s.bitLength(n)/8,u=s.bitLength(
-t),a=s.clamp(t,u-i),f=s.<span class="apidocCodeKeywordSpan">bitSlice</span>(t,u-i),u=(u-i)/8;7&#x3e;o&#x26;&#x26;q(new sjcl.exce\
-ption.invalid
-(&#x22;ccm: iv must be at least 7 bytes&#x22;));for(t=2;4&#x3e;t&#x26;&#x26;u&#x3e;&#x3e;&#x3e;8*t;t++);return t&#x3c;15-o&#x26;\
-&#x26;(
+t),a=s.clamp(t,u-i),f=s.<span class="apidocCodeKeywordSpan">bitSlice</span>(t,u-i),u=(u-i)/8;7&#x3e;o&#x26;&#x26;q(new sjcl.exception
+.invalid
+(&#x22;ccm: iv must be at least 7 bytes&#x22;));for(t=2;4&#x3e;t&#x26;&#x26;u&#x3e;&#x3e;&#x3e;8*t;t++);return t&#x3c;15-o&#x26;&#
+x26;(
 t=15-o),n=s.clamp(n,8*(15-t)),a=sjcl.mode.ccm.p(e,a,n,f,i,t),e=sjcl.mode.ccm.L(e
 ,a.data,n,r,i,t),s.equal(a.tag,e)||q(new sjcl.exception.corrupt(&#x22;ccm: tag doesn&#x27;t match&#x22;
 )),a.data},L:function(e,t,n,r,i,s){var o=[],u=sjcl.bitArray,a=u.l;i/=8,(i%2||4&#x3e;i||16&#x3c;
@@ -23651,16 +23726,16 @@ t)return e;e=e.slice(0,Math.ceil(t/32));var n=e.length;return t&#x26;=31,0&#x3c;
     <li>example usage<pre class="apidocCodePre">...
 e){return w(this,e,1)},k:[[[],[],[],[],[]],[[],[],[],[],[]]],D:function(){var e=
 this.k[0],t=this.k[1],n=e[4],r=t[4],i,s,o,u=[],a=[],f,l,c,h;for(i=0;256&#x3e;i;i++)a[
-(u[i]=i&#x3c;&#x3c;1^283*(i&#x3e;&#x3e;7))^i]=i;for(s=o=0;!n[s];s^=f||1,o=a[o]||1){c=o^o&#x3c;&#x3c;1^o&#x3c;&#x3c;2^o&#x3c;&#x3\
-c;3^
+(u[i]=i&#x3c;&#x3c;1^283*(i&#x3e;&#x3e;7))^i]=i;for(s=o=0;!n[s];s^=f||1,o=a[o]||1){c=o^o&#x3c;&#x3c;1^o&#x3c;&#x3c;2^o&#x3c;&#x3c
+;3^
 o&#x3c;&#x3c;4,c=c&#x3e;&#x3e;8^c&#x26;255^99,n[s]=c,r[c]=s,l=u[i=u[f=u[s]]],h=16843009*l^65537*i^257*f^16843008*
-s,l=257*u[c]^16843008*c;for(i=0;4&#x3e;i;i++)e[i][s]=l=l&#x3c;&#x3c;24^l&#x3e;&#x3e;&#x3e;8,t[i][c]=h=h&#x3c;&#x3c;24^h&#x3e;&#x\
-3e;&#x3e;8
+s,l=257*u[c]^16843008*c;for(i=0;4&#x3e;i;i++)e[i][s]=l=l&#x3c;&#x3c;24^l&#x3e;&#x3e;&#x3e;8,t[i][c]=h=h&#x3c;&#x3c;24^h&#x3e;&#x3e
+;&#x3e;8
 }for(i=0;5&#x3e;i;i++)e[i]=e[i].slice(0),t[i]=t[i].slice(0)}},sjcl.bitArray={bitSlice
 :function(e,t,n){return e=sjcl.bitArray.P(e.slice(t/32),32-(t&#x26;31)).slice(1),n===
 s?e:sjcl.bitArray.<span class="apidocCodeKeywordSpan">clamp</span>(e,n-t)},extract:function(e,t,n){var r=Math.floor(-t-n&#x26;31
-);return((t+n-1^t)&#x26;-32?e[t/32|0]&#x3c;&#x3c;32-r^e[t/32+1|0]&#x3e;&#x3e;&#x3e;r:e[t/32|0]&#x3e;&#x3e;&#x3e;r)&#x26;(1&#x3c;\
-&#x3c;n)-1},
+);return((t+n-1^t)&#x26;-32?e[t/32|0]&#x3c;&#x3c;32-r^e[t/32+1|0]&#x3e;&#x3e;&#x3e;r:e[t/32|0]&#x3e;&#x3e;&#x3e;r)&#x26;(1&#x3c;&#
+x3c;n)-1},
 concat:function(e,t){if(0===e.length||0===t.length)return e.concat(t);var n=e[e.
 length-1],r=sjcl.bitArray.getPartial(n);return 32===r?e.concat(t):sjcl.bitArray.
 P(t,r,n|0,e.slice(0,e.length-1))},bitLength:function(e){var t=e.length;return 0===
@@ -23719,11 +23794,11 @@ sjcl.bitArray.bitLength(t))return u;var n=0,r;for(r=0;r&#x3c;e.length;r++)n|=e[r
 .L(e,t,n,r,i,s),o=sjcl.mode.ccm.p(e,o,n,t,i,s),u.concat(o.data,o.tag)},decrypt:function(
 e,t,n,r,i){i=i||64,r=r||[];var s=sjcl.bitArray,o=s.bitLength(n)/8,u=s.bitLength(
 t),a=s.clamp(t,u-i),f=s.bitSlice(t,u-i),u=(u-i)/8;7&#x3e;o&#x26;&#x26;q(new sjcl.exception.invalid
-(&#x22;ccm: iv must be at least 7 bytes&#x22;));for(t=2;4&#x3e;t&#x26;&#x26;u&#x3e;&#x3e;&#x3e;8*t;t++);return t&#x3c;15-o&#x26;\
-&#x26;(
+(&#x22;ccm: iv must be at least 7 bytes&#x22;));for(t=2;4&#x3e;t&#x26;&#x26;u&#x3e;&#x3e;&#x3e;8*t;t++);return t&#x3c;15-o&#x26;&#
+x26;(
 t=15-o),n=s.clamp(n,8*(15-t)),a=sjcl.mode.ccm.p(e,a,n,f,i,t),e=sjcl.mode.ccm.L(e
-,a.data,n,r,i,t),s.<span class="apidocCodeKeywordSpan">equal</span>(a.tag,e)||q(new sjcl.exception.corrupt(&#x22;ccm: tag doesn&\
-#x27;t match&#x22;
+,a.data,n,r,i,t),s.<span class="apidocCodeKeywordSpan">equal</span>(a.tag,e)||q(new sjcl.exception.corrupt(&#x22;ccm: tag doesn&#
+x27;t match&#x22;
 )),a.data},L:function(e,t,n,r,i,s){var o=[],u=sjcl.bitArray,a=u.l;i/=8,(i%2||4&#x3e;i||16&#x3c;
 i)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;ccm: invalid tag length&#x22;)),(4294967295&#x3c;r.length||4294967295&#x3c;
 t.length)&#x26;&#x26;q(new sjcl.exception.bug(&#x22;ccm: can&#x27;t deal with 4GiB or more data&#x22;)),s=
@@ -23761,13 +23836,13 @@ n&#x26;&#x26;(o=u.concat([u.partial(16,65534)],[n])),o=u.concat(o,r);for(r=0;r&#
 .round(e/1099511627776)||32}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 o&#x3c;&#x3c;4,c=c&#x3e;&#x3e;8^c&#x26;255^99,n[s]=c,r[c]=s,l=u[i=u[f=u[s]]],h=16843009*l^65537*i^257*f^16843008*
-s,l=257*u[c]^16843008*c;for(i=0;4&#x3e;i;i++)e[i][s]=l=l&#x3c;&#x3c;24^l&#x3e;&#x3e;&#x3e;8,t[i][c]=h=h&#x3c;&#x3c;24^h&#x3e;&#x\
-3e;&#x3e;8
+s,l=257*u[c]^16843008*c;for(i=0;4&#x3e;i;i++)e[i][s]=l=l&#x3c;&#x3c;24^l&#x3e;&#x3e;&#x3e;8,t[i][c]=h=h&#x3c;&#x3c;24^h&#x3e;&#x3e
+;&#x3e;8
 }for(i=0;5&#x3e;i;i++)e[i]=e[i].slice(0),t[i]=t[i].slice(0)}},sjcl.bitArray={bitSlice
 :function(e,t,n){return e=sjcl.bitArray.P(e.slice(t/32),32-(t&#x26;31)).slice(1),n===
 s?e:sjcl.bitArray.clamp(e,n-t)},extract:function(e,t,n){var r=Math.floor(-t-n&#x26;31
-);return((t+n-1^t)&#x26;-32?e[t/32|0]&#x3c;&#x3c;32-r^e[t/32+1|0]&#x3e;&#x3e;&#x3e;r:e[t/32|0]&#x3e;&#x3e;&#x3e;r)&#x26;(1&#x3c;\
-&#x3c;n)-1},
+);return((t+n-1^t)&#x26;-32?e[t/32|0]&#x3c;&#x3c;32-r^e[t/32+1|0]&#x3e;&#x3e;&#x3e;r:e[t/32|0]&#x3e;&#x3e;&#x3e;r)&#x26;(1&#x3c;&#
+x3c;n)-1},
 concat:function(e,t){if(0===e.length||0===t.length)return e.concat(t);var n=e[e.
 length-1],r=sjcl.bitArray.<span class="apidocCodeKeywordSpan">getPartial</span>(n);return 32===r?e.concat(t):sjcl.bitArray.
 P(t,r,n|0,e.slice(0,e.length-1))},bitLength:function(e){var t=e.length;return 0===
@@ -23807,15 +23882,15 @@ sjcl.bitArray.bitLength(t))return u;var n=0,r;for(r=0;r&#x3c;e.length;r++)n|=e[r
 return 32===e?t:(n?t|0:t&#x3c;&#x3c;32-e)+1099511627776*e}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 s?e:sjcl.bitArray.clamp(e,n-t)},extract:function(e,t,n){var r=Math.floor(-t-n&#x26;31
-);return((t+n-1^t)&#x26;-32?e[t/32|0]&#x3c;&#x3c;32-r^e[t/32+1|0]&#x3e;&#x3e;&#x3e;r:e[t/32|0]&#x3e;&#x3e;&#x3e;r)&#x26;(1&#x3c;\
-&#x3c;n)-1},
+);return((t+n-1^t)&#x26;-32?e[t/32|0]&#x3c;&#x3c;32-r^e[t/32+1|0]&#x3e;&#x3e;&#x3e;r:e[t/32|0]&#x3e;&#x3e;&#x3e;r)&#x26;(1&#x3c;&#
+x3c;n)-1},
 concat:function(e,t){if(0===e.length||0===t.length)return e.concat(t);var n=e[e.
 length-1],r=sjcl.bitArray.getPartial(n);return 32===r?e.concat(t):sjcl.bitArray.
 P(t,r,n|0,e.slice(0,e.length-1))},bitLength:function(e){var t=e.length;return 0===
 t?0:32*(t-1)+sjcl.bitArray.getPartial(e[t-1])},clamp:function(e,t){if(32*e.length&#x3c;
 t)return e;e=e.slice(0,Math.ceil(t/32));var n=e.length;return t&#x26;=31,0&#x3c;n&#x26;&#x26;t&#x26;&#x26;(e[n-1
-]=sjcl.bitArray.<span class="apidocCodeKeywordSpan">partial</span>(t,e[n-1]&#x26;2147483648&#x3e;&#x3e;t-1,1)),e},partial:functi\
-on(e,t,n){
+]=sjcl.bitArray.<span class="apidocCodeKeywordSpan">partial</span>(t,e[n-1]&#x26;2147483648&#x3e;&#x3e;t-1,1)),e},partial:function
+(e,t,n){
 return 32===e?t:(n?t|0:t&#x3c;&#x3c;32-e)+1099511627776*e},getPartial:function(e){return Math
 .round(e/1099511627776)||32},equal:function(e,t){if(sjcl.bitArray.bitLength(e)!==
 sjcl.bitArray.bitLength(t))return u;var n=0,r;for(r=0;r&#x3c;e.length;r++)n|=e[r]^t[r
@@ -23847,15 +23922,15 @@ e%t)n=s[n&#x3e;&#x3e;&#x3e;24]&#x3c;&#x3c;24^s[n&#x3e;&#x3e;16&#x26;255]&#x3c;&#
 u&#x3c;&#x3c;24,u=u&#x3c;&#x3c;1^283*(u&#x3e;&#x3e;7));r[e]=r[e-t]^n}for(t=0;e;t++,e--)n=r[t&#x26;3?e:e-4],i[t]=4&#x3e;=
 e||4&#x3e;t?n:o[0][s[n&#x3e;&#x3e;&#x3e;24]]^o[1][s[n&#x3e;&#x3e;16&#x26;255]]^o[2][s[n&#x3e;&#x3e;8&#x26;255]]^o[3][s[n&#x26;255]]}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-r|0,c=l,l=f,f=a,a=r+(f&#x26;l^c&#x26;(f^l))+(f&#x3e;&#x3e;&#x3e;2^f&#x3e;&#x3e;&#x3e;13^f&#x3e;&#x3e;&#x3e;22^f&#x3c;&#x3c;30^f&\
-#x3c;&#x3c;19^f&#x3c;&#x3c;10)|0;o[0]=
+r|0,c=l,l=f,f=a,a=r+(f&#x26;l^c&#x26;(f^l))+(f&#x3e;&#x3e;&#x3e;2^f&#x3e;&#x3e;&#x3e;13^f&#x3e;&#x3e;&#x3e;22^f&#x3c;&#x3c;30^f&#
+x3c;&#x3c;19^f&#x3c;&#x3c;10)|0;o[0]=
 o[0]+a|0,o[1]=o[1]+f|0,o[2]=o[2]+l|0,o[3]=o[3]+c|0,o[4]=o[4]+h|0,o[5]=o[5]+p|0,o
 [6]=o[6]+d|0,o[7]=o[7]+v|0}function C(e,t){var n,r=sjcl.random.w[e],i=[];for(n in
 r)r.hasOwnProperty(n)&#x26;&#x26;i.push(r[n]);for(n=0;n&#x3c;i.length;n++)i[n](t)}function E(e)
 {&#x22;undefined&#x22;!=typeof window&#x26;&#x26;window.performance&#x26;&#x26;&#x22;function&#x22;==typeof window.performance
 .now?sjcl.random.addEntropy(window.performance.now(),e,&#x22;loadtime&#x22;):sjcl.random.addEntropy
 ((new Date).valueOf(),e,&#x22;loadtime&#x22;)}function A(e){e.b=B(e).concat(B(e)),e.A=new
-sjcl.cipher.<span class="apidocCodeKeywordSpan">aes</span>(e.b)}function B(e){for(var t=0;4&#x3e;t&#x26;&#x26;(e.f[t]=e.f[t]+1|0\
+sjcl.cipher.<span class="apidocCodeKeywordSpan">aes</span>(e.b)}function B(e){for(var t=0;4&#x3e;t&#x26;&#x26;(e.f[t]=e.f[t]+1|0
 ,!e.f[t]);
 t++);return e.A.encrypt(e.f)}function D(e,t){return function(){t.apply(e,arguments
 )}}var s=void 0,u=!1,sjcl={cipher:{},hash:{},keyexchange:{},mode:{},misc:{},codec
@@ -23896,14 +23971,14 @@ this.message},this.message=e},notReady:function(e){this.toString=function(){retu
 this.message},this.message=e}}};&#x22;undefined&#x22;!=typeof module&#x26;&#x26;module.exports&#x26;&#x26;(module
 .exports=sjcl),&#x22;function&#x22;==typeof define&#x26;&#x26;define([],function(){return sjcl}),sjcl
 .cipher.aes=function(e){this.k[0][0][0]||this.<span class="apidocCodeKeywordSpan">D</span>();var t,n,r,i,s=this.k[0][4],o=this
-.k[1];t=e.length;var u=1;4!==t&#x26;&#x26;6!==t&#x26;&#x26;8!==t&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;invalid aes key s\
-ize&#x22;
+.k[1];t=e.length;var u=1;4!==t&#x26;&#x26;6!==t&#x26;&#x26;8!==t&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;invalid aes key size
+&#x22;
 )),this.b=[r=e.slice(0),i=[]];for(e=t;e&#x3c;4*t+28;e++){n=r[e-1];if(0===e%t||8===t&#x26;&#x26;4===
-e%t)n=s[n&#x3e;&#x3e;&#x3e;24]&#x3c;&#x3c;24^s[n&#x3e;&#x3e;16&#x26;255]&#x3c;&#x3c;16^s[n&#x3e;&#x3e;8&#x26;255]&#x3c;&#x3c;8^s\
+e%t)n=s[n&#x3e;&#x3e;&#x3e;24]&#x3c;&#x3c;24^s[n&#x3e;&#x3e;16&#x26;255]&#x3c;&#x3c;16^s[n&#x3e;&#x3e;8&#x26;255]&#x3c;&#x3c;8^s
 [n&#x26;255],0===e%t&#x26;&#x26;(n=n&#x3c;&#x3c;8^n&#x3e;&#x3e;&#x3e;24^
 u&#x3c;&#x3c;24,u=u&#x3c;&#x3c;1^283*(u&#x3e;&#x3e;7));r[e]=r[e-t]^n}for(t=0;e;t++,e--)n=r[t&#x26;3?e:e-4],i[t]=4&#x3e;=
-e||4&#x3e;t?n:o[0][s[n&#x3e;&#x3e;&#x3e;24]]^o[1][s[n&#x3e;&#x3e;16&#x26;255]]^o[2][s[n&#x3e;&#x3e;8&#x26;255]]^o[3][s[n&#x26;25\
-5]]},sjcl
+e||4&#x3e;t?n:o[0][s[n&#x3e;&#x3e;&#x3e;24]]^o[1][s[n&#x3e;&#x3e;16&#x26;255]]^o[2][s[n&#x3e;&#x3e;8&#x26;255]]^o[3][s[n&#x26;255
+]]},sjcl
 .cipher.aes.prototype={encrypt:function(e){return w(this,e,0)},decrypt:function(
 e){return w(this,e,1)},k:[[[],[],[],[],[]],[[],[],[],[],[]]],D:function(){var e=
 ...</pre></li>
@@ -23988,13 +24063,13 @@ this.message},this.message=e}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 e,t,n,r,i){i=i||64,r=r||[];var s=sjcl.bitArray,o=s.bitLength(n)/8,u=s.bitLength(
 t),a=s.clamp(t,u-i),f=s.bitSlice(t,u-i),u=(u-i)/8;7&#x3e;o&#x26;&#x26;q(new sjcl.exception.invalid
-(&#x22;ccm: iv must be at least 7 bytes&#x22;));for(t=2;4&#x3e;t&#x26;&#x26;u&#x3e;&#x3e;&#x3e;8*t;t++);return t&#x3c;15-o&#x26;\
-&#x26;(
+(&#x22;ccm: iv must be at least 7 bytes&#x22;));for(t=2;4&#x3e;t&#x26;&#x26;u&#x3e;&#x3e;&#x3e;8*t;t++);return t&#x3c;15-o&#x26;&#
+x26;(
 t=15-o),n=s.clamp(n,8*(15-t)),a=sjcl.mode.ccm.p(e,a,n,f,i,t),e=sjcl.mode.ccm.L(e
 ,a.data,n,r,i,t),s.equal(a.tag,e)||q(new sjcl.exception.corrupt(&#x22;ccm: tag doesn&#x27;t match&#x22;
 )),a.data},L:function(e,t,n,r,i,s){var o=[],u=sjcl.bitArray,a=u.l;i/=8,(i%2||4&#x3e;i||16&#x3c;
 i)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;ccm: invalid tag length&#x22;)),(4294967295&#x3c;r.length||4294967295&#x3c;
-t.length)&#x26;&#x26;q(new sjcl.exception.<span class="apidocCodeKeywordSpan">bug</span>(&#x22;ccm: can&#x27;t deal with 4GiB or\
+t.length)&#x26;&#x26;q(new sjcl.exception.<span class="apidocCodeKeywordSpan">bug</span>(&#x22;ccm: can&#x27;t deal with 4GiB or
  more data&#x22;)),s=
 [u.partial(8,(r.length?64:0)|i-2&#x3c;&#x3c;2|s-1)],s=u.concat(s,n),s[3]|=u.bitLength(t)/8
 ,s=e.encrypt(s);if(r.length){n=u.bitLength(r)/8,65279&#x3e;=n?o=[u.partial(16,n)]:4294967295&#x3e;=
@@ -24023,11 +24098,11 @@ i,s){var o,u=sjcl.bitArray;o=u.l;var a=t.length,f=u.bitLength(t);n=u.concat([u.p
 .L(e,t,n,r,i,s),o=sjcl.mode.ccm.p(e,o,n,t,i,s),u.concat(o.data,o.tag)},decrypt:function(
 e,t,n,r,i){i=i||64,r=r||[];var s=sjcl.bitArray,o=s.bitLength(n)/8,u=s.bitLength(
 t),a=s.clamp(t,u-i),f=s.bitSlice(t,u-i),u=(u-i)/8;7&#x3e;o&#x26;&#x26;q(new sjcl.exception.invalid
-(&#x22;ccm: iv must be at least 7 bytes&#x22;));for(t=2;4&#x3e;t&#x26;&#x26;u&#x3e;&#x3e;&#x3e;8*t;t++);return t&#x3c;15-o&#x26;\
-&#x26;(
+(&#x22;ccm: iv must be at least 7 bytes&#x22;));for(t=2;4&#x3e;t&#x26;&#x26;u&#x3e;&#x3e;&#x3e;8*t;t++);return t&#x3c;15-o&#x26;&#
+x26;(
 t=15-o),n=s.clamp(n,8*(15-t)),a=sjcl.mode.ccm.p(e,a,n,f,i,t),e=sjcl.mode.ccm.L(e
-,a.data,n,r,i,t),s.equal(a.tag,e)||q(new sjcl.exception.<span class="apidocCodeKeywordSpan">corrupt</span>(&#x22;ccm: tag doesn&\
-#x27;t match&#x22;
+,a.data,n,r,i,t),s.equal(a.tag,e)||q(new sjcl.exception.<span class="apidocCodeKeywordSpan">corrupt</span>(&#x22;ccm: tag doesn&#
+x27;t match&#x22;
 )),a.data},L:function(e,t,n,r,i,s){var o=[],u=sjcl.bitArray,a=u.l;i/=8,(i%2||4&#x3e;i||16&#x3c;
 i)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;ccm: invalid tag length&#x22;)),(4294967295&#x3c;r.length||4294967295&#x3c;
 t.length)&#x26;&#x26;q(new sjcl.exception.bug(&#x22;ccm: can&#x27;t deal with 4GiB or more data&#x22;)),s=
@@ -24057,16 +24132,16 @@ this.message},this.message=e}</pre></li>
 // utility2-uglify https://raw.githubusercontent.com/bitwiseshiftleft/sjcl/1.0.3/sjcl.js
 (function () { var module;
 &#x22;use strict&#x22;;function q(e){throw e}function w(e,t,n){4!==t.length&#x26;&#x26;q(new sjcl.exception
-.<span class="apidocCodeKeywordSpan">invalid</span>(&#x22;invalid aes block size&#x22;));var r=e.b[n],i=t[0]^r[0],s=t[n?3:1]^r[1\
+.<span class="apidocCodeKeywordSpan">invalid</span>(&#x22;invalid aes block size&#x22;));var r=e.b[n],i=t[0]^r[0],s=t[n?3:1]^r[1
 ],o=t
 [2]^r[2];t=t[n?1:3]^r[3];var u,a,f,l=r.length/4-2,c,h=4,p=[0,0,0,0];u=e.k[n],e=u
-[0];var d=u[1],v=u[2],m=u[3],g=u[4];for(c=0;c&#x3c;l;c++)u=e[i&#x3e;&#x3e;&#x3e;24]^d[s&#x3e;&#x3e;16&#x26;255]^v[o&#x3e;&#x3e;8\
+[0];var d=u[1],v=u[2],m=u[3],g=u[4];for(c=0;c&#x3c;l;c++)u=e[i&#x3e;&#x3e;&#x3e;24]^d[s&#x3e;&#x3e;16&#x26;255]^v[o&#x3e;&#x3e;8
 &#x26;255
-]^m[t&#x26;255]^r[h],a=e[s&#x3e;&#x3e;&#x3e;24]^d[o&#x3e;&#x3e;16&#x26;255]^v[t&#x3e;&#x3e;8&#x26;255]^m[i&#x26;255]^r[h+1],f=e[\
+]^m[t&#x26;255]^r[h],a=e[s&#x3e;&#x3e;&#x3e;24]^d[o&#x3e;&#x3e;16&#x26;255]^v[t&#x3e;&#x3e;8&#x26;255]^m[i&#x26;255]^r[h+1],f=e[
 o&#x3e;&#x3e;&#x3e;24]^
-d[t&#x3e;&#x3e;16&#x26;255]^v[i&#x3e;&#x3e;8&#x26;255]^m[s&#x26;255]^r[h+2],t=e[t&#x3e;&#x3e;&#x3e;24]^d[i&#x3e;&#x3e;16&#x26;25\
-5]^v[s&#x3e;&#x3e;8&#x26;255]^m[
-o&#x26;255]^r[h+3],h+=4,i=u,s=a,o=f;for(c=0;4&#x3e;c;c++)p[n?3&#x26;-c:c]=g[i&#x3e;&#x3e;&#x3e;24]&#x3c;&#x3c;24^g[s&#x3e;&#x3e;\
+d[t&#x3e;&#x3e;16&#x26;255]^v[i&#x3e;&#x3e;8&#x26;255]^m[s&#x26;255]^r[h+2],t=e[t&#x3e;&#x3e;&#x3e;24]^d[i&#x3e;&#x3e;16&#x26;255
+]^v[s&#x3e;&#x3e;8&#x26;255]^m[
+o&#x26;255]^r[h+3],h+=4,i=u,s=a,o=f;for(c=0;4&#x3e;c;c++)p[n?3&#x26;-c:c]=g[i&#x3e;&#x3e;&#x3e;24]&#x3c;&#x3c;24^g[s&#x3e;&#x3e;
 16&#x26;255
 ]&#x3c;&#x3c;16^g[o&#x3e;&#x3e;8&#x26;255]&#x3c;&#x3c;8^g[t&#x26;255]^r[h++],u=i,i=s,s=o,o=t,t=u;return p}function x(e,t
 ){var n,r,i,s=t.slice(0),o=e.r,u=e.b,a=o[0],f=o[1],l=o[2],c=o[3],h=o[4],p=o[5],d=
@@ -24092,11 +24167,11 @@ this.message},this.message=e}</pre></li>
 :{},seeded:{}},this.m=this.V=0,this.t=1,this.u=2,this.S=65536,this.I=[0,48,64,96
 ,128,192,256,384,512,768,1024],this.T=3e4,this.R=80},sjcl.prng.prototype={randomWords
 :function(e,t){var n=[],r;r=this.isReady(t);var i;r===this.m&#x26;&#x26;q(new sjcl.exception
-.<span class="apidocCodeKeywordSpan">notReady</span>(&#x22;generator isn&#x27;t seeded&#x22;));if(r&#x26;this.u){r=!(r&#x26;this\
+.<span class="apidocCodeKeywordSpan">notReady</span>(&#x22;generator isn&#x27;t seeded&#x22;));if(r&#x26;this.u){r=!(r&#x26;this
 .t),i=[];var s=0,o;this
 .O=i[0]=(new Date).valueOf()+this.T;for(o=0;16&#x3e;o;o++)i.push(4294967296*Math.random
 ()|0);for(o=0;o&#x3c;this.c.length&#x26;&#x26;!(i=i.concat(this.c[o].finalize()),s+=this.i[o],this
-.i[o]=0,!r&#x26;&#x26;this.F&#x26;1&#x3c;&#x3c;o);o++);this.F&#x3e;=1&#x3c;&#x3c;this.c.length&#x26;&#x26;(this.c.push(new sjcl.\
+.i[o]=0,!r&#x26;&#x26;this.F&#x26;1&#x3c;&#x3c;o);o++);this.F&#x3e;=1&#x3c;&#x3c;this.c.length&#x26;&#x26;(this.c.push(new sjcl.
 hash
 .sha256),this.i.push(0)),this.d-=s,s&#x3e;this.j&#x26;&#x26;(this.j=s),this.F++,this.b=sjcl.hash
 .sha256.hash(this.b.concat(i)),this.A=new sjcl.cipher.aes(this.b);for(r=0;4&#x3e;r&#x26;&#x26;(
@@ -24151,14 +24226,14 @@ this.message},this.message=e},notReady:function(e){this.toString=function(){retu
 this.message},this.message=e}}};&#x22;undefined&#x22;!=typeof module&#x26;&#x26;module.exports&#x26;&#x26;(module
 .exports=sjcl),&#x22;function&#x22;==typeof define&#x26;&#x26;define([],function(){return sjcl}),sjcl
 .cipher.aes=function(e){this.k[0][0][0]||this.<span class="apidocCodeKeywordSpan">D</span>();var t,n,r,i,s=this.k[0][4],o=this
-.k[1];t=e.length;var u=1;4!==t&#x26;&#x26;6!==t&#x26;&#x26;8!==t&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;invalid aes key s\
-ize&#x22;
+.k[1];t=e.length;var u=1;4!==t&#x26;&#x26;6!==t&#x26;&#x26;8!==t&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;invalid aes key size
+&#x22;
 )),this.b=[r=e.slice(0),i=[]];for(e=t;e&#x3c;4*t+28;e++){n=r[e-1];if(0===e%t||8===t&#x26;&#x26;4===
-e%t)n=s[n&#x3e;&#x3e;&#x3e;24]&#x3c;&#x3c;24^s[n&#x3e;&#x3e;16&#x26;255]&#x3c;&#x3c;16^s[n&#x3e;&#x3e;8&#x26;255]&#x3c;&#x3c;8^s\
+e%t)n=s[n&#x3e;&#x3e;&#x3e;24]&#x3c;&#x3c;24^s[n&#x3e;&#x3e;16&#x26;255]&#x3c;&#x3c;16^s[n&#x3e;&#x3e;8&#x26;255]&#x3c;&#x3c;8^s
 [n&#x26;255],0===e%t&#x26;&#x26;(n=n&#x3c;&#x3c;8^n&#x3e;&#x3e;&#x3e;24^
 u&#x3c;&#x3c;24,u=u&#x3c;&#x3c;1^283*(u&#x3e;&#x3e;7));r[e]=r[e-t]^n}for(t=0;e;t++,e--)n=r[t&#x26;3?e:e-4],i[t]=4&#x3e;=
-e||4&#x3e;t?n:o[0][s[n&#x3e;&#x3e;&#x3e;24]]^o[1][s[n&#x3e;&#x3e;16&#x26;255]]^o[2][s[n&#x3e;&#x3e;8&#x26;255]]^o[3][s[n&#x26;25\
-5]]},sjcl
+e||4&#x3e;t?n:o[0][s[n&#x3e;&#x3e;&#x3e;24]]^o[1][s[n&#x3e;&#x3e;16&#x26;255]]^o[2][s[n&#x3e;&#x3e;8&#x26;255]]^o[3][s[n&#x26;255
+]]},sjcl
 .cipher.aes.prototype={encrypt:function(e){return w(this,e,0)},decrypt:function(
 e){return w(this,e,1)},k:[[[],[],[],[],[]],[[],[],[],[],[]]],D:function(){var e=
 ...</pre></li>
@@ -24180,8 +24255,8 @@ e){return w(this,e,1)},k:[[[],[],[],[],[]],[[],[],[],[],[]]],D:function(){var e=
     <li>example usage<pre class="apidocCodePre">...
 .J,o=0,u;t&#x26;&#x26;(s=s.substr(0,62)+&#x22;-_&#x22;);for(r=0;r&#x3c;e.length;r++)u=s.indexOf(e.charAt(
 r)),0&#x3e;u&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;this isn&#x27;t base64!&#x22;)),26&#x3c;i?(i-=26,n.push(
-o^u&#x3e;&#x3e;&#x3e;i),o=u&#x3c;&#x3c;32-i):(i+=6,o^=u&#x3c;&#x3c;32-i);return i&#x26;56&#x26;&#x26;n.push(sjcl.bitArray.partia\
-l(
+o^u&#x3e;&#x3e;&#x3e;i),o=u&#x3c;&#x3c;32-i):(i+=6,o^=u&#x3c;&#x3c;32-i);return i&#x26;56&#x26;&#x26;n.push(sjcl.bitArray.partial
+(
 i&#x26;56,o,1)),n}},sjcl.codec.base64url={fromBits:function(e){return sjcl.codec.base64
 .fromBits(e,1,1)},toBits:function(e){return sjcl.codec.base64.toBits(e,1)}},sjcl
 .hash.sha256=function(e){this.b[0]||this.D(),e?(this.r=e.r.slice(0),this.o=e.o.slice
@@ -24244,13 +24319,13 @@ e,t,n){var r=this._reader,i=e+r.read(),s=Tokens.type(i)||Tokens.CHAR;return this
 // https://github.com/gotwarlost/istanbul/blob/v0.3.20/lib/instrumenter.js
 // utility2-uglifyjs https://raw.githubusercontent.com/gotwarlost/istanbul/v0.3.20/lib/instrumenter.js
 // replace &#x27;(t?&#x22;&#x22;:r)&#x27; with &#x27;Math.random().toString(16).slice(2)&#x27;
-(function () { var escodegen, esprima, module, window; escodegen = local.escodegen; esprima = local.esprima; module = undefined;\
- window = local;
+(function () { var escodegen, esprima, module, window; escodegen = local.escodegen; esprima = local.esprima; module = undefined; 
+window = local;
 (function(e){&#x22;use strict&#x22;;function p(e,t){var n,r;return s!==null?(n=s.createHash
-(&#x22;md5&#x22;),n.<span class="apidocCodeKeywordSpan">update</span>(e),r=n.digest(&#x22;base64&#x22;),r=r.replace(new RegExp(&\
-#x22;=&#x22;,&#x22;g&#x22;),&#x22;&#x22;).replace
-(new RegExp(&#x22;\\+&#x22;,&#x22;g&#x22;),&#x22;_&#x22;).replace(new RegExp(&#x22;/&#x22;,&#x22;g&#x22;),&#x22;$&#x22;)):(windo\
-w.__cov_seq=
+(&#x22;md5&#x22;),n.<span class="apidocCodeKeywordSpan">update</span>(e),r=n.digest(&#x22;base64&#x22;),r=r.replace(new RegExp(&#
+x22;=&#x22;,&#x22;g&#x22;),&#x22;&#x22;).replace
+(new RegExp(&#x22;\\+&#x22;,&#x22;g&#x22;),&#x22;_&#x22;).replace(new RegExp(&#x22;/&#x22;,&#x22;g&#x22;),&#x22;$&#x22;)):(window
+.__cov_seq=
 window.__cov_seq||0,window.__cov_seq+=1,r=window.__cov_seq),&#x22;__cov_&#x22;+Math.random().toString(16).slice(2)}function d
 (e,t){h(t)||(t=[t]),Array.prototype.push.apply(e,t)}function v(e,t,n,r){this.walkMap=
 e,this.preprocessor=t,this.scope=n,this.debug=r,this.debug&#x26;&#x26;(this.level=0,this.seq=!0
@@ -24294,7 +24369,7 @@ codec.base64.toBits(t.kemtag)).slice(0,t.ks/32)),&#x22;string&#x22;==typeof s&#x
 (s)}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 t.iter||64!==t.ts&#x26;&#x26;96!==t.ts&#x26;&#x26;128!==t.ts||128!==t.ks&#x26;&#x26;192!==t.ks&#x26;&#x26;256!==t.ks||!t
-.iv||2&#x3e;t.iv.length||4&#x3c;t.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json decrypt: invalid parameters&#x22\
+.iv||2&#x3e;t.iv.length||4&#x3c;t.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json decrypt: invalid parameters&#x22
 ;
 )),&#x22;string&#x22;==typeof e?(o=sjcl.misc.cachedPbkdf2(e,t),e=o.key.slice(0,t.ks/32),t.
 salt=o.salt):sjcl.ecc&#x26;&#x26;e instanceof sjcl.ecc.elGamal.secretKey&#x26;&#x26;(e=e.unkem(sjcl.
@@ -24304,10 +24379,10 @@ codec.base64.toBits(t.kemtag)).slice(0,t.ks/32)),&#x22;string&#x22;==typeof s&#x
 (s)},decrypt:function(e,t,n,r){var i=sjcl.json;return i.<span class="apidocCodeKeywordSpan">X</span>(e,i.decode(t),n,r)},encode
 :function(e){var t,n=&#x22;{&#x22;,r=&#x22;&#x22;;for(t in e)if(e.hasOwnProperty(t))switch(t.match(/^[a-z0-9]+$/i
 )||q(new sjcl.exception.invalid(&#x22;json encode: invalid property name&#x22;)),n+=r+&#x27;&#x22;&#x27;+
-t+&#x27;&#x22;:&#x27;,r=&#x22;,&#x22;,typeof e[t]){case&#x22;number&#x22;:case&#x22;boolean&#x22;:n+=e[t];break;case&#x22;string\
+t+&#x27;&#x22;:&#x27;,r=&#x22;,&#x22;,typeof e[t]){case&#x22;number&#x22;:case&#x22;boolean&#x22;:n+=e[t];break;case&#x22;string
 &#x22;:
-n+=&#x27;&#x22;&#x27;+escape(e[t])+&#x27;&#x22;&#x27;;break;case&#x22;object&#x22;:n+=&#x27;&#x22;&#x27;+sjcl.codec.base64.fromB\
-its(e[t
+n+=&#x27;&#x22;&#x27;+escape(e[t])+&#x27;&#x22;&#x27;;break;case&#x22;object&#x22;:n+=&#x27;&#x22;&#x27;+sjcl.codec.base64.fromBits
+(e[t
 ],0)+&#x27;&#x22;&#x27;;break;default:q(new sjcl.exception.bug(&#x22;json encode: unsupported type&#x22;)
 )}return n+&#x22;}&#x22;},decode:function(e){e=e.replace(/\s/g,&#x22;&#x22;),e.match(/^\{.*\}$/)||q(new
 sjcl.exception.invalid(&#x22;json decode: this isn&#x27;t json!&#x22;)),e=e.replace(/^\{|\}$/g,&#x22;&#x22;
@@ -24349,14 +24424,14 @@ cipher[s.cipher](e),i.e(r,s),r.key=e,s.ct=sjcl.mode[s.mode].encrypt(o,t,s.iv,n,s
     <ul>
     <li>description and source-code<pre class="apidocCodePre">decode = function (e){e=e.replace(/\s/g,&#x22;&#x22;),e.match(/^\{.*\}$/)||q(new
 sjcl.exception.invalid(&#x22;json decode: this isn&#x27;t json!&#x22;)),e=e.replace(/^\{|\}$/g,&#x22;&#x22;
-).split(/,/);var t={},n,r;for(n=0;n&#x3c;e.length;n++)(r=e[n].match(/^\s*(?:([&#x22;&#x27;]?)([a-z][a-z0-9]*)\1)\s*:\s*(?:(-?\d+)|&#x22;([a-z0-9+\/%\
-*_.@=\-]*)&#x22;|(true|false))$/i
+).split(/,/);var t={},n,r;for(n=0;n&#x3c;e.length;n++)(r=e[n].match(/^\s*(?:([&#x22;&#x27;]?)([a-z][a-z0-9]*)\1)\s*:\s*(?:(-?\d+)|&#x22;([a-z0-9+\/%*
+_.@=\-]*)&#x22;|(true|false))$/i
 ))||q(new sjcl.exception.invalid(&#x22;json decode: this isn&#x27;t json!&#x22;)),r[3]?t[r[2]]=
 parseInt(r[3],10):r[4]?t[r[2]]=r[2].match(/^(ct|adata|salt|iv)$/)?sjcl.codec.base64
 .toBits(r[4]):unescape(r[4]):r[5]&#x26;&#x26;(t[r[2]]=&#x22;true&#x22;===r[5]);return t}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 t.iter||64!==t.ts&#x26;&#x26;96!==t.ts&#x26;&#x26;128!==t.ts||128!==t.ks&#x26;&#x26;192!==t.ks&#x26;&#x26;256!==t.ks||!t
-.iv||2&#x3e;t.iv.length||4&#x3c;t.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json decrypt: invalid parameters&#x22\
+.iv||2&#x3e;t.iv.length||4&#x3c;t.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json decrypt: invalid parameters&#x22
 ;
 )),&#x22;string&#x22;==typeof e?(o=sjcl.misc.cachedPbkdf2(e,t),e=o.key.slice(0,t.ks/32),t.
 salt=o.salt):sjcl.ecc&#x26;&#x26;e instanceof sjcl.ecc.elGamal.secretKey&#x26;&#x26;(e=e.unkem(sjcl.
@@ -24366,10 +24441,10 @@ codec.base64.toBits(t.kemtag)).slice(0,t.ks/32)),&#x22;string&#x22;==typeof s&#x
 (s)},decrypt:function(e,t,n,r){var i=sjcl.json;return i.X(e,i.<span class="apidocCodeKeywordSpan">decode</span>(t),n,r)},encode
 :function(e){var t,n=&#x22;{&#x22;,r=&#x22;&#x22;;for(t in e)if(e.hasOwnProperty(t))switch(t.match(/^[a-z0-9]+$/i
 )||q(new sjcl.exception.invalid(&#x22;json encode: invalid property name&#x22;)),n+=r+&#x27;&#x22;&#x27;+
-t+&#x27;&#x22;:&#x27;,r=&#x22;,&#x22;,typeof e[t]){case&#x22;number&#x22;:case&#x22;boolean&#x22;:n+=e[t];break;case&#x22;string\
+t+&#x27;&#x22;:&#x27;,r=&#x22;,&#x22;,typeof e[t]){case&#x22;number&#x22;:case&#x22;boolean&#x22;:n+=e[t];break;case&#x22;string
 &#x22;:
-n+=&#x27;&#x22;&#x27;+escape(e[t])+&#x27;&#x22;&#x27;;break;case&#x22;object&#x22;:n+=&#x27;&#x22;&#x27;+sjcl.codec.base64.fromB\
-its(e[t
+n+=&#x27;&#x22;&#x27;+escape(e[t])+&#x27;&#x22;&#x27;;break;case&#x22;object&#x22;:n+=&#x27;&#x22;&#x27;+sjcl.codec.base64.fromBits
+(e[t
 ],0)+&#x27;&#x22;&#x27;;break;default:q(new sjcl.exception.bug(&#x22;json encode: unsupported type&#x22;)
 )}return n+&#x22;}&#x22;},decode:function(e){e=e.replace(/\s/g,&#x22;&#x22;),e.match(/^\{.*\}$/)||q(new
 sjcl.exception.invalid(&#x22;json decode: this isn&#x27;t json!&#x22;)),e=e.replace(/^\{|\}$/g,&#x22;&#x22;
@@ -24423,18 +24498,18 @@ F=new Uint32Array((new Uint8Array(F)).buffer),sjcl.random.addEntropy(F,1024,&#x2
 (32);if(window.crypto&#x26;&#x26;window.crypto.getRandomValues)window.crypto.getRandomValues
 (H);else{if(!window.msCrypto||!window.msCrypto.getRandomValues)break e;window.msCrypto
 .getRandomValues(H)}sjcl.random.addEntropy(H,1024,&#x22;crypto[&#x27;getRandomValues&#x27;]&#x22;)}}
-catch(M){&#x22;undefined&#x22;!=typeof window&#x26;&#x26;window.console&#x26;&#x26;(console.log(&#x22;There was an error collect\
-ing entropy from the browser:&#x22;
+catch(M){&#x22;undefined&#x22;!=typeof window&#x26;&#x26;window.console&#x26;&#x26;(console.log(&#x22;There was an error collecting
+ entropy from the browser:&#x22;
 ),console.log(M))}sjcl.json={defaults:{v:1,iter:1e3,ks:128,ts:64,mode:&#x22;ccm&#x22;,adata
-:&#x22;&#x22;,cipher:&#x22;aes&#x22;},Y:function(e,t,n,r){n=n||{},r=r||{};var i=sjcl.json,s=i.<span class="apidocCodeKeywordSpan\
+:&#x22;&#x22;,cipher:&#x22;aes&#x22;},Y:function(e,t,n,r){n=n||{},r=r||{};var i=sjcl.json,s=i.<span class="apidocCodeKeywordSpan
 ">e</span>({iv:
 sjcl.random.randomWords(4,0)},i.defaults),o;return i.e(s,n),n=s.adata,&#x22;string&#x22;==typeof
 s.salt&#x26;&#x26;(s.salt=sjcl.codec.base64.toBits(s.salt)),&#x22;string&#x22;==typeof s.iv&#x26;&#x26;(s.iv=sjcl
 .codec.base64.toBits(s.iv)),(!sjcl.mode[s.mode]||!sjcl.cipher[s.cipher]||&#x22;string&#x22;==typeof
-e&#x26;&#x26;100&#x3e;=s.iter||64!==s.ts&#x26;&#x26;96!==s.ts&#x26;&#x26;128!==s.ts||128!==s.ks&#x26;&#x26;192!==s.ks&#x26;&#x26\
+e&#x26;&#x26;100&#x3e;=s.iter||64!==s.ts&#x26;&#x26;96!==s.ts&#x26;&#x26;128!==s.ts||128!==s.ks&#x26;&#x26;192!==s.ks&#x26;&#x26
 ;256!==
-s.ks||2&#x3e;s.iv.length||4&#x3c;s.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json encrypt: invalid parameters&#x2\
-2;
+s.ks||2&#x3e;s.iv.length||4&#x3c;s.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json encrypt: invalid parameters&#x22
+;
 )),&#x22;string&#x22;==typeof e?(o=sjcl.misc.cachedPbkdf2(e,s),e=o.key.slice(0,s.ks/32),s.
 salt=o.salt):sjcl.ecc&#x26;&#x26;e instanceof sjcl.ecc.elGamal.publicKey&#x26;&#x26;(o=e.kem(),s.kemtag=
 ...</pre></li>
@@ -24470,8 +24545,8 @@ n+=&#x27;&#x22;&#x27;+escape(e[t])+&#x27;&#x22;&#x27;;break;case&#x22;object&#x2
 ],0)+&#x27;&#x22;&#x27;;break;default:q(new sjcl.exception.bug(&#x22;json encode: unsupported type&#x22;)
 )}return n+&#x22;}&#x22;}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-s.ks||2&#x3e;s.iv.length||4&#x3c;s.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json encrypt: invalid parameters&#x2\
-2;
+s.ks||2&#x3e;s.iv.length||4&#x3c;s.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json encrypt: invalid parameters&#x22
+;
 )),&#x22;string&#x22;==typeof e?(o=sjcl.misc.cachedPbkdf2(e,s),e=o.key.slice(0,s.ks/32),s.
 salt=o.salt):sjcl.ecc&#x26;&#x26;e instanceof sjcl.ecc.elGamal.publicKey&#x26;&#x26;(o=e.kem(),s.kemtag=
 o.tag,e=o.key.slice(0,s.ks/32)),&#x22;string&#x22;==typeof t&#x26;&#x26;(t=sjcl.codec.utf8String.toBits
@@ -24483,7 +24558,7 @@ cipher[s.cipher](e),i.e(r,s),r.key=e,s.ct=sjcl.mode[s.mode].encrypt(o,t,s.iv,n,s
 sjcl.codec.base64.toBits(t.salt)),&#x22;string&#x22;==typeof t.iv&#x26;&#x26;(t.iv=sjcl.codec.base64
 .toBits(t.iv)),(!sjcl.mode[t.mode]||!sjcl.cipher[t.cipher]||&#x22;string&#x22;==typeof e&#x26;&#x26;100&#x3e;=
 t.iter||64!==t.ts&#x26;&#x26;96!==t.ts&#x26;&#x26;128!==t.ts||128!==t.ks&#x26;&#x26;192!==t.ks&#x26;&#x26;256!==t.ks||!t
-.iv||2&#x3e;t.iv.length||4&#x3c;t.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json decrypt: invalid parameters&#x22\
+.iv||2&#x3e;t.iv.length||4&#x3c;t.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json decrypt: invalid parameters&#x22
 ;
 )),&#x22;string&#x22;==typeof e?(o=sjcl.misc.cachedPbkdf2(e,t),e=o.key.slice(0,t.ks/32),t.
 salt=o.salt):sjcl.ecc&#x26;&#x26;e instanceof sjcl.ecc.elGamal.secretKey&#x26;&#x26;(e=e.unkem(sjcl.
@@ -24561,12 +24636,12 @@ slice(0),salt:n.slice(0)}}</pre></li>
 sjcl.random.randomWords(4,0)},i.defaults),o;return i.e(s,n),n=s.adata,&#x22;string&#x22;==typeof
 s.salt&#x26;&#x26;(s.salt=sjcl.codec.base64.toBits(s.salt)),&#x22;string&#x22;==typeof s.iv&#x26;&#x26;(s.iv=sjcl
 .codec.base64.toBits(s.iv)),(!sjcl.mode[s.mode]||!sjcl.cipher[s.cipher]||&#x22;string&#x22;==typeof
-e&#x26;&#x26;100&#x3e;=s.iter||64!==s.ts&#x26;&#x26;96!==s.ts&#x26;&#x26;128!==s.ts||128!==s.ks&#x26;&#x26;192!==s.ks&#x26;&#x26\
+e&#x26;&#x26;100&#x3e;=s.iter||64!==s.ts&#x26;&#x26;96!==s.ts&#x26;&#x26;128!==s.ts||128!==s.ks&#x26;&#x26;192!==s.ks&#x26;&#x26
 ;256!==
-s.ks||2&#x3e;s.iv.length||4&#x3c;s.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json encrypt: invalid parameters&#x2\
-2;
-)),&#x22;string&#x22;==typeof e?(o=sjcl.misc.<span class="apidocCodeKeywordSpan">cachedPbkdf2</span>(e,s),e=o.key.slice(0,s.ks/3\
-2),s.
+s.ks||2&#x3e;s.iv.length||4&#x3c;s.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json encrypt: invalid parameters&#x22
+;
+)),&#x22;string&#x22;==typeof e?(o=sjcl.misc.<span class="apidocCodeKeywordSpan">cachedPbkdf2</span>(e,s),e=o.key.slice(0,s.ks/32
+),s.
 salt=o.salt):sjcl.ecc&#x26;&#x26;e instanceof sjcl.ecc.elGamal.publicKey&#x26;&#x26;(o=e.kem(),s.kemtag=
 o.tag,e=o.key.slice(0,s.ks/32)),&#x22;string&#x22;==typeof t&#x26;&#x26;(t=sjcl.codec.utf8String.toBits
 (t)),&#x22;string&#x22;==typeof n&#x26;&#x26;(s.adata=n=sjcl.codec.utf8String.toBits(n)),o=new sjcl.
@@ -24733,13 +24808,13 @@ options[4] = local.sjcl.codec.base64.fromBits(
 // https://github.com/gotwarlost/istanbul/blob/v0.3.20/lib/instrumenter.js
 // utility2-uglifyjs https://raw.githubusercontent.com/gotwarlost/istanbul/v0.3.20/lib/instrumenter.js
 // replace &#x27;(t?&#x22;&#x22;:r)&#x27; with &#x27;Math.random().toString(16).slice(2)&#x27;
-(function () { var escodegen, esprima, module, window; escodegen = local.escodegen; esprima = local.esprima; module = undefined;\
- window = local;
+(function () { var escodegen, esprima, module, window; escodegen = local.escodegen; esprima = local.esprima; module = undefined; 
+window = local;
 (function(e){&#x22;use strict&#x22;;function p(e,t){var n,r;return s!==null?(n=s.createHash
-(&#x22;md5&#x22;),n.update(e),r=n.<span class="apidocCodeKeywordSpan">digest</span>(&#x22;base64&#x22;),r=r.replace(new RegExp(&\
-#x22;=&#x22;,&#x22;g&#x22;),&#x22;&#x22;).replace
-(new RegExp(&#x22;\\+&#x22;,&#x22;g&#x22;),&#x22;_&#x22;).replace(new RegExp(&#x22;/&#x22;,&#x22;g&#x22;),&#x22;$&#x22;)):(windo\
-w.__cov_seq=
+(&#x22;md5&#x22;),n.update(e),r=n.<span class="apidocCodeKeywordSpan">digest</span>(&#x22;base64&#x22;),r=r.replace(new RegExp(&#
+x22;=&#x22;,&#x22;g&#x22;),&#x22;&#x22;).replace
+(new RegExp(&#x22;\\+&#x22;,&#x22;g&#x22;),&#x22;_&#x22;).replace(new RegExp(&#x22;/&#x22;,&#x22;g&#x22;),&#x22;$&#x22;)):(window
+.__cov_seq=
 window.__cov_seq||0,window.__cov_seq+=1,r=window.__cov_seq),&#x22;__cov_&#x22;+Math.random().toString(16).slice(2)}function d
 (e,t){h(t)||(t=[t]),Array.prototype.push.apply(e,t)}function v(e,t,n,r){this.walkMap=
 e,this.preprocessor=t,this.scope=n,this.debug=r,this.debug&#x26;&#x26;(this.level=0,this.seq=!0
@@ -24857,13 +24932,13 @@ e,t,n){var r=this._reader,i=e+r.read(),s=Tokens.type(i)||Tokens.CHAR;return this
 // https://github.com/gotwarlost/istanbul/blob/v0.3.20/lib/instrumenter.js
 // utility2-uglifyjs https://raw.githubusercontent.com/gotwarlost/istanbul/v0.3.20/lib/instrumenter.js
 // replace &#x27;(t?&#x22;&#x22;:r)&#x27; with &#x27;Math.random().toString(16).slice(2)&#x27;
-(function () { var escodegen, esprima, module, window; escodegen = local.escodegen; esprima = local.esprima; module = undefined;\
- window = local;
+(function () { var escodegen, esprima, module, window; escodegen = local.escodegen; esprima = local.esprima; module = undefined; 
+window = local;
 (function(e){&#x22;use strict&#x22;;function p(e,t){var n,r;return s!==null?(n=s.createHash
-(&#x22;md5&#x22;),n.<span class="apidocCodeKeywordSpan">update</span>(e),r=n.digest(&#x22;base64&#x22;),r=r.replace(new RegExp(&\
-#x22;=&#x22;,&#x22;g&#x22;),&#x22;&#x22;).replace
-(new RegExp(&#x22;\\+&#x22;,&#x22;g&#x22;),&#x22;_&#x22;).replace(new RegExp(&#x22;/&#x22;,&#x22;g&#x22;),&#x22;$&#x22;)):(windo\
-w.__cov_seq=
+(&#x22;md5&#x22;),n.<span class="apidocCodeKeywordSpan">update</span>(e),r=n.digest(&#x22;base64&#x22;),r=r.replace(new RegExp(&#
+x22;=&#x22;,&#x22;g&#x22;),&#x22;&#x22;).replace
+(new RegExp(&#x22;\\+&#x22;,&#x22;g&#x22;),&#x22;_&#x22;).replace(new RegExp(&#x22;/&#x22;,&#x22;g&#x22;),&#x22;$&#x22;)):(window
+.__cov_seq=
 window.__cov_seq||0,window.__cov_seq+=1,r=window.__cov_seq),&#x22;__cov_&#x22;+Math.random().toString(16).slice(2)}function d
 (e,t){h(t)||(t=[t]),Array.prototype.push.apply(e,t)}function v(e,t,n,r){this.walkMap=
 e,this.preprocessor=t,this.scope=n,this.debug=r,this.debug&#x26;&#x26;(this.level=0,this.seq=!0
@@ -24900,8 +24975,8 @@ e.offsetX||0,n=e.y||e.clientY||e.offsetY||0}catch(r){n=t=0}0!=t&#x26;&#x26;0!=n&
 )},aa:function(){E(2)},U:function(e){e=e.accelerationIncludingGravity.x||e.accelerationIncludingGravity
 .y||e.accelerationIncludingGravity.z;if(window.orientation){var t=window.orientation
 ;&#x22;number&#x22;==typeof t&#x26;&#x26;sjcl.random.addEntropy(t,1,&#x22;accelerometer&#x22;)}e&#x26;&#x26;sjcl.random.
-addEntropy(e,2,&#x22;accelerometer&#x22;),E(0)}},sjcl.random=new sjcl.<span class="apidocCodeKeywordSpan">prng</span>(6);e:try{v\
-ar F,
+addEntropy(e,2,&#x22;accelerometer&#x22;),E(0)}},sjcl.random=new sjcl.<span class="apidocCodeKeywordSpan">prng</span>(6);e:try{var
+ F,
 G,H,I;if(I=&#x22;undefined&#x22;!=typeof module){var J;if(J=module.exports){var K;try{K=require
 (&#x22;crypto&#x22;)}catch(L){K=null}J=(G=K)&#x26;&#x26;G.randomBytes}I=J}if(I)F=G.randomBytes(128),
 F=new Uint32Array((new Uint8Array(F)).buffer),sjcl.random.addEntropy(F,1024,&#x22;crypto[&#x27;randomBytes&#x27;]&#x22;
@@ -24964,23 +25039,23 @@ prototype.toString.call(e);if(&#x22;[object Uint32Array]&#x22;===n){i=[];for(n=0
 )&#x22;number&#x22;!=typeof e[n]&#x26;&#x26;(f=1)}if(!f){if(t===s)for(n=t=0;n&#x3c;e.length;n++)for(i=e[n
 ];0&#x3c;i;)t++,i&#x3e;&#x3e;&#x3e;=1;this.c[u].update([r,this.C++,2,t,o,e.length].concat(e))}break;
 case&#x22;string&#x22;:t===s&#x26;&#x26;(t=e.length),this.c[u].update([r,this.C++,3,t,o,e.length]),this
-.c[u].update(e);break;default:f=1}f&#x26;&#x26;q(new sjcl.exception.bug(&#x22;random: addEntropy only supports number, array of numbers or stri\
-ng&#x22;
+.c[u].update(e);break;default:f=1}f&#x26;&#x26;q(new sjcl.exception.bug(&#x22;random: addEntropy only supports number, array of numbers or string
+&#x22;
 )),this.i[u]+=t,this.d+=t,a===this.m&#x26;&#x26;(this.isReady()!==this.m&#x26;&#x26;C(&#x22;seeded&#x22;,Math.
 max(this.j,this.d)),C(&#x22;progress&#x22;,this.getProgress()))}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-r&#x3e;&#x3e;&#x3e;18^r&#x3e;&#x3e;&#x3e;3^r&#x3c;&#x3c;25^r&#x3c;&#x3c;14)+(i&#x3e;&#x3e;&#x3e;17^i&#x3e;&#x3e;&#x3e;19^i&#x3e;\
-&#x3e;&#x3e;10^i&#x3c;&#x3c;15^i&#x3c;&#x3c;13)+s[n&#x26;15]+s[n+9&#x26;15]|0
-),r=r+v+(h&#x3e;&#x3e;&#x3e;6^h&#x3e;&#x3e;&#x3e;11^h&#x3e;&#x3e;&#x3e;25^h&#x3c;&#x3c;26^h&#x3c;&#x3c;21^h&#x3c;&#x3c;7)+(d^h&#\
+r&#x3e;&#x3e;&#x3e;18^r&#x3e;&#x3e;&#x3e;3^r&#x3c;&#x3c;25^r&#x3c;&#x3c;14)+(i&#x3e;&#x3e;&#x3e;17^i&#x3e;&#x3e;&#x3e;19^i&#x3e;&#
+x3e;&#x3e;10^i&#x3c;&#x3c;15^i&#x3c;&#x3c;13)+s[n&#x26;15]+s[n+9&#x26;15]|0
+),r=r+v+(h&#x3e;&#x3e;&#x3e;6^h&#x3e;&#x3e;&#x3e;11^h&#x3e;&#x3e;&#x3e;25^h&#x3c;&#x3c;26^h&#x3c;&#x3c;21^h&#x3c;&#x3c;7)+(d^h&#
 x26;(p^d))+u[n],v=d,d=p,p=h,h=c+
-r|0,c=l,l=f,f=a,a=r+(f&#x26;l^c&#x26;(f^l))+(f&#x3e;&#x3e;&#x3e;2^f&#x3e;&#x3e;&#x3e;13^f&#x3e;&#x3e;&#x3e;22^f&#x3c;&#x3c;30^f&\
-#x3c;&#x3c;19^f&#x3c;&#x3c;10)|0;o[0]=
+r|0,c=l,l=f,f=a,a=r+(f&#x26;l^c&#x26;(f^l))+(f&#x3e;&#x3e;&#x3e;2^f&#x3e;&#x3e;&#x3e;13^f&#x3e;&#x3e;&#x3e;22^f&#x3c;&#x3c;30^f&#
+x3c;&#x3c;19^f&#x3c;&#x3c;10)|0;o[0]=
 o[0]+a|0,o[1]=o[1]+f|0,o[2]=o[2]+l|0,o[3]=o[3]+c|0,o[4]=o[4]+h|0,o[5]=o[5]+p|0,o
 [6]=o[6]+d|0,o[7]=o[7]+v|0}function C(e,t){var n,r=sjcl.random.w[e],i=[];for(n in
 r)r.hasOwnProperty(n)&#x26;&#x26;i.push(r[n]);for(n=0;n&#x3c;i.length;n++)i[n](t)}function E(e)
 {&#x22;undefined&#x22;!=typeof window&#x26;&#x26;window.performance&#x26;&#x26;&#x22;function&#x22;==typeof window.performance
-.now?sjcl.random.<span class="apidocCodeKeywordSpan">addEntropy</span>(window.performance.now(),e,&#x22;loadtime&#x22;):sjcl.ran\
-dom.addEntropy
+.now?sjcl.random.<span class="apidocCodeKeywordSpan">addEntropy</span>(window.performance.now(),e,&#x22;loadtime&#x22;):sjcl.random
+.addEntropy
 ((new Date).valueOf(),e,&#x22;loadtime&#x22;)}function A(e){e.b=B(e).concat(B(e)),e.A=new
 sjcl.cipher.aes(e.b)}function B(e){for(var t=0;4&#x3e;t&#x26;&#x26;(e.f[t]=e.f[t]+1|0,!e.f[t]);
 t++);return e.A.encrypt(e.f)}function D(e,t){return function(){t.apply(e,arguments
@@ -25065,10 +25140,10 @@ prototype.toString.call(e);if(&#x22;[object Uint32Array]&#x22;===n){i=[];for(n=0
 )&#x22;number&#x22;!=typeof e[n]&#x26;&#x26;(f=1)}if(!f){if(t===s)for(n=t=0;n&#x3c;e.length;n++)for(i=e[n
 ];0&#x3c;i;)t++,i&#x3e;&#x3e;&#x3e;=1;this.c[u].update([r,this.C++,2,t,o,e.length].concat(e))}break;
 case&#x22;string&#x22;:t===s&#x26;&#x26;(t=e.length),this.c[u].update([r,this.C++,3,t,o,e.length]),this
-.c[u].update(e);break;default:f=1}f&#x26;&#x26;q(new sjcl.exception.bug(&#x22;random: addEntropy only supports number, array of \
+.c[u].update(e);break;default:f=1}f&#x26;&#x26;q(new sjcl.exception.bug(&#x22;random: addEntropy only supports number, array of 
 numbers or string&#x22;
 )),this.i[u]+=t,this.d+=t,a===this.m&#x26;&#x26;(this.isReady()!==this.m&#x26;&#x26;C(&#x22;seeded&#x22;,Math.
-max(this.j,this.d)),C(&#x22;progress&#x22;,this.<span class="apidocCodeKeywordSpan">getProgress</span>()))},isReady:function(e){\
+max(this.j,this.d)),C(&#x22;progress&#x22;,this.<span class="apidocCodeKeywordSpan">getProgress</span>()))},isReady:function(e){
 return e=
 this.I[e!==s?e:this.B],this.j&#x26;&#x26;this.j&#x3e;=e?this.i[0]&#x3e;this.R&#x26;&#x26;(new Date).valueOf()&#x3e;
 this.O?this.u|this.t:this.t:this.d&#x3e;=e?this.u|this.m:this.m},getProgress:function(
@@ -25100,12 +25175,11 @@ this.O?this.u|this.t:this.t:this.d&#x3e;=e?this.u|this.m:this.m}</pre></li>
 ,this.b=[0,0,0,0,0,0,0,0],this.f=[0,0,0,0],this.A=s,this.B=e,this.q=u,this.w={progress
 :{},seeded:{}},this.m=this.V=0,this.t=1,this.u=2,this.S=65536,this.I=[0,48,64,96
 ,128,192,256,384,512,768,1024],this.T=3e4,this.R=80},sjcl.prng.prototype={randomWords
-:function(e,t){var n=[],r;r=this.<span class="apidocCodeKeywordSpan">isReady</span>(t);var i;r===this.m&#x26;&#x26;q(new sjcl.ex\
-ception
+:function(e,t){var n=[],r;r=this.<span class="apidocCodeKeywordSpan">isReady</span>(t);var i;r===this.m&#x26;&#x26;q(new sjcl.exception
 .notReady(&#x22;generator isn&#x27;t seeded&#x22;));if(r&#x26;this.u){r=!(r&#x26;this.t),i=[];var s=0,o;this
 .O=i[0]=(new Date).valueOf()+this.T;for(o=0;16&#x3e;o;o++)i.push(4294967296*Math.random
 ()|0);for(o=0;o&#x3c;this.c.length&#x26;&#x26;!(i=i.concat(this.c[o].finalize()),s+=this.i[o],this
-.i[o]=0,!r&#x26;&#x26;this.F&#x26;1&#x3c;&#x3c;o);o++);this.F&#x3e;=1&#x3c;&#x3c;this.c.length&#x26;&#x26;(this.c.push(new sjcl.\
+.i[o]=0,!r&#x26;&#x26;this.F&#x26;1&#x3c;&#x3c;o);o++);this.F&#x3e;=1&#x3c;&#x3c;this.c.length&#x26;&#x26;(this.c.push(new sjcl.
 hash
 .sha256),this.i.push(0)),this.d-=s,s&#x3e;this.j&#x26;&#x26;(this.j=s),this.F++,this.b=sjcl.hash
 .sha256.hash(this.b.concat(i)),this.A=new sjcl.cipher.aes(this.b);for(r=0;4&#x3e;r&#x26;&#x26;(
@@ -25136,18 +25210,18 @@ this.f[r]=this.f[r]+1|0,!this.f[r]);r++);}for(r=0;r&#x3c;e;r+=4)0===(r+1)%this.S
 (32);if(window.crypto&#x26;&#x26;window.crypto.getRandomValues)window.crypto.getRandomValues
 (H);else{if(!window.msCrypto||!window.msCrypto.getRandomValues)break e;window.msCrypto
 .getRandomValues(H)}sjcl.random.addEntropy(H,1024,&#x22;crypto[&#x27;getRandomValues&#x27;]&#x22;)}}
-catch(M){&#x22;undefined&#x22;!=typeof window&#x26;&#x26;window.console&#x26;&#x26;(console.log(&#x22;There was an error collect\
-ing entropy from the browser:&#x22;
+catch(M){&#x22;undefined&#x22;!=typeof window&#x26;&#x26;window.console&#x26;&#x26;(console.log(&#x22;There was an error collecting
+ entropy from the browser:&#x22;
 ),console.log(M))}sjcl.json={defaults:{v:1,iter:1e3,ks:128,ts:64,mode:&#x22;ccm&#x22;,adata
 :&#x22;&#x22;,cipher:&#x22;aes&#x22;},Y:function(e,t,n,r){n=n||{},r=r||{};var i=sjcl.json,s=i.e({iv:
-sjcl.random.<span class="apidocCodeKeywordSpan">randomWords</span>(4,0)},i.defaults),o;return i.e(s,n),n=s.adata,&#x22;string&#x\
-22;==typeof
+sjcl.random.<span class="apidocCodeKeywordSpan">randomWords</span>(4,0)},i.defaults),o;return i.e(s,n),n=s.adata,&#x22;string&#x22
+;==typeof
 s.salt&#x26;&#x26;(s.salt=sjcl.codec.base64.toBits(s.salt)),&#x22;string&#x22;==typeof s.iv&#x26;&#x26;(s.iv=sjcl
 .codec.base64.toBits(s.iv)),(!sjcl.mode[s.mode]||!sjcl.cipher[s.cipher]||&#x22;string&#x22;==typeof
-e&#x26;&#x26;100&#x3e;=s.iter||64!==s.ts&#x26;&#x26;96!==s.ts&#x26;&#x26;128!==s.ts||128!==s.ks&#x26;&#x26;192!==s.ks&#x26;&#x26\
+e&#x26;&#x26;100&#x3e;=s.iter||64!==s.ts&#x26;&#x26;96!==s.ts&#x26;&#x26;128!==s.ts||128!==s.ks&#x26;&#x26;192!==s.ks&#x26;&#x26
 ;256!==
-s.ks||2&#x3e;s.iv.length||4&#x3c;s.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json encrypt: invalid parameters&#x2\
-2;
+s.ks||2&#x3e;s.iv.length||4&#x3c;s.iv.length)&#x26;&#x26;q(new sjcl.exception.invalid(&#x22;json encrypt: invalid parameters&#x22
+;
 )),&#x22;string&#x22;==typeof e?(o=sjcl.misc.cachedPbkdf2(e,s),e=o.key.slice(0,s.ks/32),s.
 salt=o.salt):sjcl.ecc&#x26;&#x26;e instanceof sjcl.ecc.elGamal.publicKey&#x26;&#x26;(o=e.kem(),s.kemtag=
 o.tag,e=o.key.slice(0,s.ks/32)),&#x22;string&#x22;==typeof t&#x26;&#x26;(t=sjcl.codec.utf8String.toBits
@@ -25174,8 +25248,7 @@ s[n],delete i[r]}</pre></li>
 .a.loadTimeCollector),document.attachEvent(&#x22;onmousemove&#x22;,this.a.mouseCollector),
 document.attachEvent(&#x22;keypress&#x22;,this.a.keyboardCollector)):q(new sjcl.exception.
 bug(&#x22;can&#x27;t attach event&#x22;)),this.q=!0)},stopCollectors:function(){this.q&#x26;&#x26;(window
-.removeEventListener?(window.<span class="apidocCodeKeywordSpan">removeEventListener</span>(&#x22;load&#x22;,this.a.loadTimeColl\
-ector
+.removeEventListener?(window.<span class="apidocCodeKeywordSpan">removeEventListener</span>(&#x22;load&#x22;,this.a.loadTimeCollector
 ,u),window.removeEventListener(&#x22;mousemove&#x22;,this.a.mouseCollector,u),window.removeEventListener
 (&#x22;keypress&#x22;,this.a.keyboardCollector,u),window.removeEventListener(&#x22;devicemotion&#x22;
 ,this.a.accelerometerCollector,u),window.removeEventListener(&#x22;touchmove&#x22;,this.a.
@@ -25276,21 +25349,20 @@ r)HOP(r,a)&#x26;&#x26;f();return u.concat(o)}</pre></li>
     <li>description and source-code<pre class="apidocCodePre">function array_to_hash(e){var t={};for(var n=0
 ;n&#x3c;e.length;++n)t[e[n]]=!0;return t}</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-s){case&#x22;string&#x22;:o=[&#x22;string&#x22;,s];break;case&#x22;number&#x22;:o=[&#x22;num&#x22;,s];break;case&#x22;boolean&#x\
-22;
+s){case&#x22;string&#x22;:o=[&#x22;string&#x22;,s];break;case&#x22;number&#x22;:o=[&#x22;num&#x22;,s];break;case&#x22;boolean&#x22
+;
 :o=[&#x22;name&#x22;,String(s)];break;default:if(s===null){o=[&#x22;atom&#x22;,&#x22;null&#x22;];break}throw new
 Error(&#x22;Can&#x27;t handle constant of type: &#x22;+typeof s)}return r.call(n,o,s)}catch(u){
-if(u===e){if(n[0]!=&#x22;binary&#x22;||n[1]!=&#x22;===&#x22;&#x26;&#x26;n[1]!=&#x22;!==&#x22;||!(is_string(n[2])&#x26;&#x26;is_s\
-tring
-(n[3])||boolean_expr(n[2])&#x26;&#x26;boolean_expr(n[3]))){if(i&#x26;&#x26;n[0]==&#x22;binary&#x22;&#x26;&#x26;(n[1]==&#x22;||&#\
+if(u===e){if(n[0]!=&#x22;binary&#x22;||n[1]!=&#x22;===&#x22;&#x26;&#x26;n[1]!=&#x22;!==&#x22;||!(is_string(n[2])&#x26;&#x26;is_string
+(n[3])||boolean_expr(n[2])&#x26;&#x26;boolean_expr(n[3]))){if(i&#x26;&#x26;n[0]==&#x22;binary&#x22;&#x26;&#x26;(n[1]==&#x22;||&#
 x22;||
-n[1]==&#x22;&#x26;&#x26;&#x22;))try{var a=t(n[2]);n=n[1]==&#x22;&#x26;&#x26;&#x22;&#x26;&#x26;(a?n[3]:a)||n[1]==&#x22;||&#x22;&#\
+n[1]==&#x22;&#x26;&#x26;&#x22;))try{var a=t(n[2]);n=n[1]==&#x22;&#x26;&#x26;&#x22;&#x26;&#x26;(a?n[3]:a)||n[1]==&#x22;||&#x22;&#
 x26;&#x26;(a?a:n[3])||
 n}catch(f){}}else n[1]=n[1].substr(0,2);return i?i.call(n,n):null}throw u}}}(),DOT_CALL_NO_PARENS=
-jsp.<span class="apidocCodeKeywordSpan">array_to_hash</span>([&#x22;name&#x22;,&#x22;array&#x22;,&#x22;object&#x22;,&#x22;string\
+jsp.<span class="apidocCodeKeywordSpan">array_to_hash</span>([&#x22;name&#x22;,&#x22;array&#x22;,&#x22;object&#x22;,&#x22;string
 &#x22;,&#x22;dot&#x22;,&#x22;sub&#x22;,&#x22;call&#x22;,&#x22;regexp&#x22;,&#x22;defun&#x22;
-]),SPLICE_NEEDS_BRACKETS=jsp.array_to_hash([&#x22;if&#x22;,&#x22;while&#x22;,&#x22;do&#x22;,&#x22;for&#x22;,&#x22;for-in&#x22;,&\
-#x22;with&#x22;
+]),SPLICE_NEEDS_BRACKETS=jsp.array_to_hash([&#x22;if&#x22;,&#x22;while&#x22;,&#x22;do&#x22;,&#x22;for&#x22;,&#x22;for-in&#x22;,&#
+x22;with&#x22;
 ]),MAP;(function(){function t(e){this.v=e}function n(e){this.v=e}MAP=function(r,
 i,s){function f(){var f=i.call(s,r[a],a);f instanceof t?(f=f.v,f instanceof n?u.
 push.apply(u,f.v):u.push(f)):f!=e&#x26;&#x26;(f instanceof n?o.push.apply(o,f.v):o.push(f)
@@ -25709,8 +25781,7 @@ try {
     document.querySelector(&#x27;#outputPreJsonStringify1&#x27;).textContent = &#x27;&#x27;;
     document.querySelector(&#x27;#outputPreJsonStringify1&#x27;).textContent =
         local.jsonStringifyOrdered(
-            JSON.<span class="apidocCodeKeywordSpan">parse</span>(document.querySelector(&#x27;#inputTextareaEval1&#x27;).value)\
-,
+            JSON.<span class="apidocCodeKeywordSpan">parse</span>(document.querySelector(&#x27;#inputTextareaEval1&#x27;).value),
             null,
             4
         );
@@ -25869,8 +25940,7 @@ e}var r=jsp.<span class="apidocCodeKeywordSpan">tokenizer</span>(e),i=0,s;return
 (this,arguments)},a}()),n.map(function(t,r){return e.substring(t,n[r+1]||e.length
 )}).join(&#x22;\n&#x22;)}function repeat_string(e,t){if(t&#x3c;=0)return&#x22;&#x22;;if(t==1)return e;var n=
 repeat_string(e,t&#x3e;&#x3e;1);return n+=n,t&#x26;1&#x26;&#x26;(n+=e),n}function defaults(e,t){var n={};
-e===!0&#x26;&#x26;(e={});for(var r in t)HOP(t,r)&#x26;&#x26;(n[r]=e&#x26;&#x26;HOP(e,r)?e[r]:t[r]);return n}function is_identifi\
-er
+e===!0&#x26;&#x26;(e={});for(var r in t)HOP(t,r)&#x26;&#x26;(n[r]=e&#x26;&#x26;HOP(e,r)?e[r]:t[r]);return n}function is_identifier
 (e){return/^[a-z_$][a-z0-9_$]*$/i.test(e)&#x26;&#x26;e!=&#x22;this&#x22;&#x26;&#x26;!HOP(jsp.KEYWORDS_ATOM,e)&#x26;&#x26;!
 HOP(jsp.RESERVED_WORDS,e)&#x26;&#x26;!HOP(jsp.KEYWORDS,e)}function HOP(e,t){return Object.
 prototype.hasOwnProperty.call(e,t)}var jsp=require(&#x22;./parse-js&#x22;),curry=jsp.curry
@@ -25999,7 +26069,7 @@ this[0],MAP(e,function(e){return[s(e[0]),r(e[1])]})]}function l(e){if(e)return[t
 [0],i.labels.get_mangled(e)]}var n=ast_walker(),r=n.walk,i;return t=defaults(t,{
 mangle:!0,toplevel:!1,defines:null,except:null,no_functions:!1}),n.with_walkers(
 {&#x22;function&#x22;:u,defun:function(){var e=u.apply(this,arguments);switch(n.parent()[0
-]){case&#x22;toplevel&#x22;:case&#x22;function&#x22;:case&#x22;defun&#x22;:return MAP.<span class="apidocCodeKeywordSpan">at_top\
+]){case&#x22;toplevel&#x22;:case&#x22;function&#x22;:case&#x22;defun&#x22;:return MAP.<span class="apidocCodeKeywordSpan">at_top
 </span>(e)}return e},label
 :function(e,t){return i.labels.refs[e]?[this[0],i.labels.get_mangled(e,!0),r(t)]
 :r(t)},&#x22;break&#x22;:l,&#x22;continue&#x22;:l,&#x22;var&#x22;:f,&#x22;const&#x22;:f,name:function(e){return o(e)||[this
@@ -26024,19 +26094,12 @@ mangle:!0,toplevel:!1,defines:null,except:null,no_functions:!1}),n.with_walkers(
     <li>example usage<pre class="apidocCodePre">...
 ,InvalidModuleSpecifier:&#x22;Unexpected token&#x22;,IllegalImportDeclaration:&#x22;Unexpected token&#x22;
 ,IllegalExportDeclaration:&#x22;Unexpected token&#x22;,DuplicateBinding:&#x22;Duplicate binding %0&#x22;
-},u={NonAsciiIdentifierStart:/[\xAA\xB5\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0370-\u0374\u037\
-6\u0377\u037A-\u037D\u037F\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u052F\u0531-\u0556\u0559\u0561\
--\u0587\u05D0-\u05EA\u05F0-\u05F2\u0620-\u064A\u066E\u066F\u0671-\u06D3\u06D5\u06E5\u06E6\u06EE\u06EF\u06FA-\u06FC\u06FF\u0710\u\
-0712-\u072F\u074D-\u07A5\u07B1\u07CA-\u07EA\u07F4\u07F5\u07FA\u0800-\u0815\u081A\u0824\u0828\u0840-\u0858\u08A0-\u08B2\u0904-\u0\
-939\u093D\u0950\u0958-\u0961\u0971-\u0980\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BD\u09CE\u09D\
-C\u09DD\u09DF-\u09E1\u09F0\u09F1\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A59-\u\
-0A5C\u0A5E\u0A72-\u0A74\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABD\u0AD0\u0AE0\u0AE1\u0B\
-05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3D\u0B5C\u0B5D\u0B5F-\u0B61\u0B71\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BD0\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D\u0C58\u0C59\u0C60\u0C61\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBD\u0CDE\u0CE0\u0CE1\u0CF1\u0CF2\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D\u0D4E\u0D60\u0D61\u0D7A-\u0D7F\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0E01-\u0E30\u0E32\u0E33\u0E40-\u0E46\u0E81\u0E82\u0E84\u0E87\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA\u0EAB\u0EAD-\u0EB0\u0EB2\u0EB3\u0EBD\u0EC0-\u0EC4\u0EC6\u0EDC-\u0EDF\u0F00\u0F40-\u0F47\u0F49-\u0F6C\u0F88-\u0F8C\u1000-\u102A\u103F\u1050-\u1055\u105A-\u105D\u1061\u1065\u1066\u106E-\u1070\u1075-\u1081\u108E\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u1380-\u138F\u13A0-\u13F4\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F8\u1700-\u170C\u170E-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176C\u176E-\u1770\u1780-\u17B3\u17D7\u17DC\u1820-\u1877\u1880-\u18A8\u18AA\u18B0-\u18F5\u1900-\u191E\u1950-\u196D\u1970-\u1974\u1980-\u19AB\u19C1-\u19C7\u1A00-\u1A16\u1A20-\u1A54\u1AA7\u1B05-\u1B33\u1B45-\u1B4B\u1B83-\u1BA0\u1BAE\u1BAF\u1BBA-\u1BE5\u1C00-\u1C23\u1C4D-\u1C4F\u1C5A-\u1C7D\u1CE9-\u1CEC\u1CEE-\u1CF1\u1CF5\u1CF6\u1D00-\u1DBF\u1E00-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u2071\u207F\u2090-\u209C\u2102\u2107\u210A-\u2113\u2115\u2118-\u211D\u2124\u2126\u2128\u212A-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CEE\u2CF2\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D80-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303C\u3041-\u3096\u309B-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31BA\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FCC\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA61F\uA62A\uA62B\uA640-\uA66E\uA67F-\uA69D\uA6A0-\uA6EF\uA717-\uA71F\uA722-\uA788\uA78B-\uA78E\uA790-\uA7AD\uA7B0\uA7B1\uA7F7-\uA801\uA803-\uA805\uA807-\uA80A\uA80C-\uA822\uA840-\uA873\uA882-\uA8B3\uA8F2-\uA8F7\uA8FB\uA90A-\uA925\uA930-\uA946\uA960-\uA97C\uA984-\uA9B2\uA9CF\uA9E0-\uA9E4\uA9E6-\uA9EF\uA9FA-\uA9FE\uAA00-\uAA28\uAA40-\uAA42\uAA44-\uAA4B\uAA60-\uAA76\uAA7A\uAA7E-\uAAAF\uAAB1\uAAB5\uAAB6\uAAB9-\uAABD\uAAC0\uAAC2\uAADB-\uAADD\uAAE0-\uAAEA\uAAF2-\uAAF4\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB5F\uAB64\uAB65\uABC0-\uABE2\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D\uFB1F-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE70-\uFE74\uFE76-\uFEFC\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]|\uD800[\uDC00-\uDC0B\uDC0D-\uDC26\uDC28-\uDC3A\uDC3C\uDC3D\uDC3F-\uDC4D\uDC50-\uDC5D\uDC80-\uDCFA\uDD40-\uDD74\uDE80-\uDE9C\uDEA0-\uDED0\uDF00-\uDF1F\uDF30-\uDF4A\uDF50-\uDF75\uDF80-\uDF9D\uDFA0-\uDFC3\uDFC8-\uDFCF\uDFD1-\uDFD5]|\uD801[\uDC00-\uDC9D\uDD00-\uDD27\uDD30-\uDD63\uDE00-\uDF36\uDF40-\uDF55\uDF60-\uDF67]|\uD802[\uDC00-\uDC05\uDC08\uDC0A-\uDC35\uDC37\uDC38\uDC3C\uDC3F-\uDC55\uDC60-\uDC76\uDC80-\uDC9E\uDD00-\uDD15\uDD20-\uDD39\uDD80-\uDDB7\uDDBE\uDDBF\uDE00\uDE10-\uDE13\uDE15-\uDE17\uDE19-\uDE33\uDE60-\uDE7C\uDE80-\uDE9C\uDEC0-\uDEC7\uDEC9-\uDEE4\uDF00-\uDF35\uDF40-\uDF55\uDF60-\uDF72\uDF80-\uDF91]|\uD803[\uDC00-\uDC48]|\uD804[\uDC03-\uDC37\uDC83-\uDCAF\uDCD0-\uDCE8\uDD03-\uDD26\uDD50-\uDD72\uDD76\uDD83-\uDDB2\uDDC1-\uDDC4\uDDDA\uDE00-\uDE11\uDE13-\uDE2B\uDEB0-\uDEDE\uDF05-\uDF0C\uDF0F\uDF10\uDF13-\uDF28\uDF2A-\uDF30\uDF32\uDF33\uDF35-\uDF39\uDF3D\uDF5D-\uDF61]|\uD805[\uDC80-\uDCAF\uDCC4\uDCC5\uDCC7\uDD80-\uDDAE\uDE00-\uDE2F\uDE44\uDE80-\uDEAA]|\uD806[\uDCA0-\uDCDF\uDCFF\uDEC0-\uDEF8]|\uD808[\uDC00-\uDF98]|\uD809[\uDC00-\uDC6E]|[\uD80C\uD840-\uD868\uD86A-\uD86C][\uDC00-\uDFFF]|\uD80D[\uDC00-\uDC2E]|\uD81A[\uDC00-\uDE38\uDE40-\uDE5E\uDED0-\uDEED\uDF00-\uDF2F\uDF40-\uDF43\uDF63-\uDF77\uDF7D-\uDF8F]|\uD81B[\uDF00-\uDF44\uDF50\uDF93-\uDF9F]|\uD82C[\uDC00\uDC01]|\uD82F[\uDC00-\uDC6A\uDC70-\uDC7C\uDC80-\uDC88\uDC90-\uDC99]|\uD835[\uDC00-\uDC54\uDC56-\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDEA5\uDEA8-\uDEC0\uDEC2-\uDEDA\uDEDC-\uDEFA\uDEFC-\uDF14\uDF16-\uDF34\uDF36-\uDF4E\uDF50-\uDF6E\uDF70-\uDF88\uDF8A-\uDFA8\uDFAA-\uDFC2\uDFC4-\uDFCB]|\uD83A[\uDC00-\uDCC4]|\uD83B[\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB]|\uD869[\uDC00-\uDED6\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D]|\uD87E[\uDC00-\uDE1D]/
+},u={NonAsciiIdentifierStart:/[\xAA\xB5\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0370-\u0374\u0376\u0377\u037A-\u037D\u037F\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u052F\u0531-\u0556\u0559\u0561-\u0587\u05D0-\u05EA\u05F0-\u05F2\u0620-\u064A\u066E\u066F\u0671-\u06D3\u06D5\u06E5\u06E6\u06EE\u06EF\u06FA-\u06FC\u06FF\u0710\u0712-\u072F\u074D-\u07A5\u07B1\u07CA-\u07EA\u07F4\u07F5\u07FA\u0800-\u0815\u081A\u0824\u0828\u0840-\u0858\u08A0-\u08B2\u0904-\u0939\u093D\u0950\u0958-\u0961\u0971-\u0980\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BD\u09CE\u09DC\u09DD\u09DF-\u09E1\u09F0\u09F1\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A59-\u0A5C\u0A5E\u0A72-\u0A74\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABD\u0AD0\u0AE0\u0AE1\u0B05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3D\u0B5C\u0B5D\u0B5F-\u0B61\u0B71\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BD0\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D\u0C58\u0C59\u0C60\u0C61\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBD\u0CDE\u0CE0\u0CE1\u0CF1\u0CF2\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D\u0D4E\u0D60\u0D61\u0D7A-\u0D7F\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0E01-\u0E30\u0E32\u0E33\u0E40-\u0E46\u0E81\u0E82\u0E84\u0E87\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA\u0EAB\u0EAD-\u0EB0\u0EB2\u0EB3\u0EBD\u0EC0-\u0EC4\u0EC6\u0EDC-\u0EDF\u0F00\u0F40-\u0F47\u0F49-\u0F6C\u0F88-\u0F8C\u1000-\u102A\u103F\u1050-\u1055\u105A-\u105D\u1061\u1065\u1066\u106E-\u1070\u1075-\u1081\u108E\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u1380-\u138F\u13A0-\u13F4\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F8\u1700-\u170C\u170E-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176C\u176E-\u1770\u1780-\u17B3\u17D7\u17DC\u1820-\u1877\u1880-\u18A8\u18AA\u18B0-\u18F5\u1900-\u191E\u1950-\u196D\u1970-\u1974\u1980-\u19AB\u19C1-\u19C7\u1A00-\u1A16\u1A20-\u1A54\u1AA7\u1B05-\u1B33\u1B45-\u1B4B\u1B83-\u1BA0\u1BAE\u1BAF\u1BBA-\u1BE5\u1C00-\u1C23\u1C4D-\u1C4F\u1C5A-\u1C7D\u1CE9-\u1CEC\u1CEE-\u1CF1\u1CF5\u1CF6\u1D00-\u1DBF\u1E00-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u2071\u207F\u2090-\u209C\u2102\u2107\u210A-\u2113\u2115\u2118-\u211D\u2124\u2126\u2128\u212A-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CEE\u2CF2\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D80-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303C\u3041-\u3096\u309B-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31BA\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FCC\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA61F\uA62A\uA62B\uA640-\uA66E\uA67F-\uA69D\uA6A0-\uA6EF\uA717-\uA71F\uA722-\uA788\uA78B-\uA78E\uA790-\uA7AD\uA7B0\uA7B1\uA7F7-\uA801\uA803-\uA805\uA807-\uA80A\uA80C-\uA822\uA840-\uA873\uA882-\uA8B3\uA8F2-\uA8F7\uA8FB\uA90A-\uA925\uA930-\uA946\uA960-\uA97C\uA984-\uA9B2\uA9CF\uA9E0-\uA9E4\uA9E6-\uA9EF\uA9FA-\uA9FE\uAA00-\uAA28\uAA40-\uAA42\uAA44-\uAA4B\uAA60-\uAA76\uAA7A\uAA7E-\uAAAF\uAAB1\uAAB5\uAAB6\uAAB9-\uAABD\uAAC0\uAAC2\uAADB-\uAADD\uAAE0-\uAAEA\uAAF2-\uAAF4\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB5F\uAB64\uAB65\uABC0-\uABE2\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D\uFB1F-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE70-\uFE74\uFE76-\uFEFC\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]|\uD800[\uDC00-\uDC0B\uDC0D-\uDC26\uDC28-\uDC3A\uDC3C\uDC3D\uDC3F-\uDC4D\uDC50-\uDC5D\uDC80-\uDCFA\uDD40-\uDD74\uDE80-\uDE9C\uDEA0-\uDED0\uDF00-\uDF1F\uDF30-\uDF4A\uDF50-\uDF75\uDF80-\uDF9D\uDFA0-\uDFC3\uDFC8-\uDFCF\uDFD1-\uDFD5]|\uD801[\uDC00-\uDC9D\uDD00-\uDD27\uDD30-\uDD63\uDE00-\uDF36\uDF40-\uDF55\uDF60-\uDF67]|\uD802[\uDC00-\uDC05\uDC08\uDC0A-\uDC35\uDC37\uDC38\uDC3C\uDC3F-\uDC55\uDC60-\uDC76\uDC80-\uDC9E\uDD00-\uDD15\uDD20-\uDD39\uDD80-\uDDB7\uDDBE\uDDBF\uDE00\uDE10-\uDE13\uDE15-\uDE17\uDE19-\uDE33\uDE60-\uDE7C\uDE80-\uDE9C\uDEC0-\uDEC7\uDEC9-\uDEE4\uDF00-\uDF35\uDF40-\uDF55\uDF60-\uDF72\uDF80-\uDF91]|\uD803[\uDC00-\uDC48]|\uD804[\uDC03-\uDC37\uDC83-\uDCAF\uDCD0-\uDCE8\uDD03-\uDD26\uDD50-\uDD72\uDD76\uDD83-\uDDB2\uDDC1-\uDDC4\uDDDA\uDE00-\uDE11\uDE13-\uDE2B\uDEB0-\uDEDE\uDF05-\uDF0C\uDF0F\uDF10\uDF13-\uDF28\uDF2A-\uDF30\uDF32\uDF33\uDF35-\uDF39\uDF3D\uDF5D-\uDF61]|\uD805[\uDC80-\uDCAF\uDCC4\uDCC5\uDCC7\uDD80-\uDDAE\uDE00-\uDE2F\uDE44\uDE80-\uDEAA]|\uD806[\uDCA0-\uDCDF\uDCFF\uDEC0-\uDEF8]|\uD808[\uDC00-\uDF98]|\uD809[\uDC00-\uDC6E]|[\uD80C\uD840-\uD868\uD86A-\uD86C][\uDC00-\uDFFF]|\uD80D[\uDC00-\uDC2E]|\uD81A[\uDC00-\uDE38\uDE40-\uDE5E\uDED0-\uDEED\uDF00-\uDF2F\uDF40-\uDF43\uDF63-\uDF77\uDF7D-\uDF8F]|\uD81B[\uDF00-\uDF44\uDF50\uDF93-\uDF9F]|\uD82C[\uDC00\uDC01]|\uD82F[\uDC00-\uDC6A\uDC70-\uDC7C\uDC80-\uDC88\uDC90-\uDC99]|\uD835[\uDC00-\uDC54\uDC56-\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDEA5\uDEA8-\uDEC0\uDEC2-\uDEDA\uDEDC-\uDEFA\uDEFC-\uDF14\uDF16-\uDF34\uDF36-\uDF4E\uDF50-\uDF6E\uDF70-\uDF88\uDF8A-\uDFA8\uDFAA-\uDFC2\uDFC4-\uDFCB]|\uD83A[\uDC00-\uDCC4]|\uD83B[\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB]|\uD869[\uDC00-\uDED6\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D]|\uD87E[\uDC00-\uDE1D]/
 ,NonAsciiIdentifierPart:/[\xAA\xB5\xB7\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0300-\u0374\u0376\u0377\u037A-\u037D\u037F\u0386-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u0483-\u0487\u048A-\u052F\u0531-\u0556\u0559\u0561-\u0587\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7\u05D0-\u05EA\u05F0-\u05F2\u0610-\u061A\u0620-\u0669\u066E-\u06D3\u06D5-\u06DC\u06DF-\u06E8\u06EA-\u06FC\u06FF\u0710-\u074A\u074D-\u07B1\u07C0-\u07F5\u07FA\u0800-\u082D\u0840-\u085B\u08A0-\u08B2\u08E4-\u0963\u0966-\u096F\u0971-\u0983\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BC-\u09C4\u09C7\u09C8\u09CB-\u09CE\u09D7\u09DC\u09DD\u09DF-\u09E3\u09E6-\u09F1\u0A01-\u0A03\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A3C\u0A3E-\u0A42\u0A47\u0A48\u0A4B-\u0A4D\u0A51\u0A59-\u0A5C\u0A5E\u0A66-\u0A75\u0A81-\u0A83\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABC-\u0AC5\u0AC7-\u0AC9\u0ACB-\u0ACD\u0AD0\u0AE0-\u0AE3\u0AE6-\u0AEF\u0B01-\u0B03\u0B05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3C-\u0B44\u0B47\u0B48\u0B4B-\u0B4D\u0B56\u0B57\u0B5C\u0B5D\u0B5F-\u0B63\u0B66-\u0B6F\u0B71\u0B82\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BBE-\u0BC2\u0BC6-\u0BC8\u0BCA-\u0BCD\u0BD0\u0BD7\u0BE6-\u0BEF\u0C00-\u0C03\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D-\u0C44\u0C46-\u0C48\u0C4A-\u0C4D\u0C55\u0C56\u0C58\u0C59\u0C60-\u0C63\u0C66-\u0C6F\u0C81-\u0C83\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBC-\u0CC4\u0CC6-\u0CC8\u0CCA-\u0CCD\u0CD5\u0CD6\u0CDE\u0CE0-\u0CE3\u0CE6-\u0CEF\u0CF1\u0CF2\u0D01-\u0D03\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D-\u0D44\u0D46-\u0D48\u0D4A-\u0D4E\u0D57\u0D60-\u0D63\u0D66-\u0D6F\u0D7A-\u0D7F\u0D82\u0D83\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0DCA\u0DCF-\u0DD4\u0DD6\u0DD8-\u0DDF\u0DE6-\u0DEF\u0DF2\u0DF3\u0E01-\u0E3A\u0E40-\u0E4E\u0E50-\u0E59\u0E81\u0E82\u0E84\u0E87\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA\u0EAB\u0EAD-\u0EB9\u0EBB-\u0EBD\u0EC0-\u0EC4\u0EC6\u0EC8-\u0ECD\u0ED0-\u0ED9\u0EDC-\u0EDF\u0F00\u0F18\u0F19\u0F20-\u0F29\u0F35\u0F37\u0F39\u0F3E-\u0F47\u0F49-\u0F6C\u0F71-\u0F84\u0F86-\u0F97\u0F99-\u0FBC\u0FC6\u1000-\u1049\u1050-\u109D\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u135D-\u135F\u1369-\u1371\u1380-\u138F\u13A0-\u13F4\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F8\u1700-\u170C\u170E-\u1714\u1720-\u1734\u1740-\u1753\u1760-\u176C\u176E-\u1770\u1772\u1773\u1780-\u17D3\u17D7\u17DC\u17DD\u17E0-\u17E9\u180B-\u180D\u1810-\u1819\u1820-\u1877\u1880-\u18AA\u18B0-\u18F5\u1900-\u191E\u1920-\u192B\u1930-\u193B\u1946-\u196D\u1970-\u1974\u1980-\u19AB\u19B0-\u19C9\u19D0-\u19DA\u1A00-\u1A1B\u1A20-\u1A5E\u1A60-\u1A7C\u1A7F-\u1A89\u1A90-\u1A99\u1AA7\u1AB0-\u1ABD\u1B00-\u1B4B\u1B50-\u1B59\u1B6B-\u1B73\u1B80-\u1BF3\u1C00-\u1C37\u1C40-\u1C49\u1C4D-\u1C7D\u1CD0-\u1CD2\u1CD4-\u1CF6\u1CF8\u1CF9\u1D00-\u1DF5\u1DFC-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u200C\u200D\u203F\u2040\u2054\u2071\u207F\u2090-\u209C\u20D0-\u20DC\u20E1\u20E5-\u20F0\u2102\u2107\u210A-\u2113\u2115\u2118-\u211D\u2124\u2126\u2128\u212A-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D7F-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u2DE0-\u2DFF\u3005-\u3007\u3021-\u302F\u3031-\u3035\u3038-\u303C\u3041-\u3096\u3099-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31BA\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FCC\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA62B\uA640-\uA66F\uA674-\uA67D\uA67F-\uA69D\uA69F-\uA6F1\uA717-\uA71F\uA722-\uA788\uA78B-\uA78E\uA790-\uA7AD\uA7B0\uA7B1\uA7F7-\uA827\uA840-\uA873\uA880-\uA8C4\uA8D0-\uA8D9\uA8E0-\uA8F7\uA8FB\uA900-\uA92D\uA930-\uA953\uA960-\uA97C\uA980-\uA9C0\uA9CF-\uA9D9\uA9E0-\uA9FE\uAA00-\uAA36\uAA40-\uAA4D\uAA50-\uAA59\uAA60-\uAA76\uAA7A-\uAAC2\uAADB-\uAADD\uAAE0-\uAAEF\uAAF2-\uAAF6\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB5F\uAB64\uAB65\uABC0-\uABEA\uABEC\uABED\uABF0-\uABF9\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE00-\uFE0F\uFE20-\uFE2D\uFE33\uFE34\uFE4D-\uFE4F\uFE70-\uFE74\uFE76-\uFEFC\uFF10-\uFF19\uFF21-\uFF3A\uFF3F\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]|\uD800[\uDC00-\uDC0B\uDC0D-\uDC26\uDC28-\uDC3A\uDC3C\uDC3D\uDC3F-\uDC4D\uDC50-\uDC5D\uDC80-\uDCFA\uDD40-\uDD74\uDDFD\uDE80-\uDE9C\uDEA0-\uDED0\uDEE0\uDF00-\uDF1F\uDF30-\uDF4A\uDF50-\uDF7A\uDF80-\uDF9D\uDFA0-\uDFC3\uDFC8-\uDFCF\uDFD1-\uDFD5]|\uD801[\uDC00-\uDC9D\uDCA0-\uDCA9\uDD00-\uDD27\uDD30-\uDD63\uDE00-\uDF36\uDF40-\uDF55\uDF60-\uDF67]|\uD802[\uDC00-\uDC05\uDC08\uDC0A-\uDC35\uDC37\uDC38\uDC3C\uDC3F-\uDC55\uDC60-\uDC76\uDC80-\uDC9E\uDD00-\uDD15\uDD20-\uDD39\uDD80-\uDDB7\uDDBE\uDDBF\uDE00-\uDE03\uDE05\uDE06\uDE0C-\uDE13\uDE15-\uDE17\uDE19-\uDE33\uDE38-\uDE3A\uDE3F\uDE60-\uDE7C\uDE80-\uDE9C\uDEC0-\uDEC7\uDEC9-\uDEE6\uDF00-\uDF35\uDF40-\uDF55\uDF60-\uDF72\uDF80-\uDF91]|\uD803[\uDC00-\uDC48]|\uD804[\uDC00-\uDC46\uDC66-\uDC6F\uDC7F-\uDCBA\uDCD0-\uDCE8\uDCF0-\uDCF9\uDD00-\uDD34\uDD36-\uDD3F\uDD50-\uDD73\uDD76\uDD80-\uDDC4\uDDD0-\uDDDA\uDE00-\uDE11\uDE13-\uDE37\uDEB0-\uDEEA\uDEF0-\uDEF9\uDF01-\uDF03\uDF05-\uDF0C\uDF0F\uDF10\uDF13-\uDF28\uDF2A-\uDF30\uDF32\uDF33\uDF35-\uDF39\uDF3C-\uDF44\uDF47\uDF48\uDF4B-\uDF4D\uDF57\uDF5D-\uDF63\uDF66-\uDF6C\uDF70-\uDF74]|\uD805[\uDC80-\uDCC5\uDCC7\uDCD0-\uDCD9\uDD80-\uDDB5\uDDB8-\uDDC0\uDE00-\uDE40\uDE44\uDE50-\uDE59\uDE80-\uDEB7\uDEC0-\uDEC9]|\uD806[\uDCA0-\uDCE9\uDCFF\uDEC0-\uDEF8]|\uD808[\uDC00-\uDF98]|\uD809[\uDC00-\uDC6E]|[\uD80C\uD840-\uD868\uD86A-\uD86C][\uDC00-\uDFFF]|\uD80D[\uDC00-\uDC2E]|\uD81A[\uDC00-\uDE38\uDE40-\uDE5E\uDE60-\uDE69\uDED0-\uDEED\uDEF0-\uDEF4\uDF00-\uDF36\uDF40-\uDF43\uDF50-\uDF59\uDF63-\uDF77\uDF7D-\uDF8F]|\uD81B[\uDF00-\uDF44\uDF50-\uDF7E\uDF8F-\uDF9F]|\uD82C[\uDC00\uDC01]|\uD82F[\uDC00-\uDC6A\uDC70-\uDC7C\uDC80-\uDC88\uDC90-\uDC99\uDC9D\uDC9E]|\uD834[\uDD65-\uDD69\uDD6D-\uDD72\uDD7B-\uDD82\uDD85-\uDD8B\uDDAA-\uDDAD\uDE42-\uDE44]|\uD835[\uDC00-\uDC54\uDC56-\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDEA5\uDEA8-\uDEC0\uDEC2-\uDEDA\uDEDC-\uDEFA\uDEFC-\uDF14\uDF16-\uDF34\uDF36-\uDF4E\uDF50-\uDF6E\uDF70-\uDF88\uDF8A-\uDFA8\uDFAA-\uDFC2\uDFC4-\uDFCB\uDFCE-\uDFFF]|\uD83A[\uDC00-\uDCC4\uDCD0-\uDCD6]|\uD83B[\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB]|\uD869[\uDC00-\uDED6\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D]|\uD87E[\uDC00-\uDE1D]|\uDB40[\uDD00-\uDDEF]/
 },St.prototype=Et.prototype={processComment:function(){var e,t,n,r=N.bottomRightStack
 ,s,o,u=r[r.length-1];if(this.type===i.Program&#x26;&#x26;this.body.length&#x3e;0)return;if(N.trailingComments
 .length&#x3e;0){n=[];for(s=N.trailingComments.length-1;s&#x3e;=0;--s)o=N.trailingComments[
-s],o.range[0]&#x3e;=this.range[1]&#x26;&#x26;(n.unshift(o),N.trailingComments.<span class="apidocCodeKeywordSpan">splice</span>(\
+s],o.range[0]&#x3e;=this.range[1]&#x26;&#x26;(n.unshift(o),N.trailingComments.<span class="apidocCodeKeywordSpan">splice</span>(
 s,1));N.trailingComments=
 []}else u&#x26;&#x26;u.trailingComments&#x26;&#x26;u.trailingComments[0].range[0]&#x3e;=this.range[1]&#x26;&#x26;(n=
 u.trailingComments,delete u.trailingComments);while(u&#x26;&#x26;u.range[0]&#x3e;=this.range[0]
