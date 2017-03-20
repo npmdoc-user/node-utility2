@@ -439,7 +439,7 @@ local.templateApidocMd = '\
 {{env.npm_package_name}} (v{{env.npm_package_version}}) \
 {{/if env.npm_package_homepage}} \
 \n\
-{{env.npm_package_description}} \
+## {{env.npm_package_description}} \
 \n\
 {{/if header}} \
 \n\
@@ -11852,8 +11852,10 @@ header: '\
 {{#unless env.npm_package_homepage}} \
 {{env.npm_package_name}} (v{{env.npm_package_version}}) \
 {{/if env.npm_package_homepage}} \
+[![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-{{env.npm_package_name}}.svg)](https://travis-ci.org/npmdoc/node-npmdoc-{{env.npm_package_name}}) \
 \n\
-{{env.npm_package_description}} \
+\n\
+## {{env.npm_package_description}} \
 \n\
 \n\
 [![NPM](https://nodei.co/npm/{{env.npm_package_name}}.png?downloads=true)](https://www.npmjs.com/package/{{env.npm_package_name}}) \
