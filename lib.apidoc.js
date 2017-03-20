@@ -376,7 +376,7 @@ local.templateApidocMd = '\
 {{env.npm_package_name}} (v{{env.npm_package_version}}) \
 {{/if env.npm_package_homepage}} \
 \n\
-{{env.npm_package_description}} \
+## {{env.npm_package_description}} \
 \n\
 {{/if header}} \
 \n\
