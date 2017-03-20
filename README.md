@@ -101,7 +101,7 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 
 shExampleSh() {(set -e
     # npm install utility2
-    npm install utility2
+    npm install "kaizhu256/node-utility2#alpha"
     # serve a webpage that will interactively run browser-tests with coverage
     cd node_modules/utility2 && export PORT=8081 && npm start
 )}
@@ -130,7 +130,7 @@ this script will demo automated browser-tests with coverage (via electron and is
 instruction
     1. save this script as example.js
     2. run the shell command:
-        $ npm install electron-lite utility2 && \
+        $ npm install electron-lite "kaizhu256/node-utility2#alpha" && \
             PATH="$(pwd)/node_modules/.bin:$PATH" \
             PORT=8081 \
             npm_config_mode_coverage=utility2 \
