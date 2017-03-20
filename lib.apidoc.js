@@ -685,7 +685,10 @@ local.templateApidocMd = '\
                     };
                 });
             // render apidoc
-            return local.templateRender(options.template, options);
+            options.result = local.templateRender(options.template, options)
+                .trim()
+                .replace((/ +$/gm), '') + '\n';
+            return options.result;
         };
 
         local.apidocModuleDictAdd = function (options, moduleDict) {
