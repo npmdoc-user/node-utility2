@@ -276,6 +276,13 @@ shBuildCi() {(set -e
             shBuildScriptEval "githubPush" \
                 "git push -f git@github.com:$GITHUB_REPO.git HEAD:publish"
             ;;
+        "[npmdoc test]")
+            git add .
+            shFilePackageJsonVersionIncrement
+            git commit -am "[npmdoc tested]" || true
+            shBuildScriptEval "githubPush" \
+                "git push git@github.com:$GITHUB_REPO.git HEAD:alpha" || true
+            ;;
         esac
         ;;
     beta)
@@ -2531,7 +2538,7 @@ shTravisRepoListCreate() {(set -e
     curl -H "Authorization: token $TRAVIS_TOKEN" -X POST -s \
         "https://api.travis-ci.org/users/sync" || true
     printf "\n"
-    sleep 10
+    sleep 30
     printf "... synced travis\n"
     # init $TRAVIS_REPO
     for GITHUB_REPO in $LIST

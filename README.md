@@ -30,7 +30,7 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 #### todo
 - npm publish 2017.3.18
 - fix npmdoc on npmdoc
-- add package-listing to npmdoc
+- add package.json to npmdoc
 - use remote credentials
 - use github oauth - https://stackoverflow.com/questions/18027115/committing-via-travis-ci-failing
 - allow server-side stdout to be streamed to webapps
@@ -47,6 +47,7 @@ the zero-dependency swiss-army-knife tool for building, testing, and deploying w
 - add env var npm_package_buildNpmdocMain to customize npmdoc target
 - add optional commit-message for PUT and DELETE requests in github-crud
 - add package-description to apidoc
+- add package-listing to npmdoc
 - add shell-function shNpmdocRepoListCreate to automate creation of npmdoc's
 - add shell function shUtility2GrepTravisYml
 - fix 'span class' error in https://www.npmjs.com/package/npmdoc-glob
@@ -602,7 +603,9 @@ utility2-comment -->\n\
         local.assetsDict['/assets.utility2.rollup.js'] =
             local.assetsDict['/assets.utility2.rollup.js'] ||
             local.fs.readFileSync(
-                local.utility2.__dirname + '/lib.utility2.js',
+                // npmdoc-hack
+                local.utility2.__dirname +
+                    '/lib.utility2.js',
                 'utf8'
             ).replace((/^#!/), '//');
         local.assetsDict['/favicon.ico'] = local.assetsDict['/favicon.ico'] || '';

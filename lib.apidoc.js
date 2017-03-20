@@ -240,6 +240,12 @@
                     case 'jsonStringify':
                         value = JSON.stringify(value);
                         break;
+                    case 'jsonStringify4':
+                        value = JSON.stringify(value, null, 4);
+                        break;
+                    case 'markdownCodeSafe':
+                        value = value.replace((/`/g), "'");
+                        break;
                     default:
                         value = value[arg]();
                         break;
@@ -360,6 +366,9 @@ local.templateApidocHtml = '\
 ';
 
 local.templateApidocMd = '\
+{{#if header}} \
+{{header}} \
+{{#unless header}} \
 # api-documentation for \
 {{#if env.npm_package_homepage}} \
 [{{env.npm_package_name}} (v{{env.npm_package_version}})]({{env.npm_package_homepage}}) \
@@ -367,11 +376,9 @@ local.templateApidocMd = '\
 {{env.npm_package_name}} (v{{env.npm_package_version}}) \
 {{/if env.npm_package_homepage}} \
 \n\
+{{env.npm_package_description}} \
 \n\
-\n\
-\n\
-#### {{env.npm_package_description}} \
-\n\
+{{/if header}} \
 \n\
 \n\
 \n\
@@ -406,7 +413,7 @@ local.templateApidocMd = '\
 \n\
 ```javascript \
 \n\
-{{source}} \
+{{source markdownCodeSafe}} \
 \n\
 ``` \
 \n\
@@ -414,7 +421,7 @@ local.templateApidocMd = '\
 \n\
 ```shell \
 \n\
-{{example}} \
+{{example markdownCodeSafe}} \
 \n\
 ``` \
 {{/if source}} \
@@ -467,7 +474,7 @@ local.templateApidocMd = '\
                 }
                 element.source = (options.template === local.templateApidocHtml
                     ? local.stringHtmlSafe(element.source)
-                    : element.source.replace((/`/g), '_'))
+                    : element.source)
                     .replace((/\([\S\s]*?\)/), function (match0) {
                         // init signature
                         element.signature = match0
@@ -493,7 +500,7 @@ local.templateApidocMd = '\
                                         local.stringHtmlSafe(match2) +
                                         '</span>' +
                                         local.stringHtmlSafe(match3)
-                                    : match0.replace((/`/g), "'")
+                                    : match0
                             ).trimRight() + '\n...';
                         }
                     );
@@ -528,22 +535,26 @@ local.templateApidocMd = '\
                 text = text.replace(new RegExp('^' + whitespace, 'gm'), '');
                 // enforce 128 character column limit
                 while ((/^.{128}[^\\\n]/m).test(text)) {
-                    text = text.replace((/^(.{128})([^\\\n]+)/gm), '$1\\\n$2');
+                    text = text.replace((/^(.{128}\w*)([^\\\n]+)/gm), '$1\\\n$2');
                 }
                 return text;
             };
             // init options
-            local.objectSetDefault(options, { modulePathList: local.module.paths });
-            options.dir = local.moduleDirname(options.dir, options.modulePathList);
+            options.dir = local.moduleDirname(
+                options.dir,
+                options.modulePathList || local.module.paths
+            );
             local.objectSetDefault(options, {
+                env: {},
                 packageJson: JSON.parse(readExample('package.json'))
             });
-            local.objectSetDefault(options, { env: {
-                npm_package_description: options.packageJson.description,
-                npm_package_homepage: options.packageJson.homepage,
-                npm_package_name: options.packageJson.name,
-                npm_package_version: options.packageJson.version
-            } }, 2);
+            Object.keys(options.packageJson).forEach(function (key) {
+                if (key[0] === '_') {
+                    delete options.packageJson[key];
+                } else if (typeof options.packageJson[key] === 'string') {
+                    options.env['npm_package_' + key] = options.packageJson[key];
+                }
+            });
             local.objectSetDefault(options, {
                 blacklistDict: { global: global },
                 circularList: [global],
