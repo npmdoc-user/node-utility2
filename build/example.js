@@ -6,7 +6,7 @@ this script will demo automated browser-tests with coverage (via electron and is
 instruction
     1. save this script as example.js
     2. run the shell command:
-        $ npm install electron-lite utility2 &&             PATH="$(pwd)/node_modules/.bin:$PATH"             PORT=8081             npm_config_mode_coverage=utility2             node_modules/.bin/utility2 test example.js
+        $ npm install electron-lite "kaizhu256/node-utility2#alpha" &&             PATH="$(pwd)/node_modules/.bin:$PATH"             PORT=8081             npm_config_mode_coverage=utility2             node_modules/.bin/utility2 test example.js
 
 
 
