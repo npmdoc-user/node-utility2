@@ -1256,7 +1256,7 @@
             });
         };
 
-        local._testCase_templateRender_default = function (options, onError) {
+        local.testCase_templateRender_default = function (options, onError) {
         /*
          * this function will test templateRender's default handling-behavior
          */

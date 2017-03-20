@@ -534,9 +534,9 @@ local.templateApidocMd = '\
                 });
                 text = text.replace(new RegExp('^' + whitespace, 'gm'), '');
                 // enforce 128 character column limit
-                while ((/^.{128}[^\\\n]/m).test(text)) {
-                    text = text.replace((/^(.{128}\w*)([^\\\n]+)/gm), '$1\\\n$2');
-                }
+                text = text.replace((/^.{128}[^\\\n]+/gm), function (match0) {
+                    return match0.replace((/(.{128}(?:\b|\w+))/g), '$1\n').trimRight();
+                });
                 return text;
             };
             // init options
