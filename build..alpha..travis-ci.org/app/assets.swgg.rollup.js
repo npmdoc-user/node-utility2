@@ -729,7 +729,10 @@ local.templateApidocMd = '\
                     };
                 });
             // render apidoc
-            return local.templateRender(options.template, options);
+            options.result = local.templateRender(options.template, options)
+                .trim()
+                .replace((/ +$/gm), '') + '\n';
+            return options.result;
         };
 
         local.apidocModuleDictAdd = function (options, moduleDict) {
@@ -11861,8 +11864,7 @@ header: '\
             });
             local.fs.writeFileSync('README.md', options.readme);
             // re-build package.json
-            packageJson.description = (/.*/).exec(options.readme)[0]
-                .slice(2)
+            packageJson.description = (/\w.*/).exec(options.readme)[0]
                 .replace((/ {2,}/g), ' ')
                 .trim();
             local.fs.writeFileSync(

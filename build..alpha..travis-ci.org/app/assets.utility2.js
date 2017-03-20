@@ -2604,8 +2604,7 @@ header: '\
             });
             local.fs.writeFileSync('README.md', options.readme);
             // re-build package.json
-            packageJson.description = (/.*/).exec(options.readme)[0]
-                .slice(2)
+            packageJson.description = (/\w.*/).exec(options.readme)[0]
                 .replace((/ {2,}/g), ' ')
                 .trim();
             local.fs.writeFileSync(
