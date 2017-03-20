@@ -2582,6 +2582,9 @@ header: '\
 ## {{env.npm_package_description}} \
 \n\
 \n\
+[![package-listing](https://npmdoc.github.io/node-{{env.npm_package_name}}/build/screen-capture.npmPackageListing.svg)](https://github.com/npmdoc/node-{{env.npm_package_name}}) \
+\n\
+\n\
 [![NPM](https://nodei.co/npm/{{env.npm_package_name}}.png?downloads=true)](https://www.npmjs.com/package/{{env.npm_package_name}}) \
 \n\
 \n\

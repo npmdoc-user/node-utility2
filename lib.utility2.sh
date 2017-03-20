@@ -343,7 +343,12 @@ shBuildCiInternal() {(set -e
     # create apidoc
     shBuildApidoc
     # create package-listing
-    shNpmPackageListingCreate
+    if [ "$npm_package_buildNpmdoc" ]
+    then
+        shNpmPackageListingCreate "node_modules/$npm_package_buildNpmdoc"
+    else
+        shNpmPackageListingCreate
+    fi
     # create recent changelog of last 50 commits
     (export MODE_BUILD=gitLog; shRunScreenCapture git log -50 --pretty="%ai\u000a%B")
     # run internal post-build
