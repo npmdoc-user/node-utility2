@@ -3,66 +3,49 @@
     "bin": {
         "utility2": "lib.utility2.sh",
         "utility2-apidoc": "lib.apidoc.js",
+        "utility2-db": "lib.db.js",
         "utility2-github-crud": "lib.github_crud.js",
         "utility2-istanbul": "lib.istanbul.js",
-        "utility2-jslint": "lib.jslint.js",
-        "utility2-uglifyjs": "lib.uglifyjs.js"
+        "utility2-jslint": "lib.jslint.js"
     },
-    "description": "the zero-dependency swiss-army-knife tool for building, testing, and deploying webapps",
+    "description": "the zero-dependency, swiss-army-knife utility for building, testing, and deploying webapps",
     "devDependencies": {
         "electron-lite": "kaizhu256/node-electron-lite#alpha"
     },
     "engines": {
-        "node": ">=4.0"
+        "node": ">=10.0"
     },
     "homepage": "https://github.com/kaizhu256/node-utility2",
     "keywords": [
-        "browser",
-        "build",
-        "busybox",
-        "ci",
-        "code-coverage",
         "continuous-integration",
-        "deploy",
-        "docker",
-        "electron",
-        "headless-browser",
-        "istanbul",
-        "jscover",
-        "jscoverage",
-        "phantomjs",
-        "slimerjs",
-        "swiss-army-knife",
-        "test",
+        "npmdoc",
+        "npmtest",
         "test-coverage",
-        "travis",
-        "travis-ci",
-        "utility2",
-        "webapp"
+        "travis-ci"
     ],
     "license": "MIT",
     "main": "lib.utility2.js",
     "name": "utility2",
-    "nameAlias": "utility2",
-    "nameAliasDeprecate": "busybox2 busyweb",
-    "nameAliasPublish": "busybox test-lite",
+    "nameAliasPublish": "busybox npmtest-lite test-lite",
+    "nameLib": "utility2",
     "nameOriginal": "utility2",
     "os": [
         "darwin",
         "linux"
     ],
-    "readmeParse": "1",
     "repository": {
         "type": "git",
         "url": "https://github.com/kaizhu256/node-utility2.git"
     },
     "scripts": {
-        "build-ci": "./lib.utility2.sh shReadmeTest build_ci.sh",
+        "build-ci": "./npm_scripts.sh",
         "env": "env",
-        "heroku-postbuild": "./lib.utility2.sh shDeployHeroku",
-        "postinstall": "if [ -f lib.utility2.npm_scripts.sh ]; then ./lib.utility2.npm_scripts.sh postinstall; fi",
-        "start": "(set -e; export PORT=${PORT:-8080}; if [ -f assets.app.js ]; then node assets.app.js; exit; fi; export npm_config_mode_auto_restart=1; ./lib.utility2.sh shRun shIstanbulCover test.js)",
-        "test": "(set -e; export PORT=$(./lib.utility2.sh shServerPortRandom); export PORT_REPL=$(./lib.utility2.sh shServerPortRandom); export npm_config_mode_auto_restart=1; ./lib.utility2.sh test test.js)"
+        "eval": "./npm_scripts.sh",
+        "heroku-postbuild": "./npm_scripts.sh",
+        "postinstall": "./npm_scripts.sh",
+        "start": "./npm_scripts.sh",
+        "test": "./npm_scripts.sh",
+        "utility2": "./npm_scripts.sh"
     },
-    "version": "2017.3.17"
+    "version": "2019.4.9"
 }
